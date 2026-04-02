@@ -1,0 +1,42 @@
+{
+    "_version": "1.73.1",
+    "sap.app": {
+        "id": "ui5.genatrix",
+        "type": "library",
+        "title": "UI5 Genatrix",
+        "applicationVersion": {
+            "version": "0.0.1"
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "deviceTypes": {
+            "phone": true,
+            "tablet": true,
+            "desktop": true
+        }
+    },
+    "sap.ui5": {
+        "dependencies": {
+            "minUI5Version": "1.136.16",
+            "libs": {
+                "sap.ui.core": {},
+                "sap.m": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "library": {
+            "css": false,
+            "i18n": {
+                "bundleUrl": "i18n/i18n.properties",
+                "supportedLocales": [
+                    ""
+                ],
+                "fallbackLocale": ""
+            }
+        }
+    }
+}

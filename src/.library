@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<library
+	xmlns="http://www.sap.com/sap.ui.library.xsd">
+	<name>ui5.genatrix</name>
+	<version>${version}</version>
+	<vendor>Hasan Çiftçi (hasanciftcii26@gmail.com)</vendor>
+	<documentation>UI5 Genatrix</documentation>
+	<dependencies>
+		<dependency>
+			<libraryName>sap.ui.core</libraryName>
+		</dependency>
+		<dependency>
+			<libraryName>sap.m</libraryName>
+		</dependency>
+	</dependencies>
+	<appData></appData>
+</library>

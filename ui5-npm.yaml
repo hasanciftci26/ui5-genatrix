@@ -1,0 +1,36 @@
+specVersion: '4.0'
+type: library
+metadata:
+  name: ui5.genatrix
+framework:
+  name: SAPUI5
+  version: 1.136.16
+  libraries:
+    - name: sap.ui.core
+    - name: sap.m
+builder:
+  resources:
+    excludes:
+      - /test-resources/**
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration:
+        debug: false
+        removeConsoleStatements: true
+        transformAsyncToPromise: false
+        transformTypeScript: true
+        generateDts: true
+        omitTSFromBuildResult: true
+        omitSourceMaps: true
+resources:
+  configuration:
+    propertiesFileSourceEncoding: UTF-8
+---
+specVersion: "4.0"
+kind: extension
+type: task
+metadata:
+  name: remove-debug-files
+task:
+  path: task/remove-debug-files.js
