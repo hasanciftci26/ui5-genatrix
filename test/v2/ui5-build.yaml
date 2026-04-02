@@ -1,0 +1,26 @@
+specVersion: '4.0'
+type: application
+metadata:
+  name: ui5.genatrix.test.v2
+framework:
+  name: SAPUI5
+  version: 1.136.16
+  libraries:
+    - name: sap.ui.core
+    - name: sap.m
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: ui5-tooling-transpile-task
+      afterTask: replaceVersion
+      configuration:
+        debug: true
+        removeConsoleStatements: false
+        transpileAsync: false
+        transpileTypeScript: true
+resources:
+  configuration:
+    propertiesFileSourceEncoding: UTF-8

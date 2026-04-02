@@ -1,0 +1,126 @@
+{
+    "_version": "1.73.1",
+    "sap.app": {
+        "id": "ui5.genatrix.test.v2",
+        "type": "application",
+        "i18n": {
+            "bundleUrl": "i18n/i18n.properties",
+            "supportedLocales": [
+                ""
+            ],
+            "fallbackLocale": ""
+        },
+        "applicationVersion": {
+            "version": "0.0.1"
+        },
+        "title": "{{global.title.appTitle}}",
+        "description": "{{global.info.appDescription}}",
+        "dataSources": {
+            "mainService": {
+                "type": "OData",
+                "uri": "/company-management/",
+                "settings": {
+                    "odataVersion": "2.0"
+                }
+            }
+        }
+    },
+    "sap.ui": {
+        "technology": "UI5",
+        "icons": {
+            "icon": "",
+            "favIcon": "",
+            "phone": "",
+            "phone@2": "",
+            "tablet": "",
+            "tablet@2": ""
+        },
+        "deviceTypes": {
+            "desktop": true,
+            "tablet": true,
+            "phone": true
+        }
+    },
+    "sap.ui5": {
+        "flexEnabled": false,
+        "resourceRoots": {
+            "ui5.genatrix": "./resources/ui5/genatrix"
+        },
+        "dependencies": {
+            "minUI5Version": "1.136.16",
+            "libs": {
+                "sap.m": {},
+                "sap.ui.core": {},
+                "sap.f": {},
+                "sap.suite.ui.generic.template": {},
+                "sap.ui.comp": {},
+                "sap.ui.generic.app": {},
+                "sap.ui.table": {},
+                "sap.ushell": {}
+            }
+        },
+        "contentDensities": {
+            "compact": true,
+            "cozy": true
+        },
+        "models": {
+            "i18n": {
+                "type": "sap.ui.model.resource.ResourceModel",
+                "settings": {
+                    "bundleName": "ui5.genatrix.test.v2.i18n.i18n",
+                    "supportedLocales": [
+                        ""
+                    ],
+                    "fallbackLocale": ""
+                }
+            },
+            "": {
+                "dataSource": "mainService",
+                "preload": true
+            }
+        },
+        "resources": {
+            "css": [
+                {
+                    "uri": "css/style.css"
+                }
+            ]
+        },
+        "routing": {
+            "config": {
+                "routerClass": "sap.m.routing.Router",
+                "viewType": "XML",
+                "async": true,
+                "path": "ui5.genatrix.test.v2.view",
+                "controlAggregation": "pages",
+                "controlId": "app",
+                "clearControlAggregation": false
+            },
+            "routes": [
+                {
+                    "name": "RouteHomepage",
+                    "pattern": "",
+                    "target": [
+                        "TargetHomepage"
+                    ]
+                }
+            ],
+            "targets": {
+                "TargetHomepage": {
+                    "id": "Homepage",
+                    "name": "Homepage",
+                    "type": "View",
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false
+                }
+            }
+        },
+        "rootView": {
+            "viewName": "ui5.genatrix.test.v2.view.App",
+            "type": "XML",
+            "async": true,
+            "id": "App"
+        }
+    }
+}

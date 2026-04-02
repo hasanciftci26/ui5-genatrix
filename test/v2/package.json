@@ -1,0 +1,29 @@
+{
+    "name": "ui5-genatrix-test-v2",
+    "version": "0.0.1",
+    "description": "UI5 Genatrix v2 Test Application",
+    "author": "Hasan Çiftçi (hasanciftcii26@gmail.com)",
+    "license": "UNLICENSED",
+    "keywords": [
+        "sapui5",
+        "odata",
+        "metadata",
+        "generic-ui",
+        "test"
+    ],
+    "repository": {
+        "url": "https://github.com/hasanciftci26/ui5-genatrix"
+    },
+    "scripts": {
+        "start": "ui5 serve --port 8080 -o index.html",
+        "install-tgz": "npm install ../../ui5-genatrix-0.0.1.tgz"
+    },
+    "devDependencies": {
+        "@sapui5/types": "1.136.16",
+        "@ui5/cli": "^4.0.50",
+        "http-proxy-middleware": "^3.0.5",
+        "typescript": "^6.0.2",
+        "ui5-middleware-livereload": "^3.3.0",
+        "ui5-tooling-transpile": "^3.11.0"
+    }
+}
