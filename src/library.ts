@@ -12,7 +12,7 @@ const library = Lib.init({
         "ui5.genatrix.control.v2.form.EmbeddedForm"
     ],
     noLibraryCSS: true,
-    version: "1.0.0"
+    version: "0.0.1"
 });
 
 export default library;
