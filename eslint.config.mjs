@@ -1,17 +1,12 @@
 import pluginTypescript from "@typescript-eslint/eslint-plugin";
 import parserTypescript from "@typescript-eslint/parser";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
+import fioriTools from "@sap-ux/eslint-plugin-fiori-tools";
 import path from "path";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended
-});
 
 const baseRules = {
     "linebreak-style": "off",
@@ -64,7 +59,6 @@ const baseRules = {
         ignoreRegExpLiterals: true,
         ignoreTrailingComments: true
     }],
-    "@typescript-eslint/no-floating-promises": "error",
     "@typescript-eslint/require-await": "error",
     "@typescript-eslint/prefer-readonly": "error",
     "@typescript-eslint/no-inferrable-types": "error",
@@ -77,7 +71,7 @@ const baseRules = {
         varsIgnorePattern: "^_"
     }],
     "@typescript-eslint/unbound-method": "error",
-    "@typescript-eslint/no-explicit-any": ["error", { "ignoreRestArgs": true }],
+    "@typescript-eslint/no-explicit-any": ["error", { ignoreRestArgs: true }],
     "@typescript-eslint/no-floating-promises": ["error", {
         ignoreVoid: true,
         ignoreIIFE: false
@@ -91,14 +85,19 @@ const baseRules = {
 };
 
 export default [
-    ...compat.extends("plugin:@sap-ux/eslint-plugin-fiori-tools/defaultTS"),
+    js.configs.recommended,
+    ...fioriTools.configs.recommended,
     {
-        ignores: ["dist/**"],
+        ignores: ["dist/**"]
+    },
+    {
         files: ["**/*.ts"],
         languageOptions: {
             parser: parserTypescript,
             parserOptions: {
-                ecmaVersion: "latest"
+                ecmaVersion: "latest",
+                projectService: true,
+                tsconfigRootDir: __dirname
             }
         },
         plugins: {
@@ -110,12 +109,34 @@ export default [
         files: ["**/*.types.ts"],
         languageOptions: {
             parser: parserTypescript,
-            parserOptions: { ecmaVersion: "latest" }
+            parserOptions: {
+                ecmaVersion: "latest",
+                projectService: true,
+                tsconfigRootDir: __dirname
+            }
         },
-        plugins: { "@typescript-eslint": pluginTypescript },
+        plugins: {
+            "@typescript-eslint": pluginTypescript
+        },
         rules: {
             ...baseRules,
-            semi: "off"
+            semi: "off",
+            "@typescript-eslint/no-explicit-any": "off"
+        }
+    },
+    {
+        files: ["src/interface/**/*.ts"],
+        rules: {
+            ...baseRules,
+            semi: "off",
+            "@typescript-eslint/no-explicit-any": "off"
+        }
+    },
+    {
+        files: ["src/control/**/*Renderer.ts"],
+        rules: {
+            ...baseRules,
+            "@typescript-eslint/naming-convention": "off"
         }
     }
-]
+];
