@@ -27,7 +27,8 @@
             ]
         },
         "types": [
-            "@sapui5/types"
+            "@sapui5/types",
+            "ui5-genatrix"
         ]
     },
     "include": [

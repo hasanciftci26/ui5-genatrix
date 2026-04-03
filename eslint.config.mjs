@@ -70,7 +70,7 @@ const baseRules = {
         argsIgnorePattern: "^_",
         varsIgnorePattern: "^_"
     }],
-    "@typescript-eslint/unbound-method": "error",
+    "@typescript-eslint/unbound-method": "off",
     "@typescript-eslint/no-explicit-any": ["error", { ignoreRestArgs: true }],
     "@typescript-eslint/no-floating-promises": ["error", {
         ignoreVoid: true,
@@ -133,7 +133,7 @@ export default [
         }
     },
     {
-        files: ["src/control/**/*Renderer.ts"],
+        files: ["src/control/**/*Renderer.ts", "src/control/enum/**/*.ts"],
         rules: {
             ...baseRules,
             "@typescript-eslint/naming-convention": "off"

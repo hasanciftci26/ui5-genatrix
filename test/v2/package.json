@@ -25,5 +25,8 @@
         "typescript": "^6.0.2",
         "ui5-middleware-livereload": "^3.3.0",
         "ui5-tooling-transpile": "^3.11.0"
+    },
+    "dependencies": {
+        "ui5-genatrix": "file:../../ui5-genatrix-0.0.1.tgz"
     }
 }

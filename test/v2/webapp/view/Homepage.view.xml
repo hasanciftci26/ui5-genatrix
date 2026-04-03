@@ -4,13 +4,67 @@
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core"
+    xmlns:f="sap.f"
+    xmlns:smartfilterbar="sap.ui.comp.smartfilterbar"
+    xmlns:smarttable="sap.ui.comp.smarttable"
+    xmlns:table="sap.ui.table"
+    xmlns:rowmodes="sap.ui.table.rowmodes"
+    xmlns:form="ui5.genatrix.control.v2.form"
 >
     <Page
         id="Homepage"
         showHeader="false"
     >
         <content>
-            <Text text="UI5 Genatrix" />
+            <f:ShellBar
+                id="sbHeader"
+                title="UI5 Genatrix"
+                homeIcon="img/app_logo.png"
+                busyIndicatorDelay="0"
+            >
+                <f:profile>
+                    <Avatar initials="GX" />
+                </f:profile>
+            </f:ShellBar>
+            <FlexBox justifyContent="Center">
+                <VBox width="95%">
+                    <smartfilterbar:SmartFilterBar
+                        id="sfbEmployees"
+                        entitySet="Employees"
+                        enableBasicSearch="true"
+                        useProvidedNavigationProperties="true"
+                    />
+                    <smarttable:SmartTable
+                        id="stEmployees"
+                        entitySet="Employees"
+                        smartFilterId="sfbEmployees"
+                        tableType="Table"
+                        header="Employees"
+                        enableAutoBinding="true"
+                        enableAutoColumnWidth="true"
+                        enablePaste="false"
+                        enableCopy="false"
+                    >
+                        <smarttable:customToolbar>
+                            <OverflowToolbar>
+                                <ToolbarSpacer />
+                                <form:DialogForm
+                                    buttonText="Create"
+                                    buttonIcon=""
+                                />
+                            </OverflowToolbar>
+                        </smarttable:customToolbar>
+                        <table:Table
+                            selectionMode="Single"
+                            selectionBehavior="Row"
+                        >
+                            <table:rowMode>
+                                <rowmodes:Interactive rowCount="15" />
+                            </table:rowMode>
+                        </table:Table>
+                    </smarttable:SmartTable>
+                </VBox>
+            </FlexBox>
         </content>
     </Page>
 </mvc:View>
