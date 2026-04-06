@@ -4,7 +4,7 @@ const FormMode = {
     Create: "Create",
     Update: "Update",
     Delete: "Delete",
-    Read: "Read"
+    Display: "Display"
 } as const;
 
 DataType.registerEnum("ui5.genatrix.control.enum.form.FormMode", FormMode);

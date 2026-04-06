@@ -3,7 +3,16 @@ import { $ControlSettings } from "sap/ui/core/Control";
 import { URI } from "sap/ui/core/library";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
-import { AggregationBinder, AggregationDestroyer, AggregationGetterMulti, AggregationRemoverAll, AggregationRemoverSingle, AggregationSetterOrAdder, OptionalPropertyGetter, OptionalPropertySetter } from "ui5/genatrix/types/global/ManagedObjectClass.types";
+import {
+    AggregationBinder,
+    AggregationDestroyer,
+    AggregationGetterMulti,
+    AggregationRemoverAll,
+    AggregationRemoverSingle,
+    AggregationSetterOrAdder,
+    OptionalPropertyGetter,
+    OptionalPropertySetter
+} from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
 type FormModeType = typeof FormMode[keyof typeof FormMode];
 
@@ -29,6 +38,9 @@ export type DialogFormSettings = $ControlSettings & {
     decimalSeparator?: string;
     closeDialogOnSuccess?: boolean;
     showBusyOnSubmit?: boolean;
+    requiredProperties?: string;
+    readonlyProperties?: string;
+    excludedProperties?: string;
     propertyOptions?: PropertyOption[];
 };
 
@@ -93,6 +105,15 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
 
         getShowBusyOnSubmit: OptionalPropertyGetter<boolean>;
         setShowBusyOnSubmit: OptionalPropertySetter<boolean, DialogForm>;
+
+        getRequiredProperties: OptionalPropertyGetter<string>;
+        setRequiredProperties: OptionalPropertySetter<string, DialogForm>;
+
+        getReadonlyProperties: OptionalPropertyGetter<string>;
+        setReadonlyProperties: OptionalPropertySetter<string, DialogForm>;
+
+        getExcludedProperties: OptionalPropertyGetter<string>;
+        setExcludedProperties: OptionalPropertySetter<string, DialogForm>;
 
         getPropertyOptions: AggregationGetterMulti<PropertyOption>;
         addPropertyOption: AggregationSetterOrAdder<PropertyOption, DialogForm>;

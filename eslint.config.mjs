@@ -63,7 +63,7 @@ const baseRules = {
     "@typescript-eslint/prefer-readonly": "error",
     "@typescript-eslint/no-inferrable-types": "error",
     "@typescript-eslint/prefer-optional-chain": "error",
-    "@typescript-eslint/prefer-nullish-coalescing": "error",
+    "@typescript-eslint/prefer-nullish-coalescing": "off",
     "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: false }],
     "prefer-const": "error",
     "@typescript-eslint/no-unused-vars": ["error", {

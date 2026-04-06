@@ -50,6 +50,8 @@
                             <OverflowToolbar>
                                 <ToolbarSpacer />
                                 <form:DialogForm
+                                    entitySet="Employees"
+                                    formMode="Delete"
                                     buttonText="Create"
                                     buttonIcon=""
                                 >

@@ -3,9 +3,13 @@ import { ButtonType, TitleAlignment } from "sap/m/library";
 import Control from "sap/ui/core/Control";
 import { MetadataOptions } from "sap/ui/core/Element";
 import { URI } from "sap/ui/core/library";
+import Context from "sap/ui/model/odata/v2/Context";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
 import DialogFormRenderer from "ui5/genatrix/control/v2/form/DialogFormRenderer";
+import DialogGenerator from "ui5/genatrix/generator/core/DialogGenerator";
+import FormGenerator from "ui5/genatrix/generator/v2/FormGenerator";
 import { DialogFormSettings } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
+import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.control.v2.form
@@ -23,10 +27,10 @@ export default class DialogForm extends Control {
             dialogTitleAlignment: { type: "sap.m.TitleAlignment", defaultValue: TitleAlignment.Auto },
             submitButtonText: { type: "string" },
             submitButtonIcon: { type: "sap.ui.core.URI" },
-            submitButtonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Accept },
+            submitButtonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Emphasized },
             closeButtonText: { type: "string" },
             closeButtonIcon: { type: "sap.ui.core.URI" },
-            closeButtonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Reject },
+            closeButtonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Default },
             datePattern: { type: "string" },
             timePattern: { type: "string" },
             dateTimeSeparator: { type: "string", defaultValue: " " },
@@ -35,7 +39,9 @@ export default class DialogForm extends Control {
             decimalSeparator: { type: "string" },
             closeDialogOnSuccess: { type: "boolean", defaultValue: true },
             showBusyOnSubmit: { type: "boolean", defaultValue: true },
-            initialized: { type: "string", visibility: "hidden" }
+            requiredProperties: { type: "string" },
+            readonlyProperties: { type: "string" },
+            excludedProperties: { type: "string" }
         },
         defaultAggregation: "propertyOptions",
         aggregations: {
@@ -44,6 +50,9 @@ export default class DialogForm extends Control {
         }
     };
     public static renderer = DialogFormRenderer;
+    private dialogGenerator: DialogGenerator;
+    private formGenerator: FormGenerator;
+    private context: Context;
 
     constructor(settings?: DialogFormSettings);
     constructor(id?: string, settings?: DialogFormSettings);
@@ -86,11 +95,81 @@ export default class DialogForm extends Control {
     }
 
     public closeDialog() {
-        
+
     }
 
-    private onButtonPress() {
+    private async onButtonPress() {
+        const dialog = this.generateDialog();
+        // const form = await this.generateForm();
 
+        // dialog.addContent(form);
+        dialog.setBindingContext(this.context);
+        dialog.open();
+    }
+
+    private generateDialog() {
+        if (this.dialogGenerator) {
+            this.dialogGenerator.destroy();
+        }
+
+        this.dialogGenerator = new DialogGenerator({
+            title: this.getDialogTitle() || this.getDefaultDialogTitle(),
+            titleAlignment: this.getDialogTitleAlignment() || TitleAlignment.Auto,
+            addSubmitButton: this.getFormMode() !== "Display",
+            submitButtonText: this.getSubmitButtonText() || this.getDefaultSubmitButtonText(),
+            submitButtonIcon: this.getSubmitButtonIcon(),
+            submitButtonType: this.getSubmitButtonType() || ButtonType.Emphasized,
+            closeButtonText: this.getCloseButtonText() || this.getDefaultCloseButtonText(),
+            closeButtonIcon: this.getCloseButtonIcon(),
+            closeButtonType: this.getCloseButtonType() || ButtonType.Default
+        });
+
+        return this.dialogGenerator.generate();
+    }
+
+    private async generateForm() {
+        if (this.formGenerator) {
+            this.formGenerator.destroy();
+        }
+
+        this.formGenerator = new FormGenerator();
+        return this.formGenerator.generateForm();
+    }
+
+    private getDefaultSubmitButtonText() {
+        if (this.getSubmitButtonIcon()) {
+            return;
+        }
+
+        switch (this.getFormMode()) {
+            case "Create":
+                return LibraryBundle.getText("genatrix.button.create");
+            case "Update":
+                return LibraryBundle.getText("genatrix.button.update");
+            case "Delete":
+                return LibraryBundle.getText("genatrix.button.delete");
+        }
+    }
+
+    private getDefaultCloseButtonText() {
+        if (this.getCloseButtonIcon()) {
+            return;
+        }
+
+        return LibraryBundle.getText("genatrix.button.close");
+    }
+
+    private getDefaultDialogTitle() {
+        switch (this.getFormMode()) {
+            case "Create":
+                return LibraryBundle.getText("genatrix.title.create", [this.getEntitySet()]);
+            case "Update":
+                return LibraryBundle.getText("genatrix.title.update", [this.getEntitySet()]);
+            case "Delete":
+                return LibraryBundle.getText("genatrix.title.delete", [this.getEntitySet()]);
+            default:
+                return LibraryBundle.getText("genatrix.title.display", [this.getEntitySet()]);
+        }
     }
 
     private getButton() {
