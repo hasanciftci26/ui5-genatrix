@@ -1,3 +1,4 @@
+import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
 import BaseController from "ui5/genatrix/test/v2/controller/BaseController";
 
 /**
@@ -25,6 +26,6 @@ export default class Homepage extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     private onRoutePatternMatched() {
-
+        const form = new DialogForm();
     }
 }

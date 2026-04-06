@@ -1,8 +1,9 @@
-import { ButtonType } from "sap/m/library";
+import { ButtonType, TitleAlignment } from "sap/m/library";
 import { $ControlSettings } from "sap/ui/core/Control";
 import { URI } from "sap/ui/core/library";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
-import { OptionalPropertyGetter, OptionalPropertySetter } from "ui5/genatrix/types/global/ManagedObjectClass.types";
+import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
+import { AggregationBinder, AggregationDestroyer, AggregationGetterMulti, AggregationRemoverAll, AggregationRemoverSingle, AggregationSetterOrAdder, OptionalPropertyGetter, OptionalPropertySetter } from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
 type FormModeType = typeof FormMode[keyof typeof FormMode];
 
@@ -12,16 +13,92 @@ export type DialogFormSettings = $ControlSettings & {
     buttonText?: string;
     buttonIcon?: URI;
     buttonType?: ButtonType;
+    dialogTitle?: string;
+    dialogTitleAlignment?: TitleAlignment;
+    submitButtonText?: string;
+    submitButtonIcon?: URI;
+    submitButtonType?: ButtonType;
+    closeButtonText?: string;
+    closeButtonIcon?: URI;
+    closeButtonType?: ButtonType;
+    datePattern?: string;
+    timePattern?: string;
+    dateTimeSeparator?: string;
+    dateFirst?: boolean;
+    groupingSeparator?: string;
+    decimalSeparator?: string;
+    closeDialogOnSuccess?: boolean;
+    showBusyOnSubmit?: boolean;
+    propertyOptions?: PropertyOption[];
 };
 
 declare module "ui5/genatrix/control/v2/form/DialogForm" {
     export default interface DialogForm {
         getEntitySet: OptionalPropertyGetter<string>;
         setEntitySet: OptionalPropertySetter<string, DialogForm>;
+
         getFormMode: OptionalPropertyGetter<FormModeType>;
         setFormMode: OptionalPropertySetter<FormModeType, DialogForm>;
+
         getButtonText: OptionalPropertyGetter<string>;
+
         getButtonIcon: OptionalPropertyGetter<URI>;
+
         getButtonType: OptionalPropertyGetter<ButtonType>;
+
+        getDialogTitle: OptionalPropertyGetter<string>;
+        setDialogTitle: OptionalPropertySetter<string, DialogForm>;
+
+        getDialogTitleAlignment: OptionalPropertyGetter<TitleAlignment>;
+        setDialogTitleAlignment: OptionalPropertySetter<TitleAlignment, DialogForm>;
+
+        getSubmitButtonText: OptionalPropertyGetter<string>;
+        setSubmitButtonText: OptionalPropertySetter<string, DialogForm>;
+
+        getSubmitButtonIcon: OptionalPropertyGetter<URI>;
+        setSubmitButtonIcon: OptionalPropertySetter<URI, DialogForm>;
+
+        getSubmitButtonType: OptionalPropertyGetter<ButtonType>;
+        setSubmitButtonType: OptionalPropertySetter<ButtonType, DialogForm>;
+
+        getCloseButtonText: OptionalPropertyGetter<string>;
+        setCloseButtonText: OptionalPropertySetter<string, DialogForm>;
+
+        getCloseButtonIcon: OptionalPropertyGetter<URI>;
+        setCloseButtonIcon: OptionalPropertySetter<URI, DialogForm>;
+
+        getCloseButtonType: OptionalPropertyGetter<ButtonType>;
+        setCloseButtonType: OptionalPropertySetter<ButtonType, DialogForm>;
+
+        getDatePattern: OptionalPropertyGetter<string>;
+        setDatePattern: OptionalPropertySetter<string, DialogForm>;
+
+        getTimePattern: OptionalPropertyGetter<string>;
+        setTimePattern: OptionalPropertySetter<string, DialogForm>;
+
+        getDateTimeSeparator: OptionalPropertyGetter<string>;
+        setDateTimeSeparator: OptionalPropertySetter<string, DialogForm>;
+
+        getDateFirst: OptionalPropertyGetter<boolean>;
+        setDateFirst: OptionalPropertySetter<boolean, DialogForm>;
+
+        getGroupingSeparator: OptionalPropertyGetter<string>;
+        setGroupingSeparator: OptionalPropertySetter<string, DialogForm>;
+
+        getDecimalSeparator: OptionalPropertyGetter<string>;
+        setDecimalSeparator: OptionalPropertySetter<string, DialogForm>;
+
+        getCloseDialogOnSuccess: OptionalPropertyGetter<boolean>;
+        setCloseDialogOnSuccess: OptionalPropertySetter<boolean, DialogForm>;
+
+        getShowBusyOnSubmit: OptionalPropertyGetter<boolean>;
+        setShowBusyOnSubmit: OptionalPropertySetter<boolean, DialogForm>;
+
+        getPropertyOptions: AggregationGetterMulti<PropertyOption>;
+        addPropertyOption: AggregationSetterOrAdder<PropertyOption, DialogForm>;
+        bindPropertyOptions: AggregationBinder<DialogForm>;
+        removePropertyOption: AggregationRemoverSingle<PropertyOption>;
+        removeAllPropertyOptions: AggregationRemoverAll<PropertyOption>;
+        destroyPropertyOptions: AggregationDestroyer<DialogForm>;
     }
 }

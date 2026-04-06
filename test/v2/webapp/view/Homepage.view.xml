@@ -10,6 +10,7 @@
     xmlns:table="sap.ui.table"
     xmlns:rowmodes="sap.ui.table.rowmodes"
     xmlns:form="ui5.genatrix.control.v2.form"
+    xmlns:metadataform="ui5.genatrix.metadata.form"
 >
     <Page
         id="Homepage"
@@ -51,7 +52,11 @@
                                 <form:DialogForm
                                     buttonText="Create"
                                     buttonIcon=""
-                                />
+                                >
+                                    <metadataform:PropertyOption
+                                        propertyName="MyProp"
+                                    />
+                                </form:DialogForm>
                             </OverflowToolbar>
                         </smarttable:customToolbar>
                         <table:Table

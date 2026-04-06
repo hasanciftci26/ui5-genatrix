@@ -1,5 +1,5 @@
 import Button from "sap/m/Button";
-import { ButtonType } from "sap/m/library";
+import { ButtonType, TitleAlignment } from "sap/m/library";
 import Control from "sap/ui/core/Control";
 import { MetadataOptions } from "sap/ui/core/Element";
 import { URI } from "sap/ui/core/library";
@@ -15,13 +15,31 @@ export default class DialogForm extends Control {
         library: "ui5.genatrix",
         properties: {
             entitySet: { type: "string" },
-            formMode: { type: "ui5.genatrix.control.enum.form.Mode", defaultValue: FormMode.Create },
+            formMode: { type: "ui5.genatrix.control.enum.form.FormMode", defaultValue: FormMode.Create },
             buttonText: { type: "string" },
             buttonIcon: { type: "sap.ui.core.URI", defaultValue: "sap-icon://add" },
             buttonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Default },
+            dialogTitle: { type: "string" },
+            dialogTitleAlignment: { type: "sap.m.TitleAlignment", defaultValue: TitleAlignment.Auto },
+            submitButtonText: { type: "string" },
+            submitButtonIcon: { type: "sap.ui.core.URI" },
+            submitButtonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Accept },
+            closeButtonText: { type: "string" },
+            closeButtonIcon: { type: "sap.ui.core.URI" },
+            closeButtonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Reject },
+            datePattern: { type: "string" },
+            timePattern: { type: "string" },
+            dateTimeSeparator: { type: "string", defaultValue: " " },
+            dateFirst: { type: "boolean", defaultValue: true },
+            groupingSeparator: { type: "string" },
+            decimalSeparator: { type: "string" },
+            closeDialogOnSuccess: { type: "boolean", defaultValue: true },
+            showBusyOnSubmit: { type: "boolean", defaultValue: true },
             initialized: { type: "string", visibility: "hidden" }
         },
+        defaultAggregation: "propertyOptions",
         aggregations: {
+            propertyOptions: { type: "ui5.genatrix.metadata.form.PropertyOption", multiple: true, singularName: "propertyOption" },
             button: { type: "sap.m.Button", multiple: false, visibility: "hidden" }
         }
     };
@@ -65,6 +83,10 @@ export default class DialogForm extends Control {
         this.setProperty("buttonType", value);
         this.getButton().setType(value);
         return this;
+    }
+
+    public closeDialog() {
+        
     }
 
     private onButtonPress() {

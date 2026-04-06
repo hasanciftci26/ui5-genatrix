@@ -1,0 +1,45 @@
+import Formatting from "sap/base/i18n/Formatting";
+import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
+import { PropertyOptionSettings } from "ui5/genatrix/types/metadata/form/PropertyOption.types";
+
+/**
+ * @namespace ui5.genatrix.metadata.form
+ */
+export default class PropertyOption extends ManagedObject {
+    public static metadata: MetadataOptions = {
+        library: "ui5.genatrix",
+        final: true,
+        properties: {
+            propertyName: { type: "string" },
+            label: { type: "string" },
+            required: { type: "boolean", defaultValue: false },
+            readonly: { type: "boolean", defaultValue: false },
+            excluded: { type: "boolean", defaultValue: false },
+            datePattern: { type: "string" },
+            timePattern: { type: "string" },
+            dateTimeSeparator: { type: "string", defaultValue: " " },
+            dateFirst: { type: "boolean", defaultValue: true },
+            groupingSeparator: { type: "string" },
+            decimalSeparator: { type: "string" }
+        }
+    };
+
+    constructor(settings?: PropertyOptionSettings);
+    constructor(id?: string, settings?: PropertyOptionSettings);
+
+    constructor(idOrSettings?: string | PropertyOptionSettings, settings?: PropertyOptionSettings) {
+        if (typeof idOrSettings === "string") {
+            super(idOrSettings, settings);
+        } else {
+            super(idOrSettings);
+        }
+    }
+
+    public getDateTimePattern() {
+        const datePattern = this.getDatePattern() || Formatting.getDatePattern("medium");
+        const timePattern = this.getTimePattern() || Formatting.getTimePattern("medium");
+        const dateTimeSeparator = this.getDateTimeSeparator() || " ";
+
+        return this.getDateFirst() ? `${datePattern}${dateTimeSeparator}${timePattern}` : `${timePattern}${dateTimeSeparator}${datePattern}`;
+    }
+}
