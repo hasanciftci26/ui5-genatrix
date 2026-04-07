@@ -16,9 +16,10 @@ import {
 
 type FormModeType = typeof FormMode[keyof typeof FormMode];
 
-export type DialogFormSettings = $ControlSettings & {
+export type DialogFormSettings<InitialDataT extends Record<string, any>> = $ControlSettings & {
     entitySet?: string;
     formMode?: FormModeType;
+    initialData?: InitialDataT;
     buttonText?: string;
     buttonIcon?: URI;
     buttonType?: ButtonType;
@@ -41,16 +42,20 @@ export type DialogFormSettings = $ControlSettings & {
     requiredProperties?: string;
     readonlyProperties?: string;
     excludedProperties?: string;
+    oDataModelName?: string;
     propertyOptions?: PropertyOption[];
 };
 
 declare module "ui5/genatrix/control/v2/form/DialogForm" {
-    export default interface DialogForm {
+    export default interface DialogForm<InitialDataT extends Record<string, any> = Record<string, any>> {
         getEntitySet: OptionalPropertyGetter<string>;
         setEntitySet: OptionalPropertySetter<string, DialogForm>;
 
         getFormMode: OptionalPropertyGetter<FormModeType>;
         setFormMode: OptionalPropertySetter<FormModeType, DialogForm>;
+
+        getInitialData: OptionalPropertyGetter<InitialDataT>;
+        setInitialData: OptionalPropertySetter<InitialDataT, DialogForm>;
 
         getButtonText: OptionalPropertyGetter<string>;
 
@@ -114,6 +119,9 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
 
         getExcludedProperties: OptionalPropertyGetter<string>;
         setExcludedProperties: OptionalPropertySetter<string, DialogForm>;
+
+        getODataModelName: OptionalPropertyGetter<string>;
+        setODataModelName: OptionalPropertySetter<string, DialogForm>;
 
         getPropertyOptions: AggregationGetterMulti<PropertyOption>;
         addPropertyOption: AggregationSetterOrAdder<PropertyOption, DialogForm>;

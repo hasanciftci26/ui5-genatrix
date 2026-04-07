@@ -1,7 +1,11 @@
 import Button from "sap/m/Button";
 import Dialog from "sap/m/Dialog";
 import EventProvider from "sap/ui/base/EventProvider";
-import { DialogGeneratorSettings } from "ui5/genatrix/types/generator/core/DialogGenerator.types";
+import {
+    DialogGenerator$CloseEventHandler,
+    DialogGenerator$SubmitEventHandler,
+    DialogGeneratorSettings
+} from "ui5/genatrix/types/generator/core/DialogGenerator.types";
 
 /**
  * @namespace ui5.genatrix.generator.core
@@ -24,24 +28,29 @@ export default class DialogGenerator extends EventProvider {
         this.addSubmitButton();
         this.addCloseButton();
         this.addEscapeHandler();
+        this.dialog.setModel(this.settings.oDataModel);
 
         return this.dialog;
     }
 
-    public attachSubmit() {
-        
+    public attachSubmit(handler: DialogGenerator$SubmitEventHandler, listener?: object) {
+        this.attachEvent("submit", handler, listener);
     }
 
-    public attachClose() {
-
+    public attachClose(handler: DialogGenerator$CloseEventHandler, listener?: object) {
+        this.attachEvent("close", handler, listener);
     }
 
     private fireSubmit() {
-        this.fireEvent("submit");
+        this.fireEvent("submit", {
+            dialog: this.dialog
+        });
     }
 
     private fireClose() {
-        this.fireEvent("close");
+        this.fireEvent("close", {
+            dialog: this.dialog
+        });
     }
 
     private onEscape(event: { resolve: () => void; reject: () => void; }) {

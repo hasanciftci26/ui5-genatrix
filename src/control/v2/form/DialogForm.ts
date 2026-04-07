@@ -4,22 +4,25 @@ import Control from "sap/ui/core/Control";
 import { MetadataOptions } from "sap/ui/core/Element";
 import { URI } from "sap/ui/core/library";
 import Context from "sap/ui/model/odata/v2/Context";
+import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
 import DialogFormRenderer from "ui5/genatrix/control/v2/form/DialogFormRenderer";
 import DialogGenerator from "ui5/genatrix/generator/core/DialogGenerator";
 import FormGenerator from "ui5/genatrix/generator/v2/FormGenerator";
 import { DialogFormSettings } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
+import { DialogGenerator$CloseEvent, DialogGenerator$SubmitEvent } from "ui5/genatrix/types/generator/core/DialogGenerator.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.control.v2.form
  */
-export default class DialogForm extends Control {
+export default class DialogForm<InitialDataT extends Record<string, any> = Record<string, any>> extends Control {
     public static metadata: MetadataOptions = {
         library: "ui5.genatrix",
         properties: {
             entitySet: { type: "string" },
             formMode: { type: "ui5.genatrix.control.enum.form.FormMode", defaultValue: FormMode.Create },
+            initialData: { type: "object" },
             buttonText: { type: "string" },
             buttonIcon: { type: "sap.ui.core.URI", defaultValue: "sap-icon://add" },
             buttonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Default },
@@ -41,7 +44,8 @@ export default class DialogForm extends Control {
             showBusyOnSubmit: { type: "boolean", defaultValue: true },
             requiredProperties: { type: "string" },
             readonlyProperties: { type: "string" },
-            excludedProperties: { type: "string" }
+            excludedProperties: { type: "string" },
+            oDataModelName: { type: "string" }
         },
         defaultAggregation: "propertyOptions",
         aggregations: {
@@ -54,10 +58,10 @@ export default class DialogForm extends Control {
     private formGenerator: FormGenerator;
     private context: Context;
 
-    constructor(settings?: DialogFormSettings);
-    constructor(id?: string, settings?: DialogFormSettings);
+    constructor(settings?: DialogFormSettings<InitialDataT>);
+    constructor(id?: string, settings?: DialogFormSettings<InitialDataT>);
 
-    constructor(idOrSettings?: string | DialogFormSettings, settings?: DialogFormSettings) {
+    constructor(idOrSettings?: string | DialogFormSettings<InitialDataT>, settings?: DialogFormSettings<InitialDataT>) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
@@ -100,10 +104,11 @@ export default class DialogForm extends Control {
 
     private async onButtonPress() {
         const dialog = this.generateDialog();
-        // const form = await this.generateForm();
+        const form = await this.generateForm();
+        const context = await this.resolveContext();
 
-        // dialog.addContent(form);
-        dialog.setBindingContext(this.context);
+        dialog.addContent(form);
+        dialog.setBindingContext(context);
         dialog.open();
     }
 
@@ -121,8 +126,12 @@ export default class DialogForm extends Control {
             submitButtonType: this.getSubmitButtonType() || ButtonType.Emphasized,
             closeButtonText: this.getCloseButtonText() || this.getDefaultCloseButtonText(),
             closeButtonIcon: this.getCloseButtonIcon(),
-            closeButtonType: this.getCloseButtonType() || ButtonType.Default
+            closeButtonType: this.getCloseButtonType() || ButtonType.Default,
+            oDataModel: this.getODataModel()
         });
+
+        this.dialogGenerator.attachSubmit(this.onDialogSubmit, this);
+        this.dialogGenerator.attachClose(this.onDialogClose, this);
 
         return this.dialogGenerator.generate();
     }
@@ -170,6 +179,44 @@ export default class DialogForm extends Control {
             default:
                 return LibraryBundle.getText("genatrix.title.display", [this.getEntitySet()]);
         }
+    }
+
+    private async resolveContext() {
+        if (this.getFormMode() === "Create") {
+            this.createNewContext();
+        } else {
+            await this.loadExistingContext();
+        }
+
+        return this.context;
+    }
+
+    private createNewContext() {
+        this.context = this.getODataModel().createEntry(`/${this.getEntitySet()}`, {
+            properties: this.getInitialData()
+        }) as Context;
+    }
+
+    private async loadExistingContext() {
+
+    }
+
+    private onDialogSubmit(event: DialogGenerator$SubmitEvent) {
+
+    }
+
+    private onDialogClose(event: DialogGenerator$CloseEvent) {
+
+    }
+
+    private getODataModel() {
+        const model = this.getModel(this.getODataModelName());
+
+        if (model instanceof ODataModel === false) {
+            throw new Error("ODataModel (sap.ui.model.odata.v2) not found. Set the oDataModelName property if you are using a named model - " + this.getId());
+        }
+
+        return model;
     }
 
     private getButton() {
