@@ -51,12 +51,13 @@
                                 <ToolbarSpacer />
                                 <form:DialogForm
                                     entitySet="Employees"
-                                    formMode="Delete"
                                     buttonText="Create"
                                     buttonIcon=""
+                                    keysAlwaysIncluded="false"
                                 >
                                     <metadataform:PropertyOption
-                                        propertyName="MyProp"
+                                        propertyName="ID"
+                                        excluded="true"
                                     />
                                 </form:DialogForm>
                             </OverflowToolbar>

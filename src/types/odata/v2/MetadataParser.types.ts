@@ -10,7 +10,6 @@ export type MetadataParserSettings = {
     requiredProperties?: string;
     readonlyProperties?: string;
     excludedProperties?: string;
-    keysAlwaysRequired: boolean;
     keysAlwaysIncluded: boolean;
     propertyOptions: PropertyOption[];
 };

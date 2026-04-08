@@ -1,5 +1,6 @@
 import Button from "sap/m/Button";
 import { ButtonType, TitleAlignment } from "sap/m/library";
+import BusyIndicator from "sap/ui/core/BusyIndicator";
 import Control from "sap/ui/core/Control";
 import { MetadataOptions } from "sap/ui/core/Element";
 import { URI } from "sap/ui/core/library";
@@ -45,7 +46,6 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             requiredProperties: { type: "string" },
             readonlyProperties: { type: "string" },
             excludedProperties: { type: "string" },
-            keysAlwaysRequired: { type: "boolean", defaultValue: true },
             keysAlwaysIncluded: { type: "boolean", defaultValue: true },
             oDataModelName: { type: "string" }
         },
@@ -105,6 +105,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
     }
 
     private async onButtonPress() {
+        this.showBusy();
+
         const dialog = this.generateDialog();
         const form = await this.generateForm();
         const context = await this.resolveContext();
@@ -112,6 +114,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         dialog.addContent(form);
         dialog.setBindingContext(context);
         dialog.open();
+
+        this.hideBusy();
     }
 
     private generateDialog() {
@@ -157,7 +161,6 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             requiredProperties: this.getRequiredProperties(),
             readonlyProperties: this.getReadonlyProperties(),
             excludedProperties: this.getExcludedProperties(),
-            keysAlwaysRequired: this.getKeysAlwaysRequired() ?? true,
             keysAlwaysIncluded: this.getKeysAlwaysIncluded() ?? true,
             propertyOptions: this.getPropertyOptions()
         });
@@ -225,8 +228,29 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         event.getParameters();
     }
 
-    private onDialogClose(event: DialogGenerator$CloseEvent) {
-        event.getParameters();
+    private async onDialogClose(event: DialogGenerator$CloseEvent) {
+        await this.getODataModel().resetChanges([this.context.getPath()], true, true);
+        event.getParameter("dialog").close();
+    }
+
+    private showBusy(submit = false) {
+        if (submit) {
+            if (this.getShowBusyOnSubmit()) {
+                BusyIndicator.show(0);
+            }
+        } else {
+            BusyIndicator.show(0);
+        }
+    }
+
+    private hideBusy(submit = false) {
+        if (submit) {
+            if (this.getShowBusyOnSubmit()) {
+                BusyIndicator.hide();
+            }
+        } else {
+            BusyIndicator.hide();
+        }
     }
 
     private getEntitySetOrThrow() {

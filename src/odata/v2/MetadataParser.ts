@@ -1,5 +1,6 @@
 import BaseObject from "sap/ui/base/Object";
 import ODataMetaModel, { EntitySet, EntityType } from "sap/ui/model/odata/ODataMetaModel";
+import LabelGenerator from "ui5/genatrix/generator/core/LabelGenerator";
 import { EntityProperty, MetadataParserSettings, MetaModelProperty, PropertyDisplayFormat } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 
 /**
@@ -7,10 +8,15 @@ import { EntityProperty, MetadataParserSettings, MetaModelProperty, PropertyDisp
  */
 export default class MetadataParser extends BaseObject {
     private readonly settings: MetadataParserSettings;
+    private readonly labelGenerator: LabelGenerator;
 
     constructor(settings: MetadataParserSettings) {
         super();
         this.settings = settings;
+
+        this.labelGenerator = new LabelGenerator({
+            propertyOptions: settings.propertyOptions
+        });
     }
 
     public async getEntityProperties(entitySetName: string) {
@@ -30,9 +36,9 @@ export default class MetadataParser extends BaseObject {
                 name: property.name,
                 type: property.type,
                 key: this.isKeyProperty(entityType, property),
-                label: "TODO",
+                label: this.labelGenerator.generate(property),
                 readonly: this.isPropertyReadonly(entityType, property),
-                required: this.isPropertyRequired(entityType, property),
+                required: this.isPropertyRequired(property),
                 displayFormat: this.getPropertyDisplayFormat(property),
                 precision: this.getPropertyPrecision(property),
                 scale: this.getPropertyScale(property),
@@ -55,16 +61,12 @@ export default class MetadataParser extends BaseObject {
         return entityType.key.propertyRef.some(ref => ref.name === property.name);
     }
 
-    private isPropertyRequired(entityType: EntityType, property: MetaModelProperty) {
+    private isPropertyRequired(property: MetaModelProperty) {
         if (property.nullable === "false") {
             return true;
         }
 
-        if (this.settings.keysAlwaysRequired) {
-            return this.isKeyProperty(entityType, property) ? true : this.getRequiredProperties().includes(property.name);
-        } else {
-            return this.getRequiredProperties().includes(property.name);
-        }
+        return this.getRequiredProperties().includes(property.name);
     }
 
     private isPropertyReadonly(entityType: EntityType, property: MetaModelProperty) {

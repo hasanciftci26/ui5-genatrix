@@ -24,7 +24,6 @@ export default class FormGenerator extends BaseObject {
             requiredProperties: settings.requiredProperties,
             readonlyProperties: settings.readonlyProperties,
             excludedProperties: settings.excludedProperties,
-            keysAlwaysRequired: settings.keysAlwaysRequired,
             keysAlwaysIncluded: settings.keysAlwaysIncluded,
             propertyOptions: settings.propertyOptions
         });
