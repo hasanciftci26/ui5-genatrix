@@ -11,6 +11,7 @@ export type OptionalAggregationGetterSingle<T extends ManagedObject> = () => T |
 export type AggregationGetterMulti<T extends ManagedObject> = () => T[];
 
 export type AggregationSetterOrAdder<T extends ManagedObject, TThis> = (aggregation: T) => TThis;
+export type AggregationInserter<T extends ManagedObject, TThis> = (aggregation: T, index: number) => TThis;
 
 export type AggregationBinder<TThis> = (bindingInfo: AggregationBindingInfo) => TThis;
 

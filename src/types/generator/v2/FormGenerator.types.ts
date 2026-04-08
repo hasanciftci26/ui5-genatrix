@@ -1,4 +1,5 @@
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import { FormModeType } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
 
@@ -18,4 +19,5 @@ export type FormGeneratorSettings = {
     excludedProperties?: string;
     keysAlwaysIncluded: boolean;
     propertyOptions: PropertyOption[];
+    formGroups?: FormGroup[];
 };

@@ -52,6 +52,7 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         defaultAggregation: "propertyOptions",
         aggregations: {
             propertyOptions: { type: "ui5.genatrix.metadata.form.PropertyOption", multiple: true, singularName: "propertyOption" },
+            formGroups: { type: "ui5.genatrix.metadata.form.FormGroup", multiple: true, singularName: "formGroup" },
             button: { type: "sap.m.Button", multiple: false, visibility: "hidden" }
         }
     };
@@ -162,7 +163,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             readonlyProperties: this.getReadonlyProperties(),
             excludedProperties: this.getExcludedProperties(),
             keysAlwaysIncluded: this.getKeysAlwaysIncluded() ?? true,
-            propertyOptions: this.getPropertyOptions()
+            propertyOptions: this.getPropertyOptions(),
+            formGroups: this.getFormGroups()
         });
 
         return this.formGenerator.generateForm();

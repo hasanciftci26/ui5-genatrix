@@ -122,7 +122,8 @@ export default [
             ...baseRules,
             semi: "off",
             "@typescript-eslint/naming-convention": "off",
-            "@typescript-eslint/no-explicit-any": "off"
+            "@typescript-eslint/no-explicit-any": "off",
+            "no-unused-vars": "off"
         }
     },
     {

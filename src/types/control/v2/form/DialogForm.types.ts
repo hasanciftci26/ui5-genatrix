@@ -2,11 +2,13 @@ import { ButtonType, TitleAlignment } from "sap/m/library";
 import { $ControlSettings } from "sap/ui/core/Control";
 import { URI } from "sap/ui/core/library";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
+import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import {
     AggregationBinder,
     AggregationDestroyer,
     AggregationGetterMulti,
+    AggregationInserter,
     AggregationRemoverAll,
     AggregationRemoverSingle,
     AggregationSetterOrAdder,
@@ -45,6 +47,7 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     keysAlwaysIncluded?: boolean;
     oDataModelName?: string;
     propertyOptions?: PropertyOption[];
+    formGroups?: FormGroup[];
 };
 
 declare module "ui5/genatrix/control/v2/form/DialogForm" {
@@ -129,9 +132,18 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
 
         getPropertyOptions: AggregationGetterMulti<PropertyOption>;
         addPropertyOption: AggregationSetterOrAdder<PropertyOption, DialogForm>;
+        insertPropertyOption: AggregationInserter<PropertyOption, DialogForm>;
         bindPropertyOptions: AggregationBinder<DialogForm>;
         removePropertyOption: AggregationRemoverSingle<PropertyOption>;
         removeAllPropertyOptions: AggregationRemoverAll<PropertyOption>;
         destroyPropertyOptions: AggregationDestroyer<DialogForm>;
+
+        getFormGroups: AggregationGetterMulti<FormGroup>;
+        addFormGroup: AggregationSetterOrAdder<FormGroup, DialogForm>;
+        insertFormGroup: AggregationInserter<FormGroup, DialogForm>;
+        bindFormGroups: AggregationBinder<DialogForm>;
+        removeFormGroup: AggregationRemoverSingle<FormGroup>;
+        removeAllFormGroups: AggregationRemoverAll<FormGroup>;
+        destroyFormGroups: AggregationDestroyer<DialogForm>;
     }
 }
