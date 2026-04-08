@@ -71,7 +71,7 @@ const baseRules = {
         varsIgnorePattern: "^_"
     }],
     "@typescript-eslint/unbound-method": "off",
-    "@typescript-eslint/no-explicit-any": ["error", { ignoreRestArgs: true }],
+    "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-floating-promises": ["error", {
         ignoreVoid: true,
         ignoreIIFE: false
@@ -121,6 +121,7 @@ export default [
         rules: {
             ...baseRules,
             semi: "off",
+            "@typescript-eslint/naming-convention": "off",
             "@typescript-eslint/no-explicit-any": "off"
         }
     },

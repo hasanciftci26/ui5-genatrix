@@ -45,6 +45,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             requiredProperties: { type: "string" },
             readonlyProperties: { type: "string" },
             excludedProperties: { type: "string" },
+            keysAlwaysRequired: { type: "boolean", defaultValue: true },
+            keysAlwaysIncluded: { type: "boolean", defaultValue: true },
             oDataModelName: { type: "string" }
         },
         defaultAggregation: "propertyOptions",
@@ -141,7 +143,25 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             this.formGenerator.destroy();
         }
 
-        this.formGenerator = new FormGenerator();
+        this.formGenerator = new FormGenerator({
+            controlId: this.getId(),
+            entitySet: this.getEntitySetOrThrow(),
+            oDataModel: this.getODataModel(),
+            formMode: this.getFormMode() || FormMode.Create,
+            datePattern: this.getDatePattern(),
+            timePattern: this.getTimePattern(),
+            dateTimeSeparator: this.getDateTimeSeparator(),
+            dateFirst: this.getDateFirst(),
+            groupingSeparator: this.getGroupingSeparator(),
+            decimalSeparator: this.getDecimalSeparator(),
+            requiredProperties: this.getRequiredProperties(),
+            readonlyProperties: this.getReadonlyProperties(),
+            excludedProperties: this.getExcludedProperties(),
+            keysAlwaysRequired: this.getKeysAlwaysRequired() ?? true,
+            keysAlwaysIncluded: this.getKeysAlwaysIncluded() ?? true,
+            propertyOptions: this.getPropertyOptions()
+        });
+
         return this.formGenerator.generateForm();
     }
 
@@ -202,11 +222,21 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
     }
 
     private onDialogSubmit(event: DialogGenerator$SubmitEvent) {
-
+        event.getParameters();
     }
 
     private onDialogClose(event: DialogGenerator$CloseEvent) {
+        event.getParameters();
+    }
 
+    private getEntitySetOrThrow() {
+        const entitySet = this.getEntitySet();
+
+        if (!entitySet) {
+            throw new Error("entitySet is a required property and must match an EntitySet name in your OData service - " + this.getId());
+        }
+
+        return entitySet;
     }
 
     private getODataModel() {

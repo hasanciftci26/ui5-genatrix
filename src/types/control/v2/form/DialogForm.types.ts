@@ -14,7 +14,7 @@ import {
     OptionalPropertySetter
 } from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
-type FormModeType = typeof FormMode[keyof typeof FormMode];
+export type FormModeType = typeof FormMode[keyof typeof FormMode];
 
 export type DialogFormSettings<InitialDataT extends Record<string, any>> = $ControlSettings & {
     entitySet?: string;
@@ -42,6 +42,8 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     requiredProperties?: string;
     readonlyProperties?: string;
     excludedProperties?: string;
+    keysAlwaysRequired?: boolean;
+    keysAlwaysIncluded?: boolean;
     oDataModelName?: string;
     propertyOptions?: PropertyOption[];
 };
@@ -119,6 +121,12 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
 
         getExcludedProperties: OptionalPropertyGetter<string>;
         setExcludedProperties: OptionalPropertySetter<string, DialogForm>;
+
+        getKeysAlwaysRequired: OptionalPropertyGetter<boolean>;
+        setKeysAlwaysRequired: OptionalPropertySetter<boolean, DialogForm>;
+
+        getKeysAlwaysIncluded: OptionalPropertyGetter<boolean>;
+        setKeysAlwaysIncluded: OptionalPropertySetter<boolean, DialogForm>;
 
         getODataModelName: OptionalPropertyGetter<string>;
         setODataModelName: OptionalPropertySetter<string, DialogForm>;

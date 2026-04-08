@@ -11,7 +11,7 @@ import {
  * @namespace ui5.genatrix.generator.core
  */
 export default class DialogGenerator extends EventProvider {
-    private settings: DialogGeneratorSettings;
+    private readonly settings: DialogGeneratorSettings;
     private dialog: Dialog;
 
     constructor(settings: DialogGeneratorSettings) {
