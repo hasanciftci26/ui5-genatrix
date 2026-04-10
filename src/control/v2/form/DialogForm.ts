@@ -53,6 +53,7 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         aggregations: {
             propertyOptions: { type: "ui5.genatrix.metadata.form.PropertyOption", multiple: true, singularName: "propertyOption" },
             formGroups: { type: "ui5.genatrix.metadata.form.FormGroup", multiple: true, singularName: "formGroup" },
+            validationLogics: { type: "ui5.genatrix.metadata.form.v2.ValidationLogic", multiple: true, singularName: "validationLogic" },
             button: { type: "sap.m.Button", multiple: false, visibility: "hidden" }
         }
     };

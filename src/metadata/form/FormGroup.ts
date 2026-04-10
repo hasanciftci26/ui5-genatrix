@@ -10,7 +10,8 @@ export default class FormGroup extends ManagedObject {
         final: true,
         properties: {
             title: { type: "string" },
-            propertyList: { type: "string" }
+            propertyList: { type: "string" },
+            index: { type: "int" }
         }
     };
 
