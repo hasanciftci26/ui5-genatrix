@@ -1,6 +1,7 @@
 import CheckBox from "sap/m/CheckBox";
 import Text from "sap/m/Text";
 import BaseObject from "sap/ui/base/Object";
+import Messaging from "sap/ui/core/Messaging";
 import ODataBoolean from "sap/ui/model/odata/type/Boolean";
 import Type from "sap/ui/model/Type";
 import CustomDatePicker from "ui5/genatrix/control/extension/CustomDatePicker";
@@ -41,7 +42,9 @@ export default class ControlGenerator extends BaseObject {
         if (property.readonly) {
             return this.getReadonlyControl(property, type);
         } else {
-            return this.getEditableControl(property, type);
+            const control = this.getEditableControl(property, type);
+            Messaging.registerObject(control, true);
+            return control;
         }
     }
 
