@@ -3,6 +3,8 @@ entity Employees {
         firstName   : String(40);
         lastName    : type of firstName;
         countryCode : Countries:code;
+        dateOfBirth : Date;
+        salary      : Decimal(13, 2);
 };
 
 entity Countries {

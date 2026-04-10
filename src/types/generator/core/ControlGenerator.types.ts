@@ -1,14 +1,8 @@
-import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import Validator from "ui5/genatrix/interface/metadata/form/Validator";
-import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
-import { FormModeType } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
 
-export type FormGeneratorSettings = {
+export type ControlGeneratorSettings = {
     controlId: string;
-    entitySet: string;
-    oDataModel: ODataModel;
-    formMode: FormModeType;
     datePattern?: string;
     timePattern?: string;
     dateTimeSeparator: string;
@@ -18,11 +12,6 @@ export type FormGeneratorSettings = {
     groupingSize: number;
     decimalSeparator?: string;
     parseEmptyValueToZero: boolean;
-    requiredProperties?: string;
-    readonlyProperties?: string;
-    excludedProperties?: string;
-    keysAlwaysIncluded: boolean;
     propertyOptions: PropertyOption[];
-    formGroups: FormGroup[];
     validationLogics: Validator[];
 };

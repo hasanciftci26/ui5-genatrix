@@ -10,7 +10,7 @@
     xmlns:table="sap.ui.table"
     xmlns:rowmodes="sap.ui.table.rowmodes"
     xmlns:form="ui5.genatrix.control.v2.form"
-    xmlns:metadataform="ui5.genatrix.metadata.form"
+    xmlns:formMetadata="ui5.genatrix.metadata.form"
 >
     <Page
         id="Homepage"
@@ -51,15 +51,11 @@
                                 <ToolbarSpacer />
                                 <form:DialogForm
                                     entitySet="Employees"
-                                    buttonText="Create"
-                                    buttonIcon=""
-                                    keysAlwaysIncluded="false"
-                                >
-                                    <metadataform:PropertyOption
-                                        propertyName="ID"
-                                        excluded="true"
-                                    />
-                                </form:DialogForm>
+                                    datePattern="dd MMMM y"
+                                    initialData="{
+                                        'firstName': 'Hasan'
+                                    }"
+                                />
                             </OverflowToolbar>
                         </smarttable:customToolbar>
                         <table:Table

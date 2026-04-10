@@ -11,8 +11,11 @@ export type PropertyOptionSettings = $ManagedObjectSettings & {
     timePattern?: string;
     dateTimeSeparator?: string;
     dateFirst?: boolean;
+    groupingEnabled?: boolean;
     groupingSeparator?: string;
+    groupingSize?: number;
     decimalSeparator?: string;
+    parseEmptyValueToZero?: boolean;
 };
 
 declare module "ui5/genatrix/metadata/form/PropertyOption" {
@@ -35,9 +38,15 @@ declare module "ui5/genatrix/metadata/form/PropertyOption" {
         setDateTimeSeparator: OptionalPropertySetter<string, PropertyOption>;
         getDateFirst: OptionalPropertyGetter<boolean>;
         setDateFirst: OptionalPropertySetter<boolean, PropertyOption>;
+        getGroupingEnabled: OptionalPropertyGetter<boolean>;
+        setGroupingEnabled: OptionalPropertySetter<boolean, PropertyOption>;
         getGroupingSeparator: OptionalPropertyGetter<string>;
         setGroupingSeparator: OptionalPropertySetter<string, PropertyOption>;
+        getGroupingSize: OptionalPropertyGetter<number>;
+        setGroupingSize: OptionalPropertySetter<number, PropertyOption>;
         getDecimalSeparator: OptionalPropertyGetter<string>;
         setDecimalSeparator: OptionalPropertySetter<string, PropertyOption>;
+        getParseEmptyValueToZero: OptionalPropertyGetter<boolean>;
+        setParseEmptyValueToZero: OptionalPropertySetter<boolean, PropertyOption>;
     }
 }

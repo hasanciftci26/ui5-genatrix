@@ -4,6 +4,7 @@ import { URI } from "sap/ui/core/library";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
 import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
+import ValidationLogic from "ui5/genatrix/metadata/form/v2/ValidationLogic";
 import {
     AggregationBinder,
     AggregationDestroyer,
@@ -37,8 +38,11 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     timePattern?: string;
     dateTimeSeparator?: string;
     dateFirst?: boolean;
+    groupingEnabled?: boolean;
     groupingSeparator?: string;
+    groupingSize?: number;
     decimalSeparator?: string;
+    parseEmptyValueToZero?: boolean;
     closeDialogOnSuccess?: boolean;
     showBusyOnSubmit?: boolean;
     requiredProperties?: string;
@@ -103,11 +107,20 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
         getDateFirst: OptionalPropertyGetter<boolean>;
         setDateFirst: OptionalPropertySetter<boolean, DialogForm>;
 
+        getGroupingEnabled: OptionalPropertyGetter<boolean>;
+        setGroupingEnabled: OptionalPropertySetter<boolean, DialogForm>;
+
         getGroupingSeparator: OptionalPropertyGetter<string>;
         setGroupingSeparator: OptionalPropertySetter<string, DialogForm>;
 
+        getGroupingSize: OptionalPropertyGetter<number>;
+        setGroupingSize: OptionalPropertySetter<number, DialogForm>;
+
         getDecimalSeparator: OptionalPropertyGetter<string>;
         setDecimalSeparator: OptionalPropertySetter<string, DialogForm>;
+
+        getParseEmptyValueToZero: OptionalPropertyGetter<boolean>;
+        setParseEmptyValueToZero: OptionalPropertySetter<boolean, DialogForm>;
 
         getCloseDialogOnSuccess: OptionalPropertyGetter<boolean>;
         setCloseDialogOnSuccess: OptionalPropertySetter<boolean, DialogForm>;
@@ -145,5 +158,13 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
         removeFormGroup: AggregationRemoverSingle<FormGroup>;
         removeAllFormGroups: AggregationRemoverAll<FormGroup>;
         destroyFormGroups: AggregationDestroyer<DialogForm>;
+
+        getValidationLogics: AggregationGetterMulti<ValidationLogic>;
+        addValidationLogic: AggregationSetterOrAdder<ValidationLogic, DialogForm>;
+        insertValidationLogic: AggregationInserter<ValidationLogic, DialogForm>;
+        bindValidationLogics: AggregationBinder<DialogForm>;
+        removeValidationLogic: AggregationRemoverSingle<ValidationLogic>;
+        removeAllValidationLogics: AggregationRemoverAll<ValidationLogic>;
+        destroyValidationLogics: AggregationDestroyer<DialogForm>;
     }
 }

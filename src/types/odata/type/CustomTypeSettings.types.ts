@@ -8,13 +8,13 @@ type CustomTypeBase = {
 
 export type CustomStringSettings = CustomTypeBase;
 
-type NumberConstraints = {
+export type NumberConstraints = {
     precision?: number;
     scale?: number;
     nullable?: string | boolean;
 };
 
-type NumberFormatOptions = {
+export type NumberFormatOptions = {
     groupingEnabled?: boolean;
     groupingSeparator?: string;
     groupingSize?: number;
@@ -27,11 +27,11 @@ export type CustomNumberSettings = CustomTypeBase & {
     formatOptions?: NumberFormatOptions;
 };
 
-type DateTimeConstraints = {
+export type DateTimeConstraints = {
     displayFormat: "Date";
 };
 
-type DateTimeFormatOptions = {
+export type DateTimeFormatOptions = {
     pattern: string;
 };
 

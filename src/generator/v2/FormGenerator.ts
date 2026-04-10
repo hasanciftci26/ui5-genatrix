@@ -1,7 +1,11 @@
+import Label from "sap/m/Label";
 import BaseObject from "sap/ui/base/Object";
-import Control from "sap/ui/core/Control";
+import UI5Element from "sap/ui/core/Element";
+import Title from "sap/ui/core/Title";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
+import ControlGenerator from "ui5/genatrix/generator/core/ControlGenerator";
 import MetadataParser from "ui5/genatrix/odata/v2/MetadataParser";
+import { FormElement } from "ui5/genatrix/types/generator/global/FormGenerator.types";
 import { FormGeneratorSettings } from "ui5/genatrix/types/generator/v2/FormGenerator.types";
 
 /**
@@ -10,8 +14,9 @@ import { FormGeneratorSettings } from "ui5/genatrix/types/generator/v2/FormGener
 export default class FormGenerator extends BaseObject {
     private readonly settings: FormGeneratorSettings;
     private readonly metadataParser: MetadataParser;
+    private readonly controlGenerator: ControlGenerator;
     private form: SimpleForm;
-    private readonly formContent: Control[] = [];
+    private formContent: UI5Element[];
 
     constructor(settings: FormGeneratorSettings) {
         super();
@@ -27,6 +32,21 @@ export default class FormGenerator extends BaseObject {
             keysAlwaysIncluded: settings.keysAlwaysIncluded,
             propertyOptions: settings.propertyOptions
         });
+
+        this.controlGenerator = new ControlGenerator({
+            controlId: settings.controlId,
+            datePattern: settings.datePattern,
+            timePattern: settings.timePattern,
+            dateTimeSeparator: settings.dateTimeSeparator,
+            dateFirst: settings.dateFirst,
+            groupingEnabled: settings.groupingEnabled,
+            groupingSeparator: settings.groupingSeparator,
+            groupingSize: settings.groupingSize,
+            decimalSeparator: settings.decimalSeparator,
+            parseEmptyValueToZero: settings.parseEmptyValueToZero,
+            propertyOptions: settings.propertyOptions,
+            validationLogics: settings.validationLogics
+        });
     }
 
     public async generateForm() {
@@ -40,7 +60,55 @@ export default class FormGenerator extends BaseObject {
     }
 
     public async generateFormContent() {
-        await this.metadataParser.getEntityProperties(this.settings.entitySet);
+        const properties = await this.metadataParser.getEntityProperties(this.settings.entitySet);
+        const elements: FormElement[] = [];
+
+        for (const property of properties) {
+            elements.push({
+                propertyName: property.name,
+                label: new Label({ text: property.label }),
+                control: this.controlGenerator.generate(property),
+                grouped: false
+            });
+        }
+
+        this.formContent = this.getGroupedContent(elements);
         return this.formContent;
+    }
+
+    private getGroupedContent(elements: FormElement[]) {
+        const controls: UI5Element[] = [];
+
+        if (this.settings.formGroups.length) {
+            const groups = this.settings.formGroups.sort((a, b) => (a.getIndex() ?? 0) - (b.getIndex() ?? 0));
+
+            for (const group of groups) {
+                const groupProperties = group.getPropertyList()?.split(",") || [];
+                controls.push(new Title({ text: group.getTitle() }));
+
+                for (const property of groupProperties) {
+                    const element = elements.find(e => e.propertyName === property);
+
+                    if (element) {
+                        element.grouped = true;
+                        controls.push(element.label);
+                        controls.push(element.control);
+                    }
+                }
+            }
+
+            // Add remaining properties to the last group
+            for (const element of elements.filter(e => e.grouped === false)) {
+                controls.push(element.label);
+                controls.push(element.control);
+            }
+        } else {
+            for (const element of elements) {
+                controls.push(element.label);
+                controls.push(element.control);
+            }
+        }
+
+        return controls;
     }
 }

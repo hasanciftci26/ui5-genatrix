@@ -39,8 +39,11 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             timePattern: { type: "string" },
             dateTimeSeparator: { type: "string", defaultValue: " " },
             dateFirst: { type: "boolean", defaultValue: true },
+            groupingEnabled: { type: "boolean", defaultValue: true },
             groupingSeparator: { type: "string" },
+            groupingSize: { type: "int", defaultValue: 3 },
             decimalSeparator: { type: "string" },
+            parseEmptyValueToZero: { type: "boolean", defaultValue: false },
             closeDialogOnSuccess: { type: "boolean", defaultValue: true },
             showBusyOnSubmit: { type: "boolean", defaultValue: true },
             requiredProperties: { type: "string" },
@@ -156,16 +159,20 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             formMode: this.getFormMode() || FormMode.Create,
             datePattern: this.getDatePattern(),
             timePattern: this.getTimePattern(),
-            dateTimeSeparator: this.getDateTimeSeparator(),
-            dateFirst: this.getDateFirst(),
+            dateTimeSeparator: this.getDateTimeSeparator() ?? " ",
+            dateFirst: this.getDateFirst() ?? true,
+            groupingEnabled: this.getGroupingEnabled() ?? true,
             groupingSeparator: this.getGroupingSeparator(),
+            groupingSize: this.getGroupingSize() ?? 3,
             decimalSeparator: this.getDecimalSeparator(),
+            parseEmptyValueToZero: this.getParseEmptyValueToZero() ?? false,
             requiredProperties: this.getRequiredProperties(),
             readonlyProperties: this.getReadonlyProperties(),
             excludedProperties: this.getExcludedProperties(),
             keysAlwaysIncluded: this.getKeysAlwaysIncluded() ?? true,
             propertyOptions: this.getPropertyOptions(),
-            formGroups: this.getFormGroups()
+            formGroups: this.getFormGroups(),
+            validationLogics: this.getValidationLogics()
         });
 
         return this.formGenerator.generateForm();

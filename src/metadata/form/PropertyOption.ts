@@ -1,4 +1,3 @@
-import Formatting from "sap/base/i18n/Formatting";
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
 import { PropertyOptionSettings } from "ui5/genatrix/types/metadata/form/PropertyOption.types";
 
@@ -19,8 +18,11 @@ export default class PropertyOption extends ManagedObject {
             timePattern: { type: "string" },
             dateTimeSeparator: { type: "string", defaultValue: " " },
             dateFirst: { type: "boolean", defaultValue: true },
+            groupingEnabled: { type: "boolean", defaultValue: true },
             groupingSeparator: { type: "string" },
-            decimalSeparator: { type: "string" }
+            groupingSize: { type: "int", defaultValue: 3 },
+            decimalSeparator: { type: "string" },
+            parseEmptyValueToZero: { type: "boolean", defaultValue: false }
         }
     };
 
@@ -33,13 +35,5 @@ export default class PropertyOption extends ManagedObject {
         } else {
             super(idOrSettings);
         }
-    }
-
-    public getDateTimePattern() {
-        const datePattern = this.getDatePattern() || Formatting.getDatePattern("medium");
-        const timePattern = this.getTimePattern() || Formatting.getTimePattern("medium");
-        const dateTimeSeparator = this.getDateTimeSeparator() || " ";
-
-        return this.getDateFirst() ? `${datePattern}${dateTimeSeparator}${timePattern}` : `${timePattern}${dateTimeSeparator}${datePattern}`;
     }
 }
