@@ -61,7 +61,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             formValidationErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.formValidation") },
             selectRowErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.selectTableRow") },
             contextRef: { type: "any" },
-            oDataModelName: { type: "string" }
+            oDataModelName: { type: "string" },
+            contextProvider: { type: "function" }
         },
         defaultAggregation: "propertyOptions",
         aggregations: {
@@ -240,6 +241,12 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         if (this.getFormMode() === FormMode.Create) {
             return this.createNewContext();
         } else {
+            const contextProvider = this.getContextProvider();
+
+            if (contextProvider) {
+                await Promise.resolve(contextProvider(this));
+            }
+
             return this.loadExistingContext();
         }
     }

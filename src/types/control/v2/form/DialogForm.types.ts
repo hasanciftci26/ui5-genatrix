@@ -21,6 +21,7 @@ import {
 } from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
 type ContextRef = string | Record<string, any> | Context;
+type ContextProvider<InitialDataT extends Record<string, any>> = (source: DialogForm<InitialDataT>) => Promise<void> | void;
 
 export type FormModeType = typeof FormMode[keyof typeof FormMode];
 
@@ -58,6 +59,7 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     selectRowErrorMessage?: string;
     contextRef?: ContextRef;
     oDataModelName?: string;
+    contextProvider?: ContextProvider<InitialDataT>;
     propertyOptions?: PropertyOption[];
     formGroups?: FormGroup[];
 };
@@ -165,6 +167,9 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
 
         getODataModelName: OptionalPropertyGetter<string>;
         setODataModelName: OptionalPropertySetter<string, DialogForm>;
+
+        getContextProvider: OptionalPropertyGetter<ContextProvider<InitialDataT>>;
+        setContextProvider: OptionalPropertySetter<ContextProvider<InitialDataT>, DialogForm>;
 
         getPropertyOptions: AggregationGetterMulti<PropertyOption>;
         addPropertyOption: AggregationSetterOrAdder<PropertyOption, DialogForm>;
