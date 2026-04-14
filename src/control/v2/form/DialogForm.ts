@@ -1,9 +1,13 @@
 import Button from "sap/m/Button";
-import { ButtonType, TitleAlignment } from "sap/m/library";
+import { ButtonType, ListMode, TitleAlignment } from "sap/m/library";
+import ResponsiveTable from "sap/m/Table";
+import GridTable from "sap/ui/table/Table";
+import ManagedObject from "sap/ui/base/ManagedObject";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import Control from "sap/ui/core/Control";
-import { MetadataOptions } from "sap/ui/core/Element";
+import UI5Element, { MetadataOptions } from "sap/ui/core/Element";
 import { URI } from "sap/ui/core/library";
+import View from "sap/ui/core/mvc/View";
 import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
@@ -14,6 +18,9 @@ import { DialogFormSettings } from "ui5/genatrix/types/control/v2/form/DialogFor
 import { DialogGenerator$CloseEvent } from "ui5/genatrix/types/generator/core/DialogGenerator.types";
 import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
+import { SelectionMode } from "sap/ui/table/library";
+import SmartTable from "sap/ui/comp/smarttable/SmartTable";
+import AnalyticalTable from "sap/ui/table/AnalyticalTable";
 
 /**
  * @namespace ui5.genatrix.control.v2.form
@@ -52,6 +59,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             excludedProperties: { type: "string" },
             keysAlwaysIncluded: { type: "boolean", defaultValue: true },
             formValidationErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.formValidation") },
+            selectRowErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.selectTableRow") },
+            contextRef: { type: "any" },
             oDataModelName: { type: "string" }
         },
         defaultAggregation: "propertyOptions",
@@ -74,6 +83,7 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
     private dialogGenerator: DialogGenerator;
     private formGenerator: FormGenerator;
     private context: Context;
+    private view?: View;
 
     constructor(settings?: DialogFormSettings<InitialDataT>);
     constructor(id?: string, settings?: DialogFormSettings<InitialDataT>);
@@ -126,9 +136,11 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         const form = await this.generateForm();
         const context = await this.resolveContext();
 
-        dialog.addContent(form);
-        dialog.setBindingContext(context);
-        dialog.open();
+        if (context) {
+            dialog.addContent(form);
+            dialog.setBindingContext(context);
+            dialog.open();
+        }
 
         this.hideBusy();
     }
@@ -194,11 +206,11 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         }
 
         switch (this.getFormMode()) {
-            case "Create":
+            case FormMode.Create:
                 return LibraryBundle.getText("genatrix.button.create");
-            case "Update":
+            case FormMode.Update:
                 return LibraryBundle.getText("genatrix.button.update");
-            case "Delete":
+            case FormMode.Delete:
                 return LibraryBundle.getText("genatrix.button.delete");
         }
     }
@@ -213,11 +225,11 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
 
     private getDefaultDialogTitle() {
         switch (this.getFormMode()) {
-            case "Create":
+            case FormMode.Create:
                 return LibraryBundle.getText("genatrix.title.create", [this.getEntitySet()]);
-            case "Update":
+            case FormMode.Update:
                 return LibraryBundle.getText("genatrix.title.update", [this.getEntitySet()]);
-            case "Delete":
+            case FormMode.Delete:
                 return LibraryBundle.getText("genatrix.title.delete", [this.getEntitySet()]);
             default:
                 return LibraryBundle.getText("genatrix.title.display", [this.getEntitySet()]);
@@ -225,26 +237,151 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
     }
 
     private async resolveContext() {
-        if (this.getFormMode() === "Create") {
-            this.createNewContext();
+        if (this.getFormMode() === FormMode.Create) {
+            return this.createNewContext();
         } else {
-            await this.loadExistingContext();
+            return this.loadExistingContext();
         }
-
-        return this.context;
     }
 
     private createNewContext() {
         this.context = this.getODataModel().createEntry(`/${this.getEntitySet()}`, {
             properties: this.getInitialData()
         }) as Context;
+
+        return this.context;
     }
 
     private async loadExistingContext() {
+        const contextRef = this.getContextRef();
 
+        if (!contextRef) {
+            throw new Error("contextRef is a required property when the formMode is not Create - " + this.getId());
+        }
+
+        if (typeof contextRef === "string") {
+            return this.loadContextFromTable(contextRef);
+        } else if (contextRef instanceof Context) {
+            this.context = contextRef;
+            return this.context;
+        } else {
+            const path = this.getODataModel().createKey(`/${this.getEntitySetOrThrow()}`, contextRef);
+            return this.createBindingContext(path);
+        }
     }
 
-    private async onDialogSubmit() {
+    private async loadContextFromTable(tableId: string) {
+        const table = UI5Element.getElementById(tableId) || this.getView()?.byId(tableId);
+        let path: string | undefined;
+
+        switch (true) {
+            case table instanceof ResponsiveTable:
+                path = this.getContextPathFromResponsiveTable(table);
+                break;
+            case table instanceof GridTable:
+                path = this.getContextPathFromGridTable(table);
+                break;
+            case table instanceof SmartTable:
+                path = this.getContextPathFromSmartTable(table);
+                break;
+            default:
+                throw new Error(`Element "${tableId}" is not a supported table (ResponsiveTable, GridTable, SmartTable) - ` + this.getId());
+        }
+
+        if (!path) {
+            return;
+        }
+
+        return this.createBindingContext(path);
+    }
+
+    private getContextPathFromResponsiveTable(table: ResponsiveTable) {
+        if ([ListMode.SingleSelect, ListMode.SingleSelectLeft, ListMode.SingleSelectMaster].includes(table.getMode()) === false) {
+            throw new Error(
+                `Unsupported table mode "${table.getMode()}". Expected one of: SingleSelect, SingleSelectLeft, SingleSelectMaster - ` + this.getId()
+            );
+        }
+
+        const selectedItem = table.getSelectedItem();
+
+        if (!selectedItem) {
+            const errorMessage = this.getSelectRowErrorMessage() || LibraryBundle.getText("genatrix.error.selectTableRow");
+            CustomMessageBox.error(errorMessage);
+            return;
+        }
+
+        const context = selectedItem.getBindingContext(this.getODataModelName());
+
+        if (context instanceof Context === false) {
+            throw new Error(
+                "Selected item has no valid OData V2 binding context. Ensure the table items are bound to an entity set - " + this.getId()
+            );
+        }
+
+        return context.getPath();
+    }
+
+    private getContextPathFromGridTable(table: GridTable) {
+        if (table.getSelectionMode() !== SelectionMode.Single) {
+            throw new Error(
+                `Unsupported table mode "${table.getSelectionMode()}". Expected: Single - ` + this.getId()
+            );
+        }
+
+        const selectedIndices = table.getSelectedIndices();
+        const selectedIndex = selectedIndices[0];
+
+        if (selectedIndex == null) {
+            const errorMessage = this.getSelectRowErrorMessage() || LibraryBundle.getText("genatrix.error.selectTableRow");
+            CustomMessageBox.error(errorMessage);
+            return;
+        }
+
+        const context = table.getContextByIndex(selectedIndex);
+
+        if (context instanceof Context === false) {
+            throw new Error(
+                "Selected row has no valid OData V2 binding context. Ensure the table rows are bound to an entity set - " + this.getId()
+            );
+        }
+
+        return context.getPath();
+    }
+
+    private getContextPathFromSmartTable(table: SmartTable) {
+        const innerTable = table.getTable();
+
+        switch (true) {
+            case innerTable instanceof ResponsiveTable:
+                return this.getContextPathFromResponsiveTable(innerTable);
+            case innerTable instanceof GridTable:
+            case innerTable instanceof AnalyticalTable:
+                return this.getContextPathFromGridTable(innerTable);
+        }
+    }
+
+    private createBindingContext(path: string): Promise<Context> {
+        return new Promise((resolve, reject) => {
+            this.getODataModel().createBindingContext(path, undefined, undefined, (context: Context | null) => {
+                if (context) {
+                    this.context = context;
+                    resolve(context);
+                } else {
+                    reject(new Error(`Binding context not found: "${path}" (invalid path or data not loaded) - ` + this.getId()));
+                }
+            });
+        });
+    }
+
+    private onDialogSubmit() {
+        if (this.getFormMode() === FormMode.Create || this.getFormMode() === FormMode.Update) {
+            void this.submit();
+        } else {
+            void this.delete();
+        }
+    }
+
+    private async submit() {
         this.showBusy(true);
         const invalidProperties = await this.formGenerator.validateValues();
 
@@ -259,6 +396,10 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             this.hideBusy(true);
             return;
         }
+    }
+
+    private async delete() {
+
     }
 
     private async onDialogClose(event: DialogGenerator$CloseEvent) {
@@ -286,6 +427,23 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         }
     }
 
+    private getView() {
+        if (!this.view) {
+            let parent = this.getParent();
+
+            while (parent) {
+                if (parent.isA("sap.ui.core.mvc.View")) {
+                    this.view = parent as View;
+                    break;
+                }
+
+                parent = (parent as ManagedObject).getParent();
+            }
+        }
+
+        return this.view;
+    }
+
     private getEntitySetOrThrow() {
         const entitySet = this.getEntitySet();
 
@@ -301,6 +459,10 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
 
         if (model instanceof ODataModel === false) {
             throw new Error("ODataModel (sap.ui.model.odata.v2) not found. Set the oDataModelName property if you are using a named model - " + this.getId());
+        }
+
+        if (model.getDefaultBindingMode() !== "TwoWay") {
+            model.setDefaultBindingMode("TwoWay");
         }
 
         return model;

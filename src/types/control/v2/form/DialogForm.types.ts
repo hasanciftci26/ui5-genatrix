@@ -2,6 +2,7 @@ import { ButtonType, TitleAlignment } from "sap/m/library";
 import Event from "sap/ui/base/Event";
 import { $ControlSettings } from "sap/ui/core/Control";
 import { URI } from "sap/ui/core/library";
+import Context from "sap/ui/model/odata/v2/Context";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
 import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
 import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
@@ -18,6 +19,8 @@ import {
     OptionalPropertyGetter,
     OptionalPropertySetter
 } from "ui5/genatrix/types/global/ManagedObjectClass.types";
+
+type ContextRef = string | Record<string, any> | Context;
 
 export type FormModeType = typeof FormMode[keyof typeof FormMode];
 
@@ -52,6 +55,8 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     excludedProperties?: string;
     keysAlwaysIncluded?: boolean;
     formValidationErrorMessage?: string;
+    selectRowErrorMessage?: string;
+    contextRef?: ContextRef;
     oDataModelName?: string;
     propertyOptions?: PropertyOption[];
     formGroups?: FormGroup[];
@@ -151,6 +156,12 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
 
         getFormValidationErrorMessage: OptionalPropertyGetter<string>;
         setFormValidationErrorMessage: OptionalPropertySetter<string, DialogForm>;
+
+        getSelectRowErrorMessage: OptionalPropertyGetter<string>;
+        setSelectRowErrorMessage: OptionalPropertySetter<string, DialogForm>;
+
+        getContextRef: OptionalPropertyGetter<ContextRef>;
+        setContextRef: OptionalPropertySetter<ContextRef, DialogForm>;
 
         getODataModelName: OptionalPropertyGetter<string>;
         setODataModelName: OptionalPropertySetter<string, DialogForm>;

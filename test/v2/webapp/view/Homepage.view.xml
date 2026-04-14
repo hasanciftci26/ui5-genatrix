@@ -53,6 +53,8 @@
                                     entitySet="Employees"
                                     datePattern="dd MMMM y"
                                     formValidationError="onFormValidationError"
+                                    formMode="Display"
+                                    contextRef="stEmployees"
                                     initialData="{
                                         'firstName': 'Hasan'
                                     }"
