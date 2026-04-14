@@ -1,6 +1,7 @@
 import Int16 from "sap/ui/model/odata/type/Int16";
 import ValidateException from "sap/ui/model/ValidateException";
 import { CustomNumberSettings } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
+import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.odata.type
@@ -29,7 +30,10 @@ export default class CustomInt16 extends Int16 {
 
     private checkRequired(value: number | null) {
         if (value == null) {
-            throw new ValidateException("TODO");
+            const errorMessage = this.settings.propertyOptions?.getRequiredErrorMessage() ||
+                LibraryBundle.getText("genatrix.error.requiredField", [this.settings.property.label]);
+
+            throw new ValidateException(errorMessage);
         }
     }
 }

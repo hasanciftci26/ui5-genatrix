@@ -52,6 +52,7 @@
                                 <form:DialogForm
                                     entitySet="Employees"
                                     datePattern="dd MMMM y"
+                                    formValidationError="onFormValidationError"
                                     initialData="{
                                         'firstName': 'Hasan'
                                     }"

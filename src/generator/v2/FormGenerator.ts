@@ -3,6 +3,10 @@ import BaseObject from "sap/ui/base/Object";
 import UI5Element from "sap/ui/core/Element";
 import Title from "sap/ui/core/Title";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
+import CustomDatePicker from "ui5/genatrix/control/extension/CustomDatePicker";
+import CustomDateTimePicker from "ui5/genatrix/control/extension/CustomDateTimePicker";
+import CustomInput from "ui5/genatrix/control/extension/CustomInput";
+import CustomTimePicker from "ui5/genatrix/control/extension/CustomTimePicker";
 import ControlGenerator from "ui5/genatrix/generator/core/ControlGenerator";
 import MetadataParser from "ui5/genatrix/odata/v2/MetadataParser";
 import { FormElement } from "ui5/genatrix/types/generator/global/FormGenerator.types";
@@ -74,6 +78,32 @@ export default class FormGenerator extends BaseObject {
 
         this.formContent = this.getGroupedContent(elements);
         return this.formContent;
+    }
+
+    public async validateValues() {
+        const invalidProperties: string[] = [];
+
+        for (const control of this.formContent) {
+            switch (true) {
+                case control instanceof CustomInput:
+                case control instanceof CustomDatePicker:
+                case control instanceof CustomDateTimePicker:
+                case control instanceof CustomTimePicker:
+                    try {
+                        await control.checkValuesValidity();
+                        control.setValueState("None");
+                        control.setValueStateText("");
+                    } catch (error) {
+                        invalidProperties.push(control.getPropertyName());
+                        control.setValueState("Error");
+                        control.setValueStateText((error as { message: string; }).message);
+                    }
+
+                    break;
+            }
+        }
+
+        return invalidProperties;
     }
 
     private getGroupedContent(elements: FormElement[]) {

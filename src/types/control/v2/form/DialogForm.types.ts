@@ -1,7 +1,9 @@
 import { ButtonType, TitleAlignment } from "sap/m/library";
+import Event from "sap/ui/base/Event";
 import { $ControlSettings } from "sap/ui/core/Control";
 import { URI } from "sap/ui/core/library";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
+import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
 import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import ValidationLogic from "ui5/genatrix/metadata/form/v2/ValidationLogic";
@@ -49,10 +51,17 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     readonlyProperties?: string;
     excludedProperties?: string;
     keysAlwaysIncluded?: boolean;
+    formValidationErrorMessage?: string;
     oDataModelName?: string;
     propertyOptions?: PropertyOption[];
     formGroups?: FormGroup[];
 };
+
+export type DialogForm$FormValidationErrorEventParameters = {
+    invalidProperties: string[];
+};
+
+export type DialogForm$FormValidationErrorEvent = Event<DialogForm$FormValidationErrorEventParameters, DialogForm>;
 
 declare module "ui5/genatrix/control/v2/form/DialogForm" {
     export default interface DialogForm<InitialDataT extends Record<string, any> = Record<string, any>> {
@@ -140,6 +149,9 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
         getKeysAlwaysIncluded: OptionalPropertyGetter<boolean>;
         setKeysAlwaysIncluded: OptionalPropertySetter<boolean, DialogForm>;
 
+        getFormValidationErrorMessage: OptionalPropertyGetter<string>;
+        setFormValidationErrorMessage: OptionalPropertySetter<string, DialogForm>;
+
         getODataModelName: OptionalPropertyGetter<string>;
         setODataModelName: OptionalPropertySetter<string, DialogForm>;
 
@@ -166,5 +178,9 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
         removeValidationLogic: AggregationRemoverSingle<ValidationLogic>;
         removeAllValidationLogics: AggregationRemoverAll<ValidationLogic>;
         destroyValidationLogics: AggregationDestroyer<DialogForm>;
+
+        attachFormValidationError(handler: (event: DialogForm$FormValidationErrorEvent) => void, listener?: object): DialogForm;
+        attachFormValidationError(data: object, handler: (event: DialogForm$FormValidationErrorEvent) => void, listener?: object): DialogForm;
+        fireFormValidationError: (parameters?: DialogForm$FormValidationErrorEventParameters) => DialogForm;
     }
 }

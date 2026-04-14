@@ -16,6 +16,7 @@ export type PropertyOptionSettings = $ManagedObjectSettings & {
     groupingSize?: number;
     decimalSeparator?: string;
     parseEmptyValueToZero?: boolean;
+    requiredErrorMessage?: string;
 };
 
 declare module "ui5/genatrix/metadata/form/PropertyOption" {
@@ -48,5 +49,7 @@ declare module "ui5/genatrix/metadata/form/PropertyOption" {
         setDecimalSeparator: OptionalPropertySetter<string, PropertyOption>;
         getParseEmptyValueToZero: OptionalPropertyGetter<boolean>;
         setParseEmptyValueToZero: OptionalPropertySetter<boolean, PropertyOption>;
+        getRequiredErrorMessage: OptionalPropertyGetter<string>;
+        setRequiredErrorMessage: OptionalPropertySetter<string, PropertyOption>;
     }
 }

@@ -22,7 +22,8 @@ export default class PropertyOption extends ManagedObject {
             groupingSeparator: { type: "string" },
             groupingSize: { type: "int", defaultValue: 3 },
             decimalSeparator: { type: "string" },
-            parseEmptyValueToZero: { type: "boolean", defaultValue: false }
+            parseEmptyValueToZero: { type: "boolean", defaultValue: false },
+            requiredErrorMessage: { type: "string" }
         }
     };
 

@@ -11,7 +11,8 @@ import DialogFormRenderer from "ui5/genatrix/control/v2/form/DialogFormRenderer"
 import DialogGenerator from "ui5/genatrix/generator/core/DialogGenerator";
 import FormGenerator from "ui5/genatrix/generator/v2/FormGenerator";
 import { DialogFormSettings } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
-import { DialogGenerator$CloseEvent, DialogGenerator$SubmitEvent } from "ui5/genatrix/types/generator/core/DialogGenerator.types";
+import { DialogGenerator$CloseEvent } from "ui5/genatrix/types/generator/core/DialogGenerator.types";
+import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
@@ -50,6 +51,7 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             readonlyProperties: { type: "string" },
             excludedProperties: { type: "string" },
             keysAlwaysIncluded: { type: "boolean", defaultValue: true },
+            formValidationErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.formValidation") },
             oDataModelName: { type: "string" }
         },
         defaultAggregation: "propertyOptions",
@@ -58,6 +60,14 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             formGroups: { type: "ui5.genatrix.metadata.form.FormGroup", multiple: true, singularName: "formGroup" },
             validationLogics: { type: "ui5.genatrix.metadata.form.v2.ValidationLogic", multiple: true, singularName: "validationLogic" },
             button: { type: "sap.m.Button", multiple: false, visibility: "hidden" }
+        },
+        events: {
+            formValidationError: {
+                allowPreventDefault: false,
+                parameters: {
+                    invalidProperties: { type: "string[]" }
+                }
+            }
         }
     };
     public static renderer = DialogFormRenderer;
@@ -234,8 +244,21 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
 
     }
 
-    private onDialogSubmit(event: DialogGenerator$SubmitEvent) {
-        event.getParameters();
+    private async onDialogSubmit() {
+        this.showBusy(true);
+        const invalidProperties = await this.formGenerator.validateValues();
+
+        if (invalidProperties.length) {
+            const errorMessage = this.getFormValidationErrorMessage();
+            this.fireFormValidationError({ invalidProperties: invalidProperties });
+
+            if (errorMessage) {
+                CustomMessageBox.error(errorMessage);
+            }
+
+            this.hideBusy(true);
+            return;
+        }
     }
 
     private async onDialogClose(event: DialogGenerator$CloseEvent) {

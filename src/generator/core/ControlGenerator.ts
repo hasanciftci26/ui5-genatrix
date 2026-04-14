@@ -75,7 +75,7 @@ export default class ControlGenerator extends BaseObject {
                 });
             case "Edm.DateTime":
                 if (property.displayFormat === "Date") {
-                    return new CustomDatePicker({
+                    return new CustomDatePicker(property.name, {
                         required: property.required,
                         value: {
                             path: property.name,
@@ -83,7 +83,7 @@ export default class ControlGenerator extends BaseObject {
                         }
                     });
                 } else {
-                    return new CustomDateTimePicker({
+                    return new CustomDateTimePicker(property.name, {
                         required: property.required,
                         value: {
                             path: property.name,
@@ -92,7 +92,7 @@ export default class ControlGenerator extends BaseObject {
                     });
                 }
             case "Edm.DateTimeOffset":
-                return new CustomDateTimePicker({
+                return new CustomDateTimePicker(property.name, {
                     required: property.required,
                     value: {
                         path: property.name,
@@ -100,7 +100,7 @@ export default class ControlGenerator extends BaseObject {
                     }
                 });
             case "Edm.Time":
-                return new CustomTimePicker({
+                return new CustomTimePicker(property.name, {
                     required: property.required,
                     value: {
                         path: property.name,
@@ -108,7 +108,7 @@ export default class ControlGenerator extends BaseObject {
                     }
                 });
             default:
-                return new CustomInput({
+                return new CustomInput(property.name, {
                     required: property.required,
                     maxLength: property.maxLength,
                     value: {
@@ -120,6 +120,8 @@ export default class ControlGenerator extends BaseObject {
     }
 
     private getODataType(property: EntityProperty) {
+        const propertyOptions = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name);
+
         switch (property.type) {
             case "Edm.Boolean":
                 return new ODataBoolean();
@@ -127,42 +129,49 @@ export default class ControlGenerator extends BaseObject {
                 return new CustomByte({
                     property: property,
                     formatOptions: this.getNumberFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.SByte":
                 return new CustomSByte({
                     property: property,
                     formatOptions: this.getNumberFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
-                })
+                });
             case "Edm.Int16":
                 return new CustomInt16({
                     property: property,
                     formatOptions: this.getNumberFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.Int32":
                 return new CustomInt32({
                     property: property,
                     formatOptions: this.getNumberFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.Int64":
                 return new CustomInt64({
                     property: property,
                     formatOptions: this.getNumberFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.Single":
                 return new CustomSingle({
                     property: property,
                     formatOptions: this.getNumberFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.Double":
                 return new CustomDouble({
                     property: property,
                     formatOptions: this.getNumberFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.Decimal":
@@ -173,6 +182,7 @@ export default class ControlGenerator extends BaseObject {
                         scale: property.scale
                     },
                     formatOptions: this.getNumberFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.DateTime":
@@ -180,28 +190,33 @@ export default class ControlGenerator extends BaseObject {
                     property: property,
                     constraints: this.getDateTimeConstraints(property),
                     formatOptions: this.getDateTimeFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.DateTimeOffset":
                 return new CustomDateTimeOffset({
                     property: property,
                     formatOptions: this.getDateTimeFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.Time":
                 return new CustomTime({
                     property: property,
                     formatOptions: this.getDateTimeFormatOptions(property),
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             case "Edm.Guid":
                 return new CustomGuid({
                     property: property,
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             default:
                 return new CustomString({
                     property: property,
+                    propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
         }
