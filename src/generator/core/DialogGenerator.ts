@@ -22,7 +22,10 @@ export default class DialogGenerator extends EventProvider {
     public generate() {
         this.dialog = new Dialog({
             title: this.settings.title,
-            titleAlignment: this.settings.titleAlignment
+            titleAlignment: this.settings.titleAlignment,
+            contentWidth: this.settings.contentWidth,
+            resizable: this.settings.resizable,
+            draggable: this.settings.draggable
         });
 
         this.addSubmitButton();

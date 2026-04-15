@@ -3,6 +3,7 @@ import BaseObject from "sap/ui/base/Object";
 import UI5Element from "sap/ui/core/Element";
 import Title from "sap/ui/core/Title";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
+import Layout from "ui5/genatrix/control/enum/form/Layout";
 import CustomDatePicker from "ui5/genatrix/control/extension/CustomDatePicker";
 import CustomDateTimePicker from "ui5/genatrix/control/extension/CustomDateTimePicker";
 import CustomInput from "ui5/genatrix/control/extension/CustomInput";
@@ -57,9 +58,12 @@ export default class FormGenerator extends BaseObject {
         const content = await this.generateFormContent();
 
         this.form = new SimpleForm({
+            editable: true,
+            adjustLabelSpan: false,
             content: content
         });
 
+        this.setFormLayout();
         return this.form;
     }
 
@@ -140,5 +144,26 @@ export default class FormGenerator extends BaseObject {
         }
 
         return controls;
+    }
+
+    private setFormLayout() {
+        const layoutData = this.settings.formLayout?.getLayoutData();
+
+        this.form.setLayout(this.settings.formLayout?.getLayout() || Layout.ResponsiveGridLayout);
+        this.form.setColumnsXL(this.settings.formLayout?.getColumnsXL() ?? 1);
+        this.form.setColumnsL(this.settings.formLayout?.getColumnsL() ?? 1);
+        this.form.setColumnsM(this.settings.formLayout?.getColumnsM() ?? 1);
+        this.form.setLabelSpanXL(this.settings.formLayout?.getLabelSpanXL() ?? 12);
+        this.form.setLabelSpanL(this.settings.formLayout?.getLabelSpanL() ?? 12);
+        this.form.setLabelSpanM(this.settings.formLayout?.getLabelSpanM() ?? 12);
+        this.form.setLabelSpanS(this.settings.formLayout?.getLabelSpanS() ?? 12);
+        this.form.setEmptySpanXL(this.settings.formLayout?.getEmptySpanXL() ?? 0);
+        this.form.setEmptySpanL(this.settings.formLayout?.getEmptySpanL() ?? 0);
+        this.form.setEmptySpanM(this.settings.formLayout?.getEmptySpanM() ?? 0);
+        this.form.setEmptySpanS(this.settings.formLayout?.getEmptySpanS() ?? 0);
+
+        if (layoutData) {
+            this.form.setLayoutData(layoutData);
+        }
     }
 }

@@ -37,6 +37,9 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             buttonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Default },
             dialogTitle: { type: "string" },
             dialogTitleAlignment: { type: "sap.m.TitleAlignment", defaultValue: TitleAlignment.Auto },
+            dialogWidth: { type: "string" },
+            dialogResizable: { type: "boolean", defaultValue: true },
+            dialogDraggable: { type: "boolean", defaultValue: true },
             submitButtonText: { type: "string" },
             submitButtonIcon: { type: "sap.ui.core.URI" },
             submitButtonType: { type: "sap.m.ButtonType", defaultValue: ButtonType.Emphasized },
@@ -69,6 +72,7 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             propertyOptions: { type: "ui5.genatrix.metadata.form.PropertyOption", multiple: true, singularName: "propertyOption" },
             formGroups: { type: "ui5.genatrix.metadata.form.FormGroup", multiple: true, singularName: "formGroup" },
             validationLogics: { type: "ui5.genatrix.metadata.form.v2.ValidationLogic", multiple: true, singularName: "validationLogic" },
+            formLayout: { type: "ui5.genatrix.metadata.form.FormLayout", multiple: false },
             button: { type: "sap.m.Button", multiple: false, visibility: "hidden" }
         },
         events: {
@@ -154,6 +158,9 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         this.dialogGenerator = new DialogGenerator({
             title: this.getDialogTitle() || this.getDefaultDialogTitle(),
             titleAlignment: this.getDialogTitleAlignment() || TitleAlignment.Auto,
+            contentWidth: this.getDialogWidth(),
+            resizable: this.getDialogResizable() ?? true,
+            draggable: this.getDialogDraggable() ?? true,
             addSubmitButton: this.getFormMode() !== "Display",
             submitButtonText: this.getSubmitButtonText() || this.getDefaultSubmitButtonText(),
             submitButtonIcon: this.getSubmitButtonIcon(),
@@ -195,7 +202,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             keysAlwaysIncluded: this.getKeysAlwaysIncluded() ?? true,
             propertyOptions: this.getPropertyOptions(),
             formGroups: this.getFormGroups(),
-            validationLogics: this.getValidationLogics()
+            validationLogics: this.getValidationLogics(),
+            formLayout: this.getFormLayout()
         });
 
         return this.formGenerator.generateForm();
@@ -244,7 +252,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             const contextProvider = this.getContextProvider();
 
             if (contextProvider) {
-                await Promise.resolve(contextProvider(this));
+                const context = await Promise.resolve(contextProvider());
+                this.setContextRef(context);
             }
 
             return this.loadExistingContext();

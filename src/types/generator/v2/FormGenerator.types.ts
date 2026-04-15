@@ -1,6 +1,7 @@
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import Validator from "ui5/genatrix/interface/metadata/form/Validator";
 import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
+import FormLayout from "ui5/genatrix/metadata/form/FormLayout";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import { FormModeType } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
 
@@ -25,4 +26,5 @@ export type FormGeneratorSettings = {
     propertyOptions: PropertyOption[];
     formGroups: FormGroup[];
     validationLogics: Validator[];
+    formLayout?: FormLayout;
 };

@@ -9,6 +9,9 @@ import DialogGenerator from "ui5/genatrix/generator/core/DialogGenerator";
 export type DialogGeneratorSettings = {
     title: string;
     titleAlignment: TitleAlignment;
+    contentWidth?: string;
+    resizable: boolean;
+    draggable: boolean;
     addSubmitButton: boolean;
     submitButtonText?: string;
     submitButtonIcon?: URI;

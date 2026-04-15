@@ -6,12 +6,14 @@ import Context from "sap/ui/model/odata/v2/Context";
 import FormMode from "ui5/genatrix/control/enum/form/FormMode";
 import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
 import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
+import FormLayout from "ui5/genatrix/metadata/form/FormLayout";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import ValidationLogic from "ui5/genatrix/metadata/form/v2/ValidationLogic";
 import {
     AggregationBinder,
     AggregationDestroyer,
     AggregationGetterMulti,
+    AggregationGetterSingle,
     AggregationInserter,
     AggregationRemoverAll,
     AggregationRemoverSingle,
@@ -21,7 +23,7 @@ import {
 } from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
 type ContextRef = string | Record<string, any> | Context;
-type ContextProvider<InitialDataT extends Record<string, any>> = (source: DialogForm<InitialDataT>) => Promise<void> | void;
+type ContextProvider = () => Promise<Context> | Context;
 
 export type FormModeType = typeof FormMode[keyof typeof FormMode];
 
@@ -34,6 +36,9 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     buttonType?: ButtonType;
     dialogTitle?: string;
     dialogTitleAlignment?: TitleAlignment;
+    dialogWidth?: string;
+    dialogResizable?: boolean;
+    dialogDraggable?: boolean;
     submitButtonText?: string;
     submitButtonIcon?: URI;
     submitButtonType?: ButtonType;
@@ -59,9 +64,11 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     selectRowErrorMessage?: string;
     contextRef?: ContextRef;
     oDataModelName?: string;
-    contextProvider?: ContextProvider<InitialDataT>;
+    contextProvider?: ContextProvider;
     propertyOptions?: PropertyOption[];
     formGroups?: FormGroup[];
+    validationLogics?: ValidationLogic[];
+    formLayout?: FormLayout;
 };
 
 export type DialogForm$FormValidationErrorEventParameters = {
@@ -92,6 +99,15 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
 
         getDialogTitleAlignment: OptionalPropertyGetter<TitleAlignment>;
         setDialogTitleAlignment: OptionalPropertySetter<TitleAlignment, DialogForm>;
+
+        getDialogWidth: OptionalPropertyGetter<string>;
+        setDialogWidth: OptionalPropertySetter<string, DialogForm>;
+
+        getDialogResizable: OptionalPropertyGetter<boolean>;
+        setDialogResizable: OptionalPropertySetter<boolean, DialogForm>;
+
+        getDialogDraggable: OptionalPropertyGetter<boolean>;
+        setDialogDraggable: OptionalPropertySetter<boolean, DialogForm>;
 
         getSubmitButtonText: OptionalPropertyGetter<string>;
         setSubmitButtonText: OptionalPropertySetter<string, DialogForm>;
@@ -168,8 +184,8 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
         getODataModelName: OptionalPropertyGetter<string>;
         setODataModelName: OptionalPropertySetter<string, DialogForm>;
 
-        getContextProvider: OptionalPropertyGetter<ContextProvider<InitialDataT>>;
-        setContextProvider: OptionalPropertySetter<ContextProvider<InitialDataT>, DialogForm>;
+        getContextProvider: OptionalPropertyGetter<ContextProvider>;
+        setContextProvider: OptionalPropertySetter<ContextProvider, DialogForm>;
 
         getPropertyOptions: AggregationGetterMulti<PropertyOption>;
         addPropertyOption: AggregationSetterOrAdder<PropertyOption, DialogForm>;
@@ -194,6 +210,9 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
         removeValidationLogic: AggregationRemoverSingle<ValidationLogic>;
         removeAllValidationLogics: AggregationRemoverAll<ValidationLogic>;
         destroyValidationLogics: AggregationDestroyer<DialogForm>;
+
+        getFormLayout: AggregationGetterSingle<FormLayout>;
+        setFormLayout: AggregationSetterOrAdder<FormLayout, DialogForm>;
 
         attachFormValidationError(handler: (event: DialogForm$FormValidationErrorEvent) => void, listener?: object): DialogForm;
         attachFormValidationError(data: object, handler: (event: DialogForm$FormValidationErrorEvent) => void, listener?: object): DialogForm;
