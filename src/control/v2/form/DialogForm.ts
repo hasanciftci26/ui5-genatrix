@@ -21,11 +21,13 @@ import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 import { SelectionMode } from "sap/ui/table/library";
 import SmartTable from "sap/ui/comp/smarttable/SmartTable";
 import AnalyticalTable from "sap/ui/table/AnalyticalTable";
+import { BatchResponse, RequestError } from "ui5/genatrix/types/odata/v2/Response.types";
+import Response from "ui5/genatrix/odata/v2/Response";
 
 /**
  * @namespace ui5.genatrix.control.v2.form
  */
-export default class DialogForm<InitialDataT extends Record<string, any> = Record<string, any>> extends Control {
+export default class DialogForm<ContextDataT extends Record<string, any> = Record<string, any>> extends Control {
     public static metadata: MetadataOptions = {
         library: "ui5.genatrix",
         properties: {
@@ -56,6 +58,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             decimalSeparator: { type: "string" },
             parseEmptyValueToZero: { type: "boolean", defaultValue: false },
             closeDialogOnSuccess: { type: "boolean", defaultValue: true },
+            showSubmitError: { type: "boolean", defaultValue: true },
+            submitErrorFallbackMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.unexpected") },
             showBusyOnSubmit: { type: "boolean", defaultValue: true },
             requiredProperties: { type: "string" },
             readonlyProperties: { type: "string" },
@@ -65,7 +69,8 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             selectRowErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.selectTableRow") },
             contextRef: { type: "any" },
             oDataModelName: { type: "string" },
-            contextProvider: { type: "function" }
+            contextProvider: { type: "function" },
+            beforeSubmit: { type: "function" }
         },
         defaultAggregation: "propertyOptions",
         aggregations: {
@@ -81,6 +86,18 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
                 parameters: {
                     invalidProperties: { type: "string[]" }
                 }
+            },
+            submitSuccess: {
+                allowPreventDefault: false,
+                parameters: {
+                    response: { type: "ui5.genatrix.odata.v2.Response" }
+                }
+            },
+            submitError: {
+                allowPreventDefault: false,
+                parameters: {
+                    response: { type: "ui5.genatrix.odata.v2.Response" }
+                }
             }
         }
     };
@@ -90,10 +107,10 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
     private context: Context;
     private view?: View;
 
-    constructor(settings?: DialogFormSettings<InitialDataT>);
-    constructor(id?: string, settings?: DialogFormSettings<InitialDataT>);
+    constructor(settings?: DialogFormSettings<ContextDataT>);
+    constructor(id?: string, settings?: DialogFormSettings<ContextDataT>);
 
-    constructor(idOrSettings?: string | DialogFormSettings<InitialDataT>, settings?: DialogFormSettings<InitialDataT>) {
+    constructor(idOrSettings?: string | DialogFormSettings<ContextDataT>, settings?: DialogFormSettings<ContextDataT>) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
@@ -389,7 +406,19 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
         });
     }
 
-    private onDialogSubmit() {
+    private async onDialogSubmit() {
+        this.showBusy(true);
+        const beforeSubmit = this.getBeforeSubmit();
+
+        if (beforeSubmit) {
+            const terminate = await Promise.resolve(beforeSubmit(this.context));
+
+            if (terminate) {
+                this.hideBusy(true);
+                return;
+            }
+        }
+
         if (this.getFormMode() === FormMode.Create || this.getFormMode() === FormMode.Update) {
             void this.submit();
         } else {
@@ -398,7 +427,6 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
     }
 
     private async submit() {
-        this.showBusy(true);
         const invalidProperties = await this.formGenerator.validateValues();
 
         if (invalidProperties.length) {
@@ -412,6 +440,42 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
             this.hideBusy(true);
             return;
         }
+
+        const model = this.getODataModel();
+
+        if (model.hasPendingChanges()) {
+            model.submitChanges({
+                success: (rawResponse?: BatchResponse) => {
+                    this.hideBusy(true);
+                    const response = new Response(rawResponse);
+
+                    if (response.isSuccessful()) {
+                        this.fireSubmitSuccess({ response: response });
+
+                        if (this.getCloseDialogOnSuccess()) {
+                            this.dialogGenerator.closeDialog();
+                        }
+                    } else {
+                        this.fireSubmitError({ response: response });
+
+                        if (this.getShowSubmitError()) {
+                            const fallbackMessage = this.getSubmitErrorFallbackMessage() || LibraryBundle.getText("genatrix.error.unexpected");
+                            CustomMessageBox.error(response.getErrorMessage() || fallbackMessage);
+                        }
+                    }
+                },
+                error: (err?: RequestError) => {
+                    this.hideBusy(true);
+                    const response = new Response(err);
+                    this.fireSubmitError({ response: response });
+
+                    if (this.getShowSubmitError()) {
+                        const fallbackMessage = this.getSubmitErrorFallbackMessage() || LibraryBundle.getText("genatrix.error.unexpected");
+                        CustomMessageBox.error(response.getErrorMessage() || fallbackMessage);
+                    }
+                }
+            });
+        }
     }
 
     private async delete() {
@@ -421,6 +485,7 @@ export default class DialogForm<InitialDataT extends Record<string, any> = Recor
     private async onDialogClose(event: DialogGenerator$CloseEvent) {
         await this.getODataModel().resetChanges([this.context.getPath()], true, true);
         event.getParameter("dialog").close();
+        event.getParameter("dialog").destroy();
     }
 
     private showBusy(submit = false) {

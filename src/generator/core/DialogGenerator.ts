@@ -44,6 +44,11 @@ export default class DialogGenerator extends EventProvider {
         this.attachEvent("close", handler, listener);
     }
 
+    public closeDialog() {
+        this.dialog.close();
+        this.dialog.destroy();
+    }
+
     private fireSubmit() {
         this.fireEvent("submit", {
             dialog: this.dialog

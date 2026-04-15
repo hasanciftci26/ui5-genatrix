@@ -9,6 +9,7 @@ import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
 import FormLayout from "ui5/genatrix/metadata/form/FormLayout";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import ValidationLogic from "ui5/genatrix/metadata/form/v2/ValidationLogic";
+import Response from "ui5/genatrix/odata/v2/Response";
 import {
     AggregationBinder,
     AggregationDestroyer,
@@ -22,15 +23,15 @@ import {
     OptionalPropertySetter
 } from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
-type ContextRef = string | Record<string, any> | Context;
-type ContextProvider = () => Promise<Context> | Context;
-
+type ContextRef<ContextDataT extends Record<string, any>> = string | ContextDataT | Context;
+export type ContextProvider = () => Promise<Context> | Context;
+export type BeforeSubmit = (context: Context) => Promise<boolean | void> | boolean | void;
 export type FormModeType = typeof FormMode[keyof typeof FormMode];
 
-export type DialogFormSettings<InitialDataT extends Record<string, any>> = $ControlSettings & {
+export type DialogFormSettings<ContextDataT extends Record<string, any>> = $ControlSettings & {
     entitySet?: string;
     formMode?: FormModeType;
-    initialData?: InitialDataT;
+    initialData?: ContextDataT;
     buttonText?: string;
     buttonIcon?: URI;
     buttonType?: ButtonType;
@@ -55,6 +56,8 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     decimalSeparator?: string;
     parseEmptyValueToZero?: boolean;
     closeDialogOnSuccess?: boolean;
+    showSubmitError?: boolean;
+    submitErrorFallbackMessage?: string;
     showBusyOnSubmit?: boolean;
     requiredProperties?: string;
     readonlyProperties?: string;
@@ -62,9 +65,10 @@ export type DialogFormSettings<InitialDataT extends Record<string, any>> = $Cont
     keysAlwaysIncluded?: boolean;
     formValidationErrorMessage?: string;
     selectRowErrorMessage?: string;
-    contextRef?: ContextRef;
+    contextRef?: ContextRef<ContextDataT>;
     oDataModelName?: string;
     contextProvider?: ContextProvider;
+    beforeSubmit?: BeforeSubmit;
     propertyOptions?: PropertyOption[];
     formGroups?: FormGroup[];
     validationLogics?: ValidationLogic[];
@@ -77,16 +81,28 @@ export type DialogForm$FormValidationErrorEventParameters = {
 
 export type DialogForm$FormValidationErrorEvent = Event<DialogForm$FormValidationErrorEventParameters, DialogForm>;
 
+export type DialogForm$SubmitSuccessEventParameters = {
+    response: Response;
+};
+
+export type DialogForm$SubmitSuccessEvent = Event<DialogForm$SubmitSuccessEventParameters, DialogForm>;
+
+export type DialogForm$SubmitErrorEventParameters = {
+    response: Response;
+};
+
+export type DialogForm$SubmitErrorEvent = Event<DialogForm$SubmitErrorEventParameters, DialogForm>;
+
 declare module "ui5/genatrix/control/v2/form/DialogForm" {
-    export default interface DialogForm<InitialDataT extends Record<string, any> = Record<string, any>> {
+    export default interface DialogForm<ContextDataT extends Record<string, any> = Record<string, any>> {
         getEntitySet: OptionalPropertyGetter<string>;
         setEntitySet: OptionalPropertySetter<string, DialogForm>;
 
         getFormMode: OptionalPropertyGetter<FormModeType>;
         setFormMode: OptionalPropertySetter<FormModeType, DialogForm>;
 
-        getInitialData: OptionalPropertyGetter<InitialDataT>;
-        setInitialData: OptionalPropertySetter<InitialDataT, DialogForm>;
+        getInitialData: OptionalPropertyGetter<ContextDataT>;
+        setInitialData: OptionalPropertySetter<ContextDataT, DialogForm>;
 
         getButtonText: OptionalPropertyGetter<string>;
 
@@ -157,6 +173,12 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
         getCloseDialogOnSuccess: OptionalPropertyGetter<boolean>;
         setCloseDialogOnSuccess: OptionalPropertySetter<boolean, DialogForm>;
 
+        getShowSubmitError: OptionalPropertyGetter<boolean>;
+        setShowSubmitError: OptionalPropertySetter<boolean, DialogForm>;
+
+        getSubmitErrorFallbackMessage: OptionalPropertyGetter<string>;
+        setSubmitErrorFallbackMessage: OptionalPropertySetter<string, DialogForm>;
+
         getShowBusyOnSubmit: OptionalPropertyGetter<boolean>;
         setShowBusyOnSubmit: OptionalPropertySetter<boolean, DialogForm>;
 
@@ -178,14 +200,17 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
         getSelectRowErrorMessage: OptionalPropertyGetter<string>;
         setSelectRowErrorMessage: OptionalPropertySetter<string, DialogForm>;
 
-        getContextRef: OptionalPropertyGetter<ContextRef>;
-        setContextRef: OptionalPropertySetter<ContextRef, DialogForm>;
+        getContextRef: OptionalPropertyGetter<ContextRef<ContextDataT>>;
+        setContextRef: OptionalPropertySetter<ContextRef<ContextDataT>, DialogForm>;
 
         getODataModelName: OptionalPropertyGetter<string>;
         setODataModelName: OptionalPropertySetter<string, DialogForm>;
 
         getContextProvider: OptionalPropertyGetter<ContextProvider>;
         setContextProvider: OptionalPropertySetter<ContextProvider, DialogForm>;
+
+        getBeforeSubmit: OptionalPropertyGetter<BeforeSubmit>;
+        setBeforeSubmit: OptionalPropertySetter<BeforeSubmit, DialogForm>;
 
         getPropertyOptions: AggregationGetterMulti<PropertyOption>;
         addPropertyOption: AggregationSetterOrAdder<PropertyOption, DialogForm>;
@@ -217,5 +242,13 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
         attachFormValidationError(handler: (event: DialogForm$FormValidationErrorEvent) => void, listener?: object): DialogForm;
         attachFormValidationError(data: object, handler: (event: DialogForm$FormValidationErrorEvent) => void, listener?: object): DialogForm;
         fireFormValidationError: (parameters?: DialogForm$FormValidationErrorEventParameters) => DialogForm;
+
+        attachSubmitSuccess(handler: (event: DialogForm$SubmitSuccessEvent) => void, listener?: object): DialogForm;
+        attachSubmitSuccess(data: object, handler: (event: DialogForm$SubmitSuccessEvent) => void, listener?: object): DialogForm;
+        fireSubmitSuccess: (parameters?: DialogForm$SubmitSuccessEventParameters) => DialogForm;
+
+        attachSubmitError(handler: (event: DialogForm$SubmitErrorEvent) => void, listener?: object): DialogForm;
+        attachSubmitError(data: object, handler: (event: DialogForm$SubmitErrorEvent) => void, listener?: object): DialogForm;
+        fireSubmitError: (parameters?: DialogForm$SubmitErrorEventParameters) => DialogForm;
     }
 }
