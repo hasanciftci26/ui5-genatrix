@@ -148,7 +148,11 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
     }
 
     public closeDialog() {
+        this.dialogGenerator.closeDialog();
+    }
 
+    public getContext() {
+        return this.context;
     }
 
     private async onButtonPress() {
