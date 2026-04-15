@@ -21,8 +21,10 @@ export default class FormLayout extends ManagedObject {
             emptySpanXL: { type: "int", defaultValue: 0 },
             emptySpanL: { type: "int", defaultValue: 0 },
             emptySpanM: { type: "int", defaultValue: 0 },
-            emptySpanS: { type: "int", defaultValue: 0 },
-            layoutData: { type: "sap.ui.core.LayoutData" }
+            emptySpanS: { type: "int", defaultValue: 0 }
+        },
+        aggregations: {
+            layoutData: { type: "sap.ui.core.LayoutData", multiple: false }
         }
     };
 

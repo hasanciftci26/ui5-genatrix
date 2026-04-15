@@ -1,5 +1,11 @@
 import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
-import { OptionalPropertyGetter, OptionalPropertySetter } from "ui5/genatrix/types/global/ManagedObjectClass.types";
+import LayoutData from "sap/ui/core/LayoutData";
+import {
+    AggregationGetterSingle,
+    AggregationSetterOrAdder,
+    OptionalPropertyGetter,
+    OptionalPropertySetter
+} from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
 export type PropertyOptionSettings = $ManagedObjectSettings & {
     propertyName?: string;
@@ -17,6 +23,7 @@ export type PropertyOptionSettings = $ManagedObjectSettings & {
     decimalSeparator?: string;
     parseEmptyValueToZero?: boolean;
     requiredErrorMessage?: string;
+    layoutData?: LayoutData;
 };
 
 declare module "ui5/genatrix/metadata/form/PropertyOption" {
@@ -51,5 +58,7 @@ declare module "ui5/genatrix/metadata/form/PropertyOption" {
         setParseEmptyValueToZero: OptionalPropertySetter<boolean, PropertyOption>;
         getRequiredErrorMessage: OptionalPropertyGetter<string>;
         setRequiredErrorMessage: OptionalPropertySetter<string, PropertyOption>;
+        getLayoutData: AggregationGetterSingle<LayoutData>;
+        setLayoutData: AggregationSetterOrAdder<LayoutData, PropertyOption>;
     }
 }

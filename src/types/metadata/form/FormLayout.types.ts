@@ -1,7 +1,12 @@
 import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import LayoutData from "sap/ui/core/LayoutData";
 import Layout from "ui5/genatrix/control/enum/form/Layout";
-import { OptionalPropertyGetter, OptionalPropertySetter } from "ui5/genatrix/types/global/ManagedObjectClass.types";
+import {
+    AggregationGetterSingle,
+    AggregationSetterOrAdder,
+    OptionalPropertyGetter,
+    OptionalPropertySetter
+} from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
 export type LayoutType = typeof Layout[keyof typeof Layout];
 
@@ -47,7 +52,7 @@ declare module "ui5/genatrix/metadata/form/FormLayout" {
         setEmptySpanM: OptionalPropertySetter<number, FormLayout>;
         getEmptySpanS: OptionalPropertyGetter<number>;
         setEmptySpanS: OptionalPropertySetter<number, FormLayout>;
-        getLayoutData: OptionalPropertyGetter<LayoutData>;
-        setLayoutData: OptionalPropertySetter<LayoutData, FormLayout>;
+        getLayoutData: AggregationGetterSingle<LayoutData>;
+        setLayoutData: AggregationSetterOrAdder<LayoutData, FormLayout>;
     }
 }

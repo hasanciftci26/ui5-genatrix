@@ -40,9 +40,22 @@ export default class ControlGenerator extends BaseObject {
         const type = this.getODataType(property);
 
         if (property.readonly) {
-            return this.getReadonlyControl(property, type);
+            const control = this.getReadonlyControl(property, type);
+            const layoutData = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name)?.getLayoutData();
+
+            if (layoutData) {
+                control.setLayoutData(layoutData);
+            }
+
+            return control;
         } else {
             const control = this.getEditableControl(property, type);
+            const layoutData = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name)?.getLayoutData();
+
+            if (layoutData) {
+                control.setLayoutData(layoutData);
+            }
+
             Messaging.registerObject(control, true);
             return control;
         }

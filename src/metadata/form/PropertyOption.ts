@@ -24,6 +24,9 @@ export default class PropertyOption extends ManagedObject {
             decimalSeparator: { type: "string" },
             parseEmptyValueToZero: { type: "boolean", defaultValue: false },
             requiredErrorMessage: { type: "string" }
+        },
+        aggregations: {
+            layoutData: { type: "sap.ui.core.LayoutData", multiple: false }
         }
     };
 
