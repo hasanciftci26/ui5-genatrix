@@ -1,11 +1,14 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import ValidateException from "sap/ui/model/ValidateException";
+import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
 import ValidationLogicalOperator from "ui5/genatrix/metadata/form/enum/ValidationLogicalOperator";
 import ValidationOperator from "ui5/genatrix/metadata/form/enum/ValidationOperator";
 import { ValidationLogicSettings } from "ui5/genatrix/types/metadata/form/ValidationLogic.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
+import ContextV2 from "sap/ui/model/odata/v2/Context";
+import ContextV4 from "sap/ui/model/odata/v4/Context";
 
 /**
  * @namespace ui5.genatrix.metadata.form
@@ -54,17 +57,18 @@ export default class ValidationLogic extends ManagedObject {
             return;
         }
 
+        const context = this.getContextFromParent();
         const conditions = this.getConditions();
         const logicalOperator = this.getLogicalOperator() || ValidationLogicalOperator.And;
         const conditionsSatisfied = conditions.length === 0 ||
-            (logicalOperator === ValidationLogicalOperator.And ? conditions.every(cond => cond.check()) : conditions.some(cond => cond.check()));
+            (logicalOperator === ValidationLogicalOperator.And ? conditions.every(cond => cond.check(context)) : conditions.some(cond => cond.check(context)));
 
         if (!conditionsSatisfied) {
             this.hideBusy(property, busyModel);
             return;
         }
 
-        if (!this.isValid(value)) {
+        if (!this.isValid(property, context, value)) {
             this.hideBusy(property, busyModel);
             this.throwValidationError();
         }
@@ -72,7 +76,7 @@ export default class ValidationLogic extends ManagedObject {
         this.hideBusy(property, busyModel);
     }
 
-    private isValid(value: any) {
+    private isValid(property: EntityProperty, context: ContextV2 | ContextV4, value: any) {
         return true;
     }
 
@@ -86,5 +90,10 @@ export default class ValidationLogic extends ManagedObject {
 
     private throwValidationError(): never {
         throw new ValidateException(this.getErrorMessage() || LibraryBundle.getText("genatrix.error.validation"));
+    }
+
+    private getContextFromParent() {
+        const parent = this.getParent() as DialogForm;
+        return parent.getContext();
     }
 }

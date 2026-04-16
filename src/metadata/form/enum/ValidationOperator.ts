@@ -17,7 +17,8 @@ const ValidationOperator = {
     StartsWith: "StartsWith",
     NotStartsWith: "NotStartsWith",
     EndsWith: "EndsWith",
-    NotEndsWith: "NotEndsWith"
+    NotEndsWith: "NotEndsWith",
+    RegExp: "RegExp"
 } as const;
 
 DataType.registerEnum("ui5.genatrix.metadata.form.enum.ValidationOperator", ValidationOperator);
