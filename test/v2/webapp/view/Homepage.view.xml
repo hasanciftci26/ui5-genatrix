@@ -52,7 +52,16 @@
                                 <form:DialogForm
                                     entitySet="Employees"
                                     datePattern="dd MMMM y"
-                                />
+                                >
+                                    <formMetadata:PropertyOption
+                                        propertyName="salary"
+                                        maximumValue="50000"
+                                    />
+                                    <formMetadata:PropertyOption
+                                        propertyName="dateOfBirth"
+                                        maximumValue="2000-12-31"
+                                    />
+                                </form:DialogForm>
                             </OverflowToolbar>
                         </smarttable:customToolbar>
                         <table:Table

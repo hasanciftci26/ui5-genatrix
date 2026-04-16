@@ -14,6 +14,8 @@ export type NumberConstraints = {
     precision?: number;
     scale?: number;
     nullable?: string | boolean;
+    minimum?: string;
+    maximum?: string;
 };
 
 export type NumberFormatOptions = {

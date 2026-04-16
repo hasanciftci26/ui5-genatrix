@@ -22,6 +22,8 @@ export type PropertyOptionSettings = $ManagedObjectSettings & {
     groupingSize?: number;
     decimalSeparator?: string;
     parseEmptyValueToZero?: boolean;
+    maximumValue?: string;
+    minimumValue?: string;
     requiredErrorMessage?: string;
     layoutData?: LayoutData;
 };
@@ -56,6 +58,10 @@ declare module "ui5/genatrix/metadata/form/PropertyOption" {
         setDecimalSeparator: OptionalPropertySetter<string, PropertyOption>;
         getParseEmptyValueToZero: OptionalPropertyGetter<boolean>;
         setParseEmptyValueToZero: OptionalPropertySetter<boolean, PropertyOption>;
+        getMinimumValue: OptionalPropertyGetter<string>;
+        setMinimumValue: OptionalPropertySetter<string, PropertyOption>;
+        getMaximumValue: OptionalPropertyGetter<string>;
+        setMaximumValue: OptionalPropertySetter<string, PropertyOption>;
         getRequiredErrorMessage: OptionalPropertyGetter<string>;
         setRequiredErrorMessage: OptionalPropertySetter<string, PropertyOption>;
         getLayoutData: AggregationGetterSingle<LayoutData>;

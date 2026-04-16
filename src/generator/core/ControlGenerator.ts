@@ -22,7 +22,7 @@ import CustomSingle from "ui5/genatrix/odata/type/CustomSingle";
 import CustomString from "ui5/genatrix/odata/type/CustomString";
 import CustomTime from "ui5/genatrix/odata/type/CustomTime";
 import { ControlGeneratorSettings } from "ui5/genatrix/types/generator/core/ControlGenerator.types";
-import { DateTimeConstraints, NumberFormatOptions } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
+import { DateTimeConstraints, NumberConstraints, NumberFormatOptions } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 
 /**
@@ -50,10 +50,15 @@ export default class ControlGenerator extends BaseObject {
             return control;
         } else {
             const control = this.getEditableControl(property, type);
-            const layoutData = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name)?.getLayoutData();
+            const propertyOptions = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name);
+            const layoutData = propertyOptions?.getLayoutData();
 
             if (layoutData) {
                 control.setLayoutData(layoutData);
+            }
+
+            if (control instanceof CustomDatePicker || control instanceof CustomDateTimePicker) {
+                this.setDateTimeMinMax(control, propertyOptions?.getMaximumValue(), propertyOptions?.getMinimumValue());
             }
 
             Messaging.registerObject(control, true);
@@ -141,6 +146,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Byte":
                 return new CustomByte({
                     property: property,
+                    constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -148,6 +154,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.SByte":
                 return new CustomSByte({
                     property: property,
+                    constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -155,6 +162,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Int16":
                 return new CustomInt16({
                     property: property,
+                    constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -162,6 +170,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Int32":
                 return new CustomInt32({
                     property: property,
+                    constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -169,6 +178,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Int64":
                 return new CustomInt64({
                     property: property,
+                    constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -176,6 +186,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Single":
                 return new CustomSingle({
                     property: property,
+                    constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -183,6 +194,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Double":
                 return new CustomDouble({
                     property: property,
+                    constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -190,10 +202,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Decimal":
                 return new CustomDecimal({
                     property: property,
-                    constraints: {
-                        precision: property.precision,
-                        scale: property.scale
-                    },
+                    constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -263,6 +272,23 @@ export default class ControlGenerator extends BaseObject {
         return formatOptions;
     }
 
+    private getNumberConstraints(property: EntityProperty) {
+        const propertyOptions = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name);
+        const constraints: NumberConstraints = {
+            precision: property.precision,
+            scale: property.scale,
+            maximum: propertyOptions?.getMaximumValue(),
+            minimum: propertyOptions?.getMinimumValue()
+        };
+        const isEmpty = Object.values(constraints).every(value => value == null);
+
+        if (isEmpty) {
+            return;
+        }
+
+        return constraints;
+    }
+
     private getCounterNumberSeparator(separator: string) {
         switch (separator) {
             case ".":
@@ -324,6 +350,24 @@ export default class ControlGenerator extends BaseObject {
                 }
 
                 break;
+        }
+    }
+
+    private setDateTimeMinMax(control: CustomDatePicker | CustomDateTimePicker, maximumValue?: string, minimumValue?: string) {
+        if (maximumValue != null) {
+            const date = new Date(maximumValue);
+
+            if (!isNaN(date.getTime())) {
+                control.setMaxDate(date);
+            }
+        }
+
+        if (minimumValue != null) {
+            const date = new Date(minimumValue);
+
+            if (!isNaN(date.getTime())) {
+                control.setMinDate(date);
+            }
         }
     }
 }

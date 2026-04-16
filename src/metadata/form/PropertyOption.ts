@@ -23,6 +23,8 @@ export default class PropertyOption extends ManagedObject {
             groupingSize: { type: "int", defaultValue: 3 },
             decimalSeparator: { type: "string" },
             parseEmptyValueToZero: { type: "boolean", defaultValue: false },
+            maximumValue: { type: "string" },
+            minimumValue: { type: "string" },
             requiredErrorMessage: { type: "string" }
         },
         aggregations: {
