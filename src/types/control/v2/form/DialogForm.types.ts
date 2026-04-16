@@ -8,7 +8,7 @@ import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
 import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
 import FormLayout from "ui5/genatrix/metadata/form/FormLayout";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
-import ValidationLogic from "ui5/genatrix/metadata/form/v2/ValidationLogic";
+import ValidationLogic from "ui5/genatrix/metadata/form/ValidationLogic";
 import Response from "ui5/genatrix/odata/v2/Response";
 import {
     AggregationBinder,

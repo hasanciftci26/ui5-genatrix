@@ -76,7 +76,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         aggregations: {
             propertyOptions: { type: "ui5.genatrix.metadata.form.PropertyOption", multiple: true, singularName: "propertyOption" },
             formGroups: { type: "ui5.genatrix.metadata.form.FormGroup", multiple: true, singularName: "formGroup" },
-            validationLogics: { type: "ui5.genatrix.metadata.form.v2.ValidationLogic", multiple: true, singularName: "validationLogic" },
+            validationLogics: { type: "ui5.genatrix.metadata.form.ValidationLogic", multiple: true, singularName: "validationLogic" },
             formLayout: { type: "ui5.genatrix.metadata.form.FormLayout", multiple: false },
             button: { type: "sap.m.Button", multiple: false, visibility: "hidden" }
         },
@@ -293,7 +293,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         const contextRef = this.getContextRef();
 
         if (!contextRef) {
-            throw new Error("contextRef is a required property when the formMode is not Create - " + this.getId());
+            this.throwRuntimeError("contextRef is a required property when the formMode is not Create");
         }
 
         if (typeof contextRef === "string") {
@@ -322,7 +322,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
                 path = this.getContextPathFromSmartTable(table);
                 break;
             default:
-                throw new Error(`Element "${tableId}" is not a supported table (ResponsiveTable, GridTable, SmartTable) - ` + this.getId());
+                this.throwRuntimeError(`Element "${tableId}" is not a supported table (ResponsiveTable, GridTable, SmartTable)`);
         }
 
         if (!path) {
@@ -334,9 +334,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
 
     private getContextPathFromResponsiveTable(table: ResponsiveTable) {
         if ([ListMode.SingleSelect, ListMode.SingleSelectLeft, ListMode.SingleSelectMaster].includes(table.getMode()) === false) {
-            throw new Error(
-                `Unsupported table mode "${table.getMode()}". Expected one of: SingleSelect, SingleSelectLeft, SingleSelectMaster - ` + this.getId()
-            );
+            this.throwRuntimeError(`Unsupported table mode "${table.getMode()}". Expected one of: SingleSelect, SingleSelectLeft, SingleSelectMaster`);
         }
 
         const selectedItem = table.getSelectedItem();
@@ -350,9 +348,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         const context = selectedItem.getBindingContext(this.getODataModelName());
 
         if (context instanceof Context === false) {
-            throw new Error(
-                "Selected item has no valid OData V2 binding context. Ensure the table items are bound to an entity set - " + this.getId()
-            );
+            this.throwRuntimeError("Selected item has no valid OData V2 binding context. Ensure the table items are bound to an entity set");
         }
 
         return context.getPath();
@@ -360,9 +356,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
 
     private getContextPathFromGridTable(table: GridTable) {
         if (table.getSelectionMode() !== SelectionMode.Single) {
-            throw new Error(
-                `Unsupported table mode "${table.getSelectionMode()}". Expected: Single - ` + this.getId()
-            );
+            this.throwRuntimeError(`Unsupported table mode "${table.getSelectionMode()}". Expected: Single`);
         }
 
         const selectedIndices = table.getSelectedIndices();
@@ -377,9 +371,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         const context = table.getContextByIndex(selectedIndex);
 
         if (context instanceof Context === false) {
-            throw new Error(
-                "Selected row has no valid OData V2 binding context. Ensure the table rows are bound to an entity set - " + this.getId()
-            );
+            this.throwRuntimeError("Selected row has no valid OData V2 binding context. Ensure the table rows are bound to an entity set");
         }
 
         return context.getPath();
@@ -533,7 +525,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         const entitySet = this.getEntitySet();
 
         if (!entitySet) {
-            throw new Error("entitySet is a required property and must match an EntitySet name in your OData service - " + this.getId());
+            this.throwRuntimeError("entitySet is a required property and must match an EntitySet name in your OData service");
         }
 
         return entitySet;
@@ -543,7 +535,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         const model = this.getModel(this.getODataModelName());
 
         if (model instanceof ODataModel === false) {
-            throw new Error("ODataModel (sap.ui.model.odata.v2) not found. Set the oDataModelName property if you are using a named model - " + this.getId());
+            this.throwRuntimeError("ODataModel (sap.ui.model.odata.v2) not found. Set the oDataModelName property if you are using a named model");
         }
 
         if (model.getDefaultBindingMode() !== "TwoWay") {
@@ -551,6 +543,10 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         }
 
         return model;
+    }
+
+    private throwRuntimeError(message: string): never {
+        throw new Error(`${message} - ${this.getId()}`);
     }
 
     private getButton() {
