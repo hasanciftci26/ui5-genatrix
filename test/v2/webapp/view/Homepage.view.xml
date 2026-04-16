@@ -61,6 +61,11 @@
                                         propertyName="dateOfBirth"
                                         maximumValue="2000-12-31"
                                     />
+                                    <form:validationLogics>
+                                        <formMetadata:ValidationLogic
+                                            propertyName="salary"
+                                        />
+                                    </form:validationLogics>
                                 </form:DialogForm>
                             </OverflowToolbar>
                         </smarttable:customToolbar>

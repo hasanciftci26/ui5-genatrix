@@ -1,9 +1,11 @@
+import JSONModel from "sap/ui/model/json/JSONModel";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import ValidationLogic from "ui5/genatrix/metadata/form/ValidationLogic";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 
 type CustomTypeBase = {
     property: EntityProperty;
+    busyModel: JSONModel;
     propertyOptions?: PropertyOption;
     validationLogic?: ValidationLogic;
 };

@@ -24,7 +24,7 @@ export default class CustomDouble extends Double {
         }
 
         if (this.settings.validationLogic && value != null) {
-            return this.settings.validationLogic.evaluate(value);
+            return this.settings.validationLogic.evaluate(this.settings.property, this.settings.busyModel, value);
         }
     }
 

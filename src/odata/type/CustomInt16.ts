@@ -24,7 +24,7 @@ export default class CustomInt16 extends Int16 {
         }
 
         if (this.settings.validationLogic && value != null) {
-            return this.settings.validationLogic.evaluate(value);
+            return this.settings.validationLogic.evaluate(this.settings.property, this.settings.busyModel, value);
         }
     }
 

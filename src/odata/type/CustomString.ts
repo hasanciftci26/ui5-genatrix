@@ -24,7 +24,7 @@ export default class CustomString extends ODataString {
         }
 
         if (this.settings.validationLogic && value) {
-            return this.settings.validationLogic.evaluate(value);
+            return this.settings.validationLogic.evaluate(this.settings.property, this.settings.busyModel, value);
         }
     }
 

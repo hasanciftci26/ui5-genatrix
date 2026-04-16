@@ -25,7 +25,7 @@ export default class CustomDecimal extends Decimal {
 
         if (this.settings.validationLogic && value) {
             const parsedValue = parseFloat(value);
-            return this.settings.validationLogic.evaluate(parsedValue);
+            return this.settings.validationLogic.evaluate(this.settings.property, this.settings.busyModel, parsedValue);
         }
     }
 

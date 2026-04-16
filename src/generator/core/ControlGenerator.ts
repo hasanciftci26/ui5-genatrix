@@ -2,6 +2,7 @@ import CheckBox from "sap/m/CheckBox";
 import Text from "sap/m/Text";
 import BaseObject from "sap/ui/base/Object";
 import Messaging from "sap/ui/core/Messaging";
+import JSONModel from "sap/ui/model/json/JSONModel";
 import ODataBoolean from "sap/ui/model/odata/type/Boolean";
 import Type from "sap/ui/model/Type";
 import CustomDatePicker from "ui5/genatrix/control/extension/CustomDatePicker";
@@ -30,10 +31,13 @@ import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types
  */
 export default class ControlGenerator extends BaseObject {
     private readonly settings: ControlGeneratorSettings;
+    private readonly busyModel: JSONModel;
 
     constructor(settings: ControlGeneratorSettings) {
         super();
         this.settings = settings;
+        this.busyModel = new JSONModel();
+        this.busyModel.setDefaultBindingMode("TwoWay");
     }
 
     public generate(property: EntityProperty) {
@@ -61,6 +65,7 @@ export default class ControlGenerator extends BaseObject {
                 this.setDateTimeMinMax(control, propertyOptions?.getMaximumValue(), propertyOptions?.getMinimumValue());
             }
 
+            control.setModel(this.busyModel, "genatrixBusyModel");
             Messaging.registerObject(control, true);
             return control;
         }
@@ -94,6 +99,10 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.DateTime":
                 if (property.displayFormat === "Date") {
                     return new CustomDatePicker(property.name, {
+                        busyIndicatorDelay: 0,
+                        busy: {
+                            path: `genatrixBusyModel>/${property.name}`
+                        },
                         required: property.required,
                         value: {
                             path: property.name,
@@ -102,6 +111,10 @@ export default class ControlGenerator extends BaseObject {
                     });
                 } else {
                     return new CustomDateTimePicker(property.name, {
+                        busyIndicatorDelay: 0,
+                        busy: {
+                            path: `genatrixBusyModel>/${property.name}`
+                        },
                         required: property.required,
                         value: {
                             path: property.name,
@@ -111,6 +124,10 @@ export default class ControlGenerator extends BaseObject {
                 }
             case "Edm.DateTimeOffset":
                 return new CustomDateTimePicker(property.name, {
+                    busyIndicatorDelay: 0,
+                    busy: {
+                        path: `genatrixBusyModel>/${property.name}`
+                    },
                     required: property.required,
                     value: {
                         path: property.name,
@@ -119,6 +136,10 @@ export default class ControlGenerator extends BaseObject {
                 });
             case "Edm.Time":
                 return new CustomTimePicker(property.name, {
+                    busyIndicatorDelay: 0,
+                    busy: {
+                        path: `genatrixBusyModel>/${property.name}`
+                    },
                     required: property.required,
                     value: {
                         path: property.name,
@@ -127,6 +148,10 @@ export default class ControlGenerator extends BaseObject {
                 });
             default:
                 return new CustomInput(property.name, {
+                    busyIndicatorDelay: 0,
+                    busy: {
+                        path: `genatrixBusyModel>/${property.name}`
+                    },
                     required: property.required,
                     maxLength: property.maxLength,
                     value: {
@@ -139,6 +164,7 @@ export default class ControlGenerator extends BaseObject {
 
     private getODataType(property: EntityProperty) {
         const propertyOptions = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name);
+        this.addPropertyToBusyModel(property.name);
 
         switch (property.type) {
             case "Edm.Boolean":
@@ -146,6 +172,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Byte":
                 return new CustomByte({
                     property: property,
+                    busyModel: this.busyModel,
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
@@ -154,6 +181,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.SByte":
                 return new CustomSByte({
                     property: property,
+                    busyModel: this.busyModel,
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
@@ -162,6 +190,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Int16":
                 return new CustomInt16({
                     property: property,
+                    busyModel: this.busyModel,
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
@@ -170,6 +199,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Int32":
                 return new CustomInt32({
                     property: property,
+                    busyModel: this.busyModel,
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
@@ -178,6 +208,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Int64":
                 return new CustomInt64({
                     property: property,
+                    busyModel: this.busyModel,
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
@@ -186,6 +217,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Single":
                 return new CustomSingle({
                     property: property,
+                    busyModel: this.busyModel,
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
@@ -194,6 +226,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Double":
                 return new CustomDouble({
                     property: property,
+                    busyModel: this.busyModel,
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
@@ -202,6 +235,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Decimal":
                 return new CustomDecimal({
                     property: property,
+                    busyModel: this.busyModel,
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
@@ -210,6 +244,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.DateTime":
                 return new CustomDateTime({
                     property: property,
+                    busyModel: this.busyModel,
                     constraints: this.getDateTimeConstraints(property),
                     formatOptions: this.getDateTimeFormatOptions(property),
                     propertyOptions: propertyOptions,
@@ -218,6 +253,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.DateTimeOffset":
                 return new CustomDateTimeOffset({
                     property: property,
+                    busyModel: this.busyModel,
                     formatOptions: this.getDateTimeFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -225,6 +261,7 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Time":
                 return new CustomTime({
                     property: property,
+                    busyModel: this.busyModel,
                     formatOptions: this.getDateTimeFormatOptions(property),
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
@@ -232,12 +269,14 @@ export default class ControlGenerator extends BaseObject {
             case "Edm.Guid":
                 return new CustomGuid({
                     property: property,
+                    busyModel: this.busyModel,
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
             default:
                 return new CustomString({
                     property: property,
+                    busyModel: this.busyModel,
                     propertyOptions: propertyOptions,
                     validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
                 });
@@ -369,5 +408,9 @@ export default class ControlGenerator extends BaseObject {
                 control.setMinDate(date);
             }
         }
+    }
+
+    private addPropertyToBusyModel(propertyName: string) {
+        this.busyModel.setProperty(`/${propertyName}`, false);
     }
 }

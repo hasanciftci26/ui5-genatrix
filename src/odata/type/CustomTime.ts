@@ -25,7 +25,7 @@ export default class CustomTime extends Time {
 
         if (this.settings.validationLogic && value != null) {
             const timeValue = this.hasMilliseconds(value) ? value.ms : value;
-            return this.settings.validationLogic.evaluate(timeValue);
+            return this.settings.validationLogic.evaluate(this.settings.property, this.settings.busyModel, timeValue);
         }
     }
 

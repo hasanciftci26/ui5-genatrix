@@ -25,7 +25,7 @@ export default class CustomInt64 extends Int64 {
 
         if (this.settings.validationLogic && value) {
             const parsedValue = BigInt(value);
-            return this.settings.validationLogic.evaluate(parsedValue);
+            return this.settings.validationLogic.evaluate(this.settings.property, this.settings.busyModel, parsedValue);
         }
     }
 
