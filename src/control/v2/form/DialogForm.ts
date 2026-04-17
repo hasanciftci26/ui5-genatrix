@@ -78,6 +78,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
             formGroups: { type: "ui5.genatrix.metadata.form.FormGroup", multiple: true, singularName: "formGroup" },
             validationLogics: { type: "ui5.genatrix.metadata.form.ValidationLogic", multiple: true, singularName: "validationLogic" },
             formLayout: { type: "ui5.genatrix.metadata.form.FormLayout", multiple: false },
+            valueLists: { type: "ui5.genatrix.metadata.form.ValueList", multiple: true, singularName: "valueList" },
             button: { type: "sap.m.Button", multiple: false, visibility: "hidden" }
         },
         events: {
@@ -224,7 +225,8 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
             propertyOptions: this.getPropertyOptions(),
             formGroups: this.getFormGroups(),
             validationLogics: this.getValidationLogics(),
-            formLayout: this.getFormLayout()
+            formLayout: this.getFormLayout(),
+            valueLists: this.getValueLists()
         });
 
         return this.formGenerator.generateForm();

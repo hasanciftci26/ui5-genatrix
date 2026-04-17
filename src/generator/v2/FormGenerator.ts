@@ -50,7 +50,8 @@ export default class FormGenerator extends BaseObject {
             decimalSeparator: settings.decimalSeparator,
             parseEmptyValueToZero: settings.parseEmptyValueToZero,
             propertyOptions: settings.propertyOptions,
-            validationLogics: settings.validationLogics
+            validationLogics: settings.validationLogics,
+            valueLists: settings.valueLists
         });
     }
 

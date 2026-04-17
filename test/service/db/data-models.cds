@@ -1,10 +1,12 @@
 entity Employees {
-    key ID          : String(12);
-        firstName   : String(40);
-        lastName    : type of firstName;
-        countryCode : Countries:code;
-        dateOfBirth : Date;
-        salary      : Decimal(13, 2);
+    key ID             : String(12);
+        firstName      : String(40);
+        lastName       : type of firstName;
+        countryCode    : Countries:code;
+        dateOfBirth    : Date not null;
+        fixedSalary    : Decimal(13, 2) not null;
+        variableSalary : Decimal(13, 2) not null;
+        workingStartAt : Time;
 };
 
 entity Countries {

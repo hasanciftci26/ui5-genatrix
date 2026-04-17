@@ -3,6 +3,7 @@ import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
 import FormLayout from "ui5/genatrix/metadata/form/FormLayout";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import ValidationLogic from "ui5/genatrix/metadata/form/ValidationLogic";
+import ValueList from "ui5/genatrix/metadata/form/ValueList";
 import { FormModeType } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
 
 export type FormGeneratorSettings = {
@@ -27,4 +28,5 @@ export type FormGeneratorSettings = {
     formGroups: FormGroup[];
     validationLogics: ValidationLogic[];
     formLayout?: FormLayout;
+    valueLists: ValueList[];
 };

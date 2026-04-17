@@ -1,5 +1,6 @@
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import ValidationLogic from "ui5/genatrix/metadata/form/ValidationLogic";
+import ValueList from "ui5/genatrix/metadata/form/ValueList";
 
 export type ControlGeneratorSettings = {
     controlId: string;
@@ -14,4 +15,5 @@ export type ControlGeneratorSettings = {
     parseEmptyValueToZero: boolean;
     propertyOptions: PropertyOption[];
     validationLogics: ValidationLogic[];
+    valueLists: ValueList[];
 };

@@ -5,10 +5,12 @@ import Messaging from "sap/ui/core/Messaging";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import ODataBoolean from "sap/ui/model/odata/type/Boolean";
 import Type from "sap/ui/model/Type";
+import CustomComboBox from "ui5/genatrix/control/extension/CustomComboBox";
 import CustomDatePicker from "ui5/genatrix/control/extension/CustomDatePicker";
 import CustomDateTimePicker from "ui5/genatrix/control/extension/CustomDateTimePicker";
 import CustomInput from "ui5/genatrix/control/extension/CustomInput";
 import CustomTimePicker from "ui5/genatrix/control/extension/CustomTimePicker";
+import ValueList from "ui5/genatrix/metadata/form/ValueList";
 import CustomByte from "ui5/genatrix/odata/type/CustomByte";
 import CustomDateTime from "ui5/genatrix/odata/type/CustomDateTime";
 import CustomDateTimeOffset from "ui5/genatrix/odata/type/CustomDateTimeOffset";
@@ -147,19 +149,61 @@ export default class ControlGenerator extends BaseObject {
                     }
                 });
             default:
-                return new CustomInput(property.name, {
-                    busyIndicatorDelay: 0,
-                    busy: {
-                        path: `genatrixBusyModel>/${property.name}`
-                    },
-                    required: property.required,
-                    maxLength: property.maxLength,
-                    value: {
-                        path: property.name,
-                        type: type
-                    }
-                });
+                return this.generateInput(property, type);
         }
+    }
+
+    private generateInput(property: EntityProperty, type: Type) {
+        const valueList = this.settings.valueLists.find(list => list.getPropertyName() === property.name);
+
+        if (valueList) {
+            if (valueList.getValueListWithFixedValues()) {
+                return this.generateComboBox(property, type, valueList);
+            } else {
+                return this.generateInputWithValueList(property, type, valueList);
+            }
+        } else {
+            return this.generateInputNoValueList(property, type);
+        }
+    }
+
+    private generateInputNoValueList(property: EntityProperty, type: Type) {
+        return new CustomInput(property.name, {
+            busyIndicatorDelay: 0,
+            busy: {
+                path: `genatrixBusyModel>/${property.name}`
+            },
+            required: property.required,
+            maxLength: property.maxLength,
+            value: {
+                path: property.name,
+                type: type
+            }
+        });
+    }
+
+    private generateInputWithValueList(property: EntityProperty, type: Type, valueList: ValueList) {
+        return new CustomInput(property.name, {
+            showValueHelp: true,
+            valueHelpRequest: () => {
+                valueList.open();
+            },
+            busyIndicatorDelay: 0,
+            busy: {
+                path: `genatrixBusyModel>/${property.name}`
+            },
+            required: property.required,
+            maxLength: property.maxLength,
+            value: {
+                path: property.name,
+                type: type
+            }
+        });
+    }
+
+    // TODO
+    private generateComboBox(property: EntityProperty, type: Type, valueList: ValueList) {
+        return new CustomComboBox(property.name);
     }
 
     private getODataType(property: EntityProperty) {

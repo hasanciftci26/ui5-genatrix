@@ -9,6 +9,7 @@ import FormGroup from "ui5/genatrix/metadata/form/FormGroup";
 import FormLayout from "ui5/genatrix/metadata/form/FormLayout";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import ValidationLogic from "ui5/genatrix/metadata/form/ValidationLogic";
+import ValueList from "ui5/genatrix/metadata/form/ValueList";
 import Response from "ui5/genatrix/odata/v2/Response";
 import {
     AggregationBinder,
@@ -73,6 +74,7 @@ export type DialogFormSettings<ContextDataT extends Record<string, any>> = $Cont
     formGroups?: FormGroup[];
     validationLogics?: ValidationLogic[];
     formLayout?: FormLayout;
+    valueLists?: ValueList[];
 };
 
 export type DialogForm$FormValidationErrorEventParameters = {
@@ -238,6 +240,14 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
 
         getFormLayout: AggregationGetterSingle<FormLayout>;
         setFormLayout: AggregationSetterOrAdder<FormLayout, DialogForm>;
+
+        getValueLists: AggregationGetterMulti<ValueList>;
+        addValueList: AggregationSetterOrAdder<ValueList, DialogForm>;
+        insertValueList: AggregationInserter<ValueList, DialogForm>;
+        bindValueLists: AggregationBinder<DialogForm>;
+        removeValueList: AggregationRemoverSingle<ValueList>;
+        removeAllValueLists: AggregationRemoverAll<ValueList>;
+        destroyValueLists: AggregationDestroyer<DialogForm>;
 
         attachFormValidationError(handler: (event: DialogForm$FormValidationErrorEvent) => void, listener?: object): DialogForm;
         attachFormValidationError(data: object, handler: (event: DialogForm$FormValidationErrorEvent) => void, listener?: object): DialogForm;

@@ -55,19 +55,19 @@
                                 >
                                     <form:validationLogics>
                                         <formMetadata:ValidationLogic
-                                            propertyName="salary"
+                                            propertyName="variableSalary"
                                             operator="GT"
-                                            value1="50000"
-                                            errorMessage="Salary field must be greater than 50000 when Date of Birth is 29.04.2026"
-                                        >
-                                            <formMetadata:conditions>
-                                                <formMetadata:ValidationCondition
-                                                    propertyName="dateOfBirth"
-                                                    operator="EQ"
-                                                    value1="2026-04-29"
-                                                />
-                                            </formMetadata:conditions>
-                                        </formMetadata:ValidationLogic>
+                                            value1="{
+                                                'propertyName': 'fixedSalary'
+                                            }"
+                                            errorMessage="Variable salary must be greater than fixed salary"
+                                        />
+                                        <formMetadata:ValidationLogic
+                                            propertyName="workingStartAt"
+                                            operator="LT"
+                                            value1="10:00:00"
+                                            errorMessage="Working start at must be earlier than 10:00:00"
+                                        />
                                     </form:validationLogics>
                                 </form:DialogForm>
                             </OverflowToolbar>
