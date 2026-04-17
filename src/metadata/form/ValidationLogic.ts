@@ -9,6 +9,7 @@ import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 import ContextV2 from "sap/ui/model/odata/v2/Context";
 import ContextV4 from "sap/ui/model/odata/v4/Context";
+import ValidationEngine from "ui5/genatrix/metadata/form/ValidationEngine";
 
 /**
  * @namespace ui5.genatrix.metadata.form
@@ -26,10 +27,12 @@ export default class ValidationLogic extends ManagedObject {
             logicalOperator: { type: "ui5.genatrix.metadata.form.enum.ValidationLogicalOperator", defaultValue: ValidationLogicalOperator.And },
             validator: { type: "function" }
         },
+        defaultAggregation: "conditions",
         aggregations: {
             conditions: { type: "ui5.genatrix.metadata.form.ValidationCondition", multiple: true, singularName: "condition" }
         }
     };
+    private readonly engine = new ValidationEngine();
 
     constructor(settings?: ValidationLogicSettings);
     constructor(id?: string, settings?: ValidationLogicSettings);
@@ -68,7 +71,7 @@ export default class ValidationLogic extends ManagedObject {
             return;
         }
 
-        if (!this.isValid(property, context, value)) {
+        if (!this.isValid(context, value)) {
             this.hideBusy(property, busyModel);
             this.throwValidationError();
         }
@@ -76,8 +79,14 @@ export default class ValidationLogic extends ManagedObject {
         this.hideBusy(property, busyModel);
     }
 
-    private isValid(property: EntityProperty, context: ContextV2 | ContextV4, value: any) {
-        return true;
+    private isValid(context: ContextV2 | ContextV4, value: any) {
+        return this.engine.run({
+            rawPropertyValue: value,
+            operator: this.getOperator() || ValidationOperator.EQ,
+            rawValue1: this.getValue1(),
+            rawValue2: this.getValue2(),
+            context: context
+        });
     }
 
     private showBusy(property: EntityProperty, busyModel: JSONModel) {

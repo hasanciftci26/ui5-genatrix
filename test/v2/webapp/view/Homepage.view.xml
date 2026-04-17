@@ -53,18 +53,21 @@
                                     entitySet="Employees"
                                     datePattern="dd MMMM y"
                                 >
-                                    <formMetadata:PropertyOption
-                                        propertyName="salary"
-                                        maximumValue="50000"
-                                    />
-                                    <formMetadata:PropertyOption
-                                        propertyName="dateOfBirth"
-                                        maximumValue="2000-12-31"
-                                    />
                                     <form:validationLogics>
                                         <formMetadata:ValidationLogic
                                             propertyName="salary"
-                                        />
+                                            operator="GT"
+                                            value1="50000"
+                                            errorMessage="Salary field must be greater than 50000 when Date of Birth is 29.04.2026"
+                                        >
+                                            <formMetadata:conditions>
+                                                <formMetadata:ValidationCondition
+                                                    propertyName="dateOfBirth"
+                                                    operator="EQ"
+                                                    value1="2026-04-29"
+                                                />
+                                            </formMetadata:conditions>
+                                        </formMetadata:ValidationLogic>
                                     </form:validationLogics>
                                 </form:DialogForm>
                             </OverflowToolbar>
