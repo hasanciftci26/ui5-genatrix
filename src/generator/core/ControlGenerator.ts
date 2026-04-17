@@ -156,7 +156,7 @@ export default class ControlGenerator extends BaseObject {
     private generateInput(property: EntityProperty, type: Type) {
         const valueList = this.settings.valueLists.find(list => list.getPropertyName() === property.name);
 
-        if (valueList) {
+        if (valueList && ["Edm.String", "Edm.Guid"].includes(property.type)) {
             if (valueList.getValueListWithFixedValues()) {
                 return this.generateComboBox(property, type, valueList);
             } else {

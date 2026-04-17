@@ -34,6 +34,25 @@ export default class ValueList extends ManagedObject {
     }
 
     public async open() {
-        
+        const entitySet = this.getEntitySetOrThrow();
+        const parameters = this.getParameters();
+
+        if (!parameters.length) {
+            this.throwRuntimeError("At least one parameter is required.");
+        }
+    }
+
+    private getEntitySetOrThrow() {
+        const entitySet = this.getEntitySet();
+
+        if (!entitySet) {
+            this.throwRuntimeError("entitySet is a required property");
+        }
+
+        return entitySet;
+    }
+
+    private throwRuntimeError(message: string): never {
+        throw new Error(`${message} - ${this.getId()}`);
     }
 }
