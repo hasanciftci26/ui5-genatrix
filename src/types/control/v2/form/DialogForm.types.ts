@@ -60,6 +60,8 @@ export type DialogFormSettings<ContextDataT extends Record<string, any>> = $Cont
     showSubmitError?: boolean;
     submitErrorFallbackMessage?: string;
     showBusyOnSubmit?: boolean;
+    showConfirmOnDelete?: boolean;
+    deleteConfirmMessage?: string;
     requiredProperties?: string;
     readonlyProperties?: string;
     excludedProperties?: string;
@@ -183,6 +185,12 @@ declare module "ui5/genatrix/control/v2/form/DialogForm" {
 
         getShowBusyOnSubmit: OptionalPropertyGetter<boolean>;
         setShowBusyOnSubmit: OptionalPropertySetter<boolean, DialogForm>;
+
+        getShowConfirmOnDelete: OptionalPropertyGetter<boolean>;
+        setShowConfirmOnDelete: OptionalPropertySetter<boolean, DialogForm>;
+
+        getDeleteConfirmMessage: OptionalPropertyGetter<string>;
+        setDeleteConfirmMessage: OptionalPropertySetter<string, DialogForm>;
 
         getRequiredProperties: OptionalPropertyGetter<string>;
         setRequiredProperties: OptionalPropertySetter<string, DialogForm>;

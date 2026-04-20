@@ -17,6 +17,21 @@ export default class CustomMessageBox extends BaseObject {
         });
     }
 
+    public static confirm(message: string, callback: (confirmed: boolean) => void) {
+        this.ensureCssLoaded();
+
+        MessageBox.confirm(message, {
+            contentWidth: "20%",
+            actions: ["OK", "CANCEL"],
+            initialFocus: "CANCEL",
+            emphasizedAction: "OK",
+            styleClass: "customMessageBox",
+            onClose: (event: string | null) => {
+                callback(event === "OK");
+            }
+        });
+    }
+
     private static ensureCssLoaded() {
         if (this.cssLoaded) {
             return;

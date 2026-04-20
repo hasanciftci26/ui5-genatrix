@@ -61,6 +61,8 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
             showSubmitError: { type: "boolean", defaultValue: true },
             submitErrorFallbackMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.unexpected") },
             showBusyOnSubmit: { type: "boolean", defaultValue: true },
+            showConfirmOnDelete: { type: "boolean", defaultValue: true },
+            deleteConfirmMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.confirm.delete") },
             requiredProperties: { type: "string" },
             readonlyProperties: { type: "string" },
             excludedProperties: { type: "string" },
@@ -486,6 +488,22 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
     }
 
     private delete() {
+        if (this.getShowConfirmOnDelete()) {
+            const confirmMessage = this.getDeleteConfirmMessage() || LibraryBundle.getText("genatrix.confirm.delete");
+
+            CustomMessageBox.confirm(confirmMessage, (confirmed) => {
+                if (confirmed) {
+                    this.completeDelete();
+                } else {
+                    this.hideBusy(true);
+                }
+            });
+        } else {
+            this.completeDelete();
+        }
+    }
+
+    private completeDelete() {
         this.context.delete({
             groupId: "$direct"
         }).then(() => {
@@ -497,6 +515,10 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
             });
 
             this.fireSubmitSuccess({ response: response });
+
+            if (this.getCloseDialogOnSuccess()) {
+                this.dialogGenerator.closeDialog();
+            }
         }).catch((err?: RequestError) => {
             this.hideBusy(true);
 
@@ -507,6 +529,11 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
             });
 
             this.fireSubmitError({ response: response });
+
+            if (this.getShowSubmitError()) {
+                const fallbackMessage = this.getSubmitErrorFallbackMessage() || LibraryBundle.getText("genatrix.error.unexpected");
+                CustomMessageBox.error(response.getErrorMessage() || fallbackMessage);
+            }
         });
     }
 

@@ -51,25 +51,10 @@
                                 <ToolbarSpacer />
                                 <form:DialogForm
                                     entitySet="Employees"
+                                    formMode="Delete"
+                                    contextRef="stEmployees"
                                     datePattern="dd MMMM y"
-                                >
-                                    <form:validationLogics>
-                                        <formMetadata:ValidationLogic
-                                            propertyName="variableSalary"
-                                            operator="GT"
-                                            value1="{
-                                                'propertyName': 'fixedSalary'
-                                            }"
-                                            errorMessage="Variable salary must be greater than fixed salary"
-                                        />
-                                        <formMetadata:ValidationLogic
-                                            propertyName="workingStartAt"
-                                            operator="LT"
-                                            value1="10:00:00"
-                                            errorMessage="Working start at must be earlier than 10:00:00"
-                                        />
-                                    </form:validationLogics>
-                                </form:DialogForm>
+                                />
                             </OverflowToolbar>
                         </smarttable:customToolbar>
                         <table:Table
