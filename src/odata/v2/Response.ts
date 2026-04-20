@@ -1,5 +1,5 @@
 import BaseObject from "sap/ui/base/Object";
-import { BatchResponse, ChangeResponse, ErrorResponse, ErrorResponseBody, RequestError } from "ui5/genatrix/types/odata/v2/Response.types";
+import { BatchResponse, ChangeResponse, ErrorResponse, ErrorResponseBody, RequestError, ResponseSettings } from "ui5/genatrix/types/odata/v2/Response.types";
 
 /**
  * @namespace ui5.genatrix.odata.v2
@@ -12,10 +12,20 @@ export default class Response extends BaseObject {
     private errorCode?: string;
     private data?: Record<string, any>;
 
-    constructor(rawResponse?: BatchResponse | RequestError) {
+    constructor(settings: ResponseSettings) {
         super();
-        this.rawResponse = rawResponse;
-        this.parse(rawResponse);
+        this.rawResponse = settings.rawResponse;
+
+        if (settings.responseType === "Delete") {
+            this.successful = settings.successful;
+            this.statusCode = this.successful ? "204" : "500";
+
+            if (!settings.successful && settings.rawResponse) {
+                this.parseRequestError(settings.rawResponse);
+            }
+        } else {
+            this.parse(settings.rawResponse);
+        }
     }
 
     public getRawResponse() {
@@ -141,7 +151,19 @@ export default class Response extends BaseObject {
     private parseRequestError(requestError: RequestError) {
         this.successful = false;
         this.statusCode = requestError.statusCode?.toString() || "500";
-        this.errorMessage = requestError.responseText;
+
+        if (requestError.responseText && typeof requestError.responseText === "string") {
+            try {
+                const parsedBody = JSON.parse(requestError.responseText);
+
+                if (this.isErrorResponseBody(parsedBody)) {
+                    this.errorMessage = parsedBody.error?.message?.value;
+                    this.errorCode = parsedBody.error?.code;
+                }
+            } catch {
+                this.errorMessage = requestError.responseText;
+            }
+        }
     }
 
     private isBatchResponse(response: any): response is BatchResponse {

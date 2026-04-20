@@ -420,7 +420,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         if (this.getFormMode() === FormMode.Create || this.getFormMode() === FormMode.Update) {
             void this.submit();
         } else {
-            void this.delete();
+            this.delete();
         }
     }
 
@@ -445,7 +445,11 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
             model.submitChanges({
                 success: (rawResponse?: BatchResponse) => {
                     this.hideBusy(true);
-                    const response = new Response(rawResponse);
+
+                    const response = new Response({
+                        responseType: "Submit",
+                        rawResponse: rawResponse
+                    });
 
                     if (response.isSuccessful()) {
                         this.fireSubmitSuccess({ response: response });
@@ -464,7 +468,12 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
                 },
                 error: (err?: RequestError) => {
                     this.hideBusy(true);
-                    const response = new Response(err);
+
+                    const response = new Response({
+                        responseType: "Submit",
+                        rawResponse: err
+                    });
+
                     this.fireSubmitError({ response: response });
 
                     if (this.getShowSubmitError()) {
@@ -476,8 +485,29 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         }
     }
 
-    private async delete() {
+    private delete() {
+        this.context.delete({
+            groupId: "$direct"
+        }).then(() => {
+            this.hideBusy(true);
 
+            const response = new Response({
+                responseType: "Delete",
+                successful: true
+            });
+
+            this.fireSubmitSuccess({ response: response });
+        }).catch((err?: RequestError) => {
+            this.hideBusy(true);
+
+            const response = new Response({
+                responseType: "Delete",
+                successful: false,
+                rawResponse: err
+            });
+
+            this.fireSubmitError({ response: response });
+        });
     }
 
     private async onDialogClose(event: DialogGenerator$CloseEvent) {

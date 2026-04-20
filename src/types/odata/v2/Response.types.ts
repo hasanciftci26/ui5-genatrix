@@ -63,3 +63,16 @@ export type ChangeResponse = {
 export type BatchResponse = {
     __batchResponses?: Array<ChangeResponse | ChangeResponseItem | ErrorResponse>;
 };
+
+type SubmitSettings = {
+    responseType: "Submit";
+    rawResponse?: BatchResponse | RequestError;
+};
+
+type DeleteSettings = {
+    responseType: "Delete";
+    successful: boolean;
+    rawResponse?: RequestError;
+};
+
+export type ResponseSettings = SubmitSettings | DeleteSettings;
