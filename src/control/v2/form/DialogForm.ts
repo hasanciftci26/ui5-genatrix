@@ -158,6 +158,20 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         return this.context;
     }
 
+    public getODataModel() {
+        const model = this.getModel(this.getODataModelName());
+
+        if (model instanceof ODataModel === false) {
+            this.throwRuntimeError("ODataModel (sap.ui.model.odata.v2) not found. Set the oDataModelName property if you are using a named model");
+        }
+
+        if (model.getDefaultBindingMode() !== "TwoWay") {
+            model.setDefaultBindingMode("TwoWay");
+        }
+
+        return model;
+    }
+
     private async onButtonPress() {
         this.showBusy();
 
@@ -588,20 +602,6 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
         }
 
         return entitySet;
-    }
-
-    private getODataModel() {
-        const model = this.getModel(this.getODataModelName());
-
-        if (model instanceof ODataModel === false) {
-            this.throwRuntimeError("ODataModel (sap.ui.model.odata.v2) not found. Set the oDataModelName property if you are using a named model");
-        }
-
-        if (model.getDefaultBindingMode() !== "TwoWay") {
-            model.setDefaultBindingMode("TwoWay");
-        }
-
-        return model;
     }
 
     private throwRuntimeError(message: string): never {

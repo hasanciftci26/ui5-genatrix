@@ -28,7 +28,8 @@ export default class FormGenerator extends BaseObject {
         this.settings = settings;
 
         this.metadataParser = new MetadataParser({
-            controlId: settings.controlId,
+            type: "Form",
+            classId: settings.controlId,
             model: settings.oDataModel,
             formMode: settings.formMode,
             requiredProperties: settings.requiredProperties,

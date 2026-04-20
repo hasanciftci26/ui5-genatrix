@@ -1,10 +1,12 @@
 import { Property } from "sap/ui/model/odata/ODataMetaModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
+import ValueListParameter from "ui5/genatrix/metadata/form/ValueListParameter";
 import { FormModeType } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
 
-export type MetadataParserSettings = {
-    controlId: string;
+type MetadataParserForm = {
+    type: "Form";
+    classId: string;
     model: ODataModel;
     formMode: FormModeType;
     requiredProperties?: string;
@@ -13,6 +15,15 @@ export type MetadataParserSettings = {
     keysAlwaysIncluded: boolean;
     propertyOptions: PropertyOption[];
 };
+
+type MetadataParserValueList = {
+    type: "ValueList";
+    classId: string;
+    model: ODataModel;
+    valueListParameters: ValueListParameter[];
+};
+
+export type MetadataParserSettings = MetadataParserForm | MetadataParserValueList;
 
 export type EntityProperty = {
     name: string;

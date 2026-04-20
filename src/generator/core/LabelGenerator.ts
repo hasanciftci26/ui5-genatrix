@@ -14,7 +14,7 @@ export default class LabelGenerator extends BaseObject {
     }
 
     public generate(property: MetaModelProperty) {
-        const userDefinedLabel = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name)?.getLabel();
+        const userDefinedLabel = this.settings.userDefinedLabels.find(opt => opt.propertyName === property.name)?.label;
         const labelAnnotation = property["com.sap.vocabularies.Common.v1.Label"]?.String;
         const labelExtension = property.extensions?.find(ext => ext.name === "label")?.value;
         const generatedLabel = this.labelize(property.name);

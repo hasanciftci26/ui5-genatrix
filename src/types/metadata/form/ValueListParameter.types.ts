@@ -11,6 +11,7 @@ export type ValueListParameterSettings = $ManagedObjectSettings & {
     type?: ParameterType;
     localDataProperty?: string;
     valueListProperty?: string;
+    valueListPropertyLabel?: string;
 };
 
 declare module "ui5/genatrix/metadata/form/ValueListParameter" {
@@ -21,5 +22,7 @@ declare module "ui5/genatrix/metadata/form/ValueListParameter" {
         setLocalDataProperty: OptionalPropertySetter<string, ValueListParameter>;
         getValueListProperty: OptionalPropertyGetter<string>;
         setValueListProperty: OptionalPropertySetter<string, ValueListParameter>;
+        getValueListPropertyLabel: OptionalPropertyGetter<string>;
+        setValueListPropertyLabel: OptionalPropertySetter<string, ValueListParameter>;
     }
 }

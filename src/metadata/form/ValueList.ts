@@ -1,4 +1,8 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
+import ValueHelpDialog, { ValueHelpDialog$OkEvent } from "sap/ui/comp/valuehelpdialog/ValueHelpDialog";
+import BusyIndicator from "sap/ui/core/BusyIndicator";
+import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
+import MetadataParser from "ui5/genatrix/odata/v2/MetadataParser";
 import { ValueListSettings } from "ui5/genatrix/types/metadata/form/ValueList.types";
 
 /**
@@ -21,6 +25,7 @@ export default class ValueList extends ManagedObject {
             parameters: { type: "ui5.genatrix.metadata.form.ValueListParameter", multiple: true, singularName: "parameter" }
         }
     };
+    private vhd: ValueHelpDialog;
 
     constructor(settings?: ValueListSettings);
     constructor(id?: string, settings?: ValueListSettings);
@@ -34,12 +39,55 @@ export default class ValueList extends ManagedObject {
     }
 
     public async open() {
-        const entitySet = this.getEntitySetOrThrow();
-        const parameters = this.getParameters();
+        this.showBusy();
+        const parameters = this.getParametersOrThrow();
 
-        if (!parameters.length) {
-            this.throwRuntimeError("At least one parameter is required.");
+        const metadataParser = new MetadataParser({
+            type: "ValueList",
+            classId: this.getId(),
+            model: this.getODataModelFromParent(),
+            valueListParameters: parameters
+        });
+
+        const entitySet = this.getEntitySetOrThrow();
+        const properties = await metadataParser.getEntityProperties(entitySet);
+
+        this.vhd = new ValueHelpDialog({
+            title: this.getTitle() || this.getEntitySetOrThrow(),
+            supportMultiselect: false,
+            supportRanges: false,
+            busyIndicatorDelay: 0
+        });
+
+        this.vhd.attachOk(this.onConfirm, this);
+        this.vhd.attachCancel(this.onCancel, this);
+
+        this.addFilterBar();
+        await this.bindTable();
+
+        this.vhd.update();
+
+        if (!this.vhd.isOpen()) {
+            this.vhd.open();
         }
+
+        this.hideBusy();
+    }
+
+    private addFilterBar() {
+
+    }
+
+    private async bindTable() {
+
+    }
+
+    private onConfirm(event: ValueHelpDialog$OkEvent) {
+
+    }
+
+    private onCancel() {
+
     }
 
     private getEntitySetOrThrow() {
@@ -50,6 +98,35 @@ export default class ValueList extends ManagedObject {
         }
 
         return entitySet;
+    }
+
+    private getParametersOrThrow() {
+        const parameters = this.getParameters().map(param => param.getOrThrow());
+
+        if (!parameters.length) {
+            this.throwRuntimeError("At least one ValueListParameter is required");
+        }
+
+        const hasOutParameter = parameters.some(param => param.getType() === "InOut" || param.getType() === "Out");
+
+        if (!hasOutParameter) {
+            this.throwRuntimeError("At least one ValueListParameter with InOut or Out type must be provided");
+        }
+
+        return parameters;
+    }
+
+    private showBusy() {
+        BusyIndicator.show(0);
+    }
+
+    private hideBusy() {
+        BusyIndicator.hide();
+    }
+
+    private getODataModelFromParent() {
+        const parent = this.getParent() as DialogForm;
+        return parent.getODataModel();
     }
 
     private throwRuntimeError(message: string): never {

@@ -1,5 +1,8 @@
-import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
+export type UserDefinedLabel = {
+    propertyName?: string;
+    label?: string;
+};
 
 export type LabelGeneratorSettings = {
-    propertyOptions: PropertyOption[];
+    userDefinedLabels: UserDefinedLabel[];
 };

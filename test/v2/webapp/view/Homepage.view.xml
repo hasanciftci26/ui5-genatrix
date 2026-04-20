@@ -51,10 +51,25 @@
                                 <ToolbarSpacer />
                                 <form:DialogForm
                                     entitySet="Employees"
-                                    formMode="Delete"
-                                    contextRef="stEmployees"
                                     datePattern="dd MMMM y"
-                                />
+                                >
+                                    <form:valueLists>
+                                        <formMetadata:ValueList
+                                            propertyName="countryCode"
+                                            entitySet="Countries"
+                                        >
+                                            <formMetadata:ValueListParameter
+                                                type="InOut"
+                                                localDataProperty="countryCode"
+                                                valueListProperty="code"
+                                            />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
+                                                valueListProperty="name"
+                                            />
+                                        </formMetadata:ValueList>
+                                    </form:valueLists>
+                                </form:DialogForm>
                             </OverflowToolbar>
                         </smarttable:customToolbar>
                         <table:Table
