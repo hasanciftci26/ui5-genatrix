@@ -2,6 +2,7 @@ import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
 import ValueHelpDialog, { ValueHelpDialog$OkEvent } from "sap/ui/comp/valuehelpdialog/ValueHelpDialog";
 import BusyIndicator from "sap/ui/core/BusyIndicator";
 import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
+import FilterBarGenerator from "ui5/genatrix/generator/core/FilterBarGenerator";
 import MetadataParser from "ui5/genatrix/odata/v2/MetadataParser";
 import { ValueListSettings } from "ui5/genatrix/types/metadata/form/ValueList.types";
 
@@ -26,6 +27,7 @@ export default class ValueList extends ManagedObject {
         }
     };
     private vhd: ValueHelpDialog;
+    private filterBarGenerator: FilterBarGenerator;
 
     constructor(settings?: ValueListSettings);
     constructor(id?: string, settings?: ValueListSettings);
@@ -52,19 +54,26 @@ export default class ValueList extends ManagedObject {
         const entitySet = this.getEntitySetOrThrow();
         const properties = await metadataParser.getEntityProperties(entitySet);
 
+        this.filterBarGenerator = new FilterBarGenerator({
+            properties: properties,
+            parameters: parameters,
+            searchSupported: this.getSearchSupported() ?? true,
+            caseSensitiveSearch: this.getCaseSensitiveSearch() ?? false,
+            oDataModel: this.getODataModelFromParent()
+        });
+
         this.vhd = new ValueHelpDialog({
             title: this.getTitle() || this.getEntitySetOrThrow(),
             supportMultiselect: false,
             supportRanges: false,
-            busyIndicatorDelay: 0
+            busyIndicatorDelay: 0,
+            filterBar: this.filterBarGenerator.generate()
         });
 
         this.vhd.attachOk(this.onConfirm, this);
         this.vhd.attachCancel(this.onCancel, this);
 
-        this.addFilterBar();
         await this.bindTable();
-
         this.vhd.update();
 
         if (!this.vhd.isOpen()) {
@@ -74,16 +83,12 @@ export default class ValueList extends ManagedObject {
         this.hideBusy();
     }
 
-    private addFilterBar() {
-
-    }
-
     private async bindTable() {
 
     }
 
     private onConfirm(event: ValueHelpDialog$OkEvent) {
-
+        event.getParameters();
     }
 
     private onCancel() {

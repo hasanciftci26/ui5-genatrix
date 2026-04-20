@@ -186,7 +186,7 @@ export default class ControlGenerator extends BaseObject {
         return new CustomInput(property.name, {
             showValueHelp: true,
             valueHelpRequest: () => {
-                valueList.open();
+                void valueList.open();
             },
             busyIndicatorDelay: 0,
             busy: {
