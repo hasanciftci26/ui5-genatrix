@@ -21,8 +21,8 @@ import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 import { SelectionMode } from "sap/ui/table/library";
 import SmartTable from "sap/ui/comp/smarttable/SmartTable";
 import AnalyticalTable from "sap/ui/table/AnalyticalTable";
-import { BatchResponse, RequestError } from "ui5/genatrix/types/odata/v2/SubmitResponse.types";
-import SubmitResponse from "ui5/genatrix/odata/v2/SubmitResponse";
+import { BatchResponse, RequestError } from "ui5/genatrix/types/odata/v2/Response.types";
+import Response from "ui5/genatrix/odata/v2/Response";
 
 /**
  * @namespace ui5.genatrix.control.v2.form
@@ -91,13 +91,13 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
             submitSuccess: {
                 allowPreventDefault: false,
                 parameters: {
-                    response: { type: "ui5.genatrix.odata.v2.SubmitResponse" }
+                    response: { type: "ui5.genatrix.odata.v2.Response" }
                 }
             },
             submitError: {
                 allowPreventDefault: false,
                 parameters: {
-                    response: { type: "ui5.genatrix.odata.v2.SubmitResponse" }
+                    response: { type: "ui5.genatrix.odata.v2.Response" }
                 }
             }
         }
@@ -445,7 +445,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
             model.submitChanges({
                 success: (rawResponse?: BatchResponse) => {
                     this.hideBusy(true);
-                    const response = new SubmitResponse(rawResponse);
+                    const response = new Response(rawResponse);
 
                     if (response.isSuccessful()) {
                         this.fireSubmitSuccess({ response: response });
@@ -464,7 +464,7 @@ export default class DialogForm<ContextDataT extends Record<string, any> = Recor
                 },
                 error: (err?: RequestError) => {
                     this.hideBusy(true);
-                    const response = new SubmitResponse(err);
+                    const response = new Response(err);
                     this.fireSubmitError({ response: response });
 
                     if (this.getShowSubmitError()) {

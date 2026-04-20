@@ -1,10 +1,10 @@
 import BaseObject from "sap/ui/base/Object";
-import { BatchResponse, ChangeResponse, ErrorResponse, ErrorResponseBody, RequestError } from "ui5/genatrix/types/odata/v2/SubmitResponse.types";
+import { BatchResponse, ChangeResponse, ErrorResponse, ErrorResponseBody, RequestError } from "ui5/genatrix/types/odata/v2/Response.types";
 
 /**
  * @namespace ui5.genatrix.odata.v2
  */
-export default class SubmitResponse extends BaseObject {
+export default class Response extends BaseObject {
     private readonly rawResponse?: BatchResponse | RequestError;
     private successful: boolean;
     private statusCode: string;

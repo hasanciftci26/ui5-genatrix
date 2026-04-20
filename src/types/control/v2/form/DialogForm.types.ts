@@ -10,7 +10,7 @@ import FormLayout from "ui5/genatrix/metadata/form/FormLayout";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import ValidationLogic from "ui5/genatrix/metadata/form/ValidationLogic";
 import ValueList from "ui5/genatrix/metadata/form/ValueList";
-import SubmitResponse from "ui5/genatrix/odata/v2/SubmitResponse";
+import Response from "ui5/genatrix/odata/v2/Response";
 import {
     AggregationBinder,
     AggregationDestroyer,
@@ -84,13 +84,13 @@ export type DialogForm$FormValidationErrorEventParameters = {
 export type DialogForm$FormValidationErrorEvent = Event<DialogForm$FormValidationErrorEventParameters, DialogForm>;
 
 export type DialogForm$SubmitSuccessEventParameters = {
-    response: SubmitResponse;
+    response: Response;
 };
 
 export type DialogForm$SubmitSuccessEvent = Event<DialogForm$SubmitSuccessEventParameters, DialogForm>;
 
 export type DialogForm$SubmitErrorEventParameters = {
-    response: SubmitResponse;
+    response: Response;
 };
 
 export type DialogForm$SubmitErrorEvent = Event<DialogForm$SubmitErrorEventParameters, DialogForm>;
