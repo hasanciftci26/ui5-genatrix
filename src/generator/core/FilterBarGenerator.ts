@@ -1,5 +1,4 @@
 import DynamicDateRange, { DynamicDateRange$ChangeEvent } from "sap/m/DynamicDateRange";
-import MultiInput from "sap/m/MultiInput";
 import SearchField from "sap/m/SearchField";
 import Select from "sap/m/Select";
 import TimePicker from "sap/m/TimePicker";
@@ -12,6 +11,7 @@ import JSONModel from "sap/ui/model/json/JSONModel";
 import ODataBoolean from "sap/ui/model/odata/type/Boolean";
 import ODataString from "sap/ui/model/odata/type/String";
 import Time from "sap/ui/model/odata/type/Time";
+import CustomFBMultiInput from "ui5/genatrix/control/extension/CustomFBMultiInput";
 import { FilterBarGeneratorSettings } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
@@ -22,6 +22,7 @@ import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 export default class FilterBarGenerator extends BaseObject {
     private readonly settings: FilterBarGeneratorSettings;
     private readonly model = new JSONModel();
+    private readonly modelName = "genatrixFilterBarModel";
     private fb: FilterBar;
 
     constructor(settings: FilterBarGeneratorSettings) {
@@ -47,7 +48,8 @@ export default class FilterBarGenerator extends BaseObject {
             });
         }
 
-        this.fb.setModel(this.model, "genatrixFilterBarModel");
+        this.model.setDefaultBindingMode("TwoWay");
+        this.fb.setModel(this.model, this.modelName);
         return this.fb;
     }
 
@@ -79,7 +81,7 @@ export default class FilterBarGenerator extends BaseObject {
     private getSearchField() {
         const searchField = new SearchField({
             value: {
-                path: "genatrixFilterBarModel>/genatrixFilterBarSearch",
+                path: `${this.modelName}>/genatrixFilterBarSearch`,
                 type: new ODataString()
             }
         });
@@ -96,17 +98,8 @@ export default class FilterBarGenerator extends BaseObject {
                 return this.getTimePicker(property);
             case "Edm.Boolean":
                 return this.getSelect(property);
-            case "Edm.Byte":
-            case "Edm.SByte":
-            case "Edm.Int16":
-            case "Edm.Int32":
-            case "Edm.Int64":
-            case "Edm.Single":
-            case "Edm.Double":
-            case "Edm.Decimal":
-                return this.getNumberInput(property);
             default:
-                return this.getStringInput(property);
+                return this.getInput(property);
         }
     }
 
@@ -131,7 +124,7 @@ export default class FilterBarGenerator extends BaseObject {
     private getTimePicker(property: EntityProperty) {
         const control = new TimePicker({
             value: {
-                path: `genatrixFilterBarModel>/${property.name}`,
+                path: `${this.modelName}>/${property.name}`,
                 type: new Time()
             }
         });
@@ -141,9 +134,10 @@ export default class FilterBarGenerator extends BaseObject {
 
     private getSelect(property: EntityProperty) {
         const type = new ODataBoolean();
+
         const control = new Select({
             selectedKey: {
-                path: `genatrixFilterBarModel>/${property.name}`
+                path: `${this.modelName}>/${property.name}`
             },
             items: [
                 new Item({ key: "NONE", text: LibraryBundle.getText("genatrix.label.notSelected") }),
@@ -156,17 +150,7 @@ export default class FilterBarGenerator extends BaseObject {
         return control;
     }
 
-    private getNumberInput(property: EntityProperty) {
-        const control = new MultiInput({ value: { path: "" } });
-        return control;
-    }
-
-    private getStringInput(property: EntityProperty) {
-        const control = new MultiInput();
-
-        control.addValidator((args: object) => {
-            let test = "x";
-        });
-        return control;
+    private getInput(property: EntityProperty) {
+        return CustomFBMultiInput.createInstance(property, this.modelName);
     }
 }

@@ -45,3 +45,25 @@ export type CustomDateTimeSettings = CustomTypeBase & {
     constraints?: DateTimeConstraints;
     formatOptions?: DateTimeFormatOptions;
 };
+
+export type CustomFilterBarFieldSettings = {
+    property: EntityProperty;
+};
+
+export type CustomFilterBarFieldOperator =
+    "EQ" |
+    "NE" |
+    "GE" |
+    "NOT_GE" |
+    "GT" |
+    "NOT_GT" |
+    "LE" |
+    "NOT_LE" |
+    "LT" |
+    "NOT_LT" |
+    "CONTAINS" |
+    "NOT_CONTAINS" |
+    "STARTS_WITH" |
+    "NOT_STARTS_WITH" |
+    "ENDS_WITH" |
+    "NOT_ENDS_WITH";
