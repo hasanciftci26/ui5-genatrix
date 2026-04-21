@@ -67,6 +67,10 @@
                                                 type="DisplayOnly"
                                                 valueListProperty="name"
                                             />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
+                                                valueListProperty="testField"
+                                            />
                                         </formMetadata:ValueList>
                                     </form:valueLists>
                                 </form:DialogForm>

@@ -10,6 +10,7 @@ entity Employees {
 };
 
 entity Countries {
-    key code : String(5);
-        name : String(100);
+    key code      : String(5);
+        name      : String(100);
+        testField : Boolean;
 };

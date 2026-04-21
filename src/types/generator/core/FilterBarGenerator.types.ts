@@ -7,5 +7,6 @@ export type FilterBarGeneratorSettings = {
     parameters: ValueListParameter[];
     searchSupported: boolean;
     caseSensitiveSearch: boolean;
+    dateRangeOptions?: string;
     oDataModel: ODataModel;
 };

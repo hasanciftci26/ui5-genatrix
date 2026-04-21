@@ -19,7 +19,8 @@ export default class ValueList extends ManagedObject {
             searchSupported: { type: "boolean", defaultValue: true },
             caseSensitiveSearch: { type: "boolean", defaultValue: false },
             title: { type: "string" },
-            valueListWithFixedValues: { type: "boolean", defaultValue: false }
+            valueListWithFixedValues: { type: "boolean", defaultValue: false },
+            dateRangeOptions: { type: "string" }
         },
         defaultAggregation: "parameters",
         aggregations: {

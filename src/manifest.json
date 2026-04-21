@@ -33,7 +33,16 @@
             "i18n": {
                 "bundleUrl": "i18n/i18n.properties",
                 "supportedLocales": [
-                    ""
+                    "",
+                    "ar",
+                    "de",
+                    "es",
+                    "fr",
+                    "ja",
+                    "pt",
+                    "ru",
+                    "tr",
+                    "zh_CN"
                 ],
                 "fallbackLocale": ""
             }

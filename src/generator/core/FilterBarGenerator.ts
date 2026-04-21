@@ -1,6 +1,5 @@
-import CheckBox from "sap/m/CheckBox";
-import DynamicDateRange from "sap/m/DynamicDateRange";
-import Input from "sap/m/Input";
+import DynamicDateRange, { DynamicDateRange$ChangeEvent } from "sap/m/DynamicDateRange";
+import MultiInput from "sap/m/MultiInput";
 import SearchField from "sap/m/SearchField";
 import Select from "sap/m/Select";
 import TimePicker from "sap/m/TimePicker";
@@ -8,9 +7,11 @@ import BaseObject from "sap/ui/base/Object";
 import FilterBar from "sap/ui/comp/filterbar/FilterBar";
 import FilterGroupItem from "sap/ui/comp/filterbar/FilterGroupItem";
 import Item from "sap/ui/core/Item";
+import Messaging from "sap/ui/core/Messaging";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import ODataBoolean from "sap/ui/model/odata/type/Boolean";
 import ODataString from "sap/ui/model/odata/type/String";
+import Time from "sap/ui/model/odata/type/Time";
 import { FilterBarGeneratorSettings } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
@@ -33,7 +34,8 @@ export default class FilterBarGenerator extends BaseObject {
             advancedMode: true,
             isRunningInValueHelpDialog: true,
             filterGroupItems: this.getFilterGroupItems(),
-            showClearOnFB: true
+            showClearOnFB: false,
+            filterBarExpanded: false
         });
 
         if (this.settings.searchSupported) {
@@ -60,6 +62,7 @@ export default class FilterBarGenerator extends BaseObject {
             }
 
             const control = this.generateControl(property);
+            Messaging.registerObject(control, true);
 
             items.push(new FilterGroupItem({
                 groupName: "__$INTERNAL$",
@@ -108,38 +111,62 @@ export default class FilterBarGenerator extends BaseObject {
     }
 
     private getDynamicDateRange(property: EntityProperty) {
-        const control = new DynamicDateRange();
+        const control = new DynamicDateRange({
+            name: property.name,
+            standardOptions: this.settings.dateRangeOptions?.split(",")
+        });
+
+        control.attachChange(this.onDateRangeChange, this);
         return control;
+    }
+
+    private onDateRangeChange(event: DynamicDateRange$ChangeEvent) {
+        if (event.getParameter("valid")) {
+            event.getSource().setValueState("None");
+        } else {
+            event.getSource().setValueState("Error");
+        }
     }
 
     private getTimePicker(property: EntityProperty) {
-        const control = new TimePicker();
-        return control;
-    }
-
-    private getSelect(property: EntityProperty) {
-        this.model.setProperty(`/${property.name}`, "NONE");
-        const control = new Select({
-            selectedKey: {
-                path: `genatrixFilterBarModel>/${property.name}`
-            },
-            items: [
-                new Item({ key: "NONE", text: "" }),
-                new Item({ key: "YES", text: LibraryBundle.getText("genatrix.label.yes") }),
-                new Item({ key: "NO", text: LibraryBundle.getText("genatrix.label.no") })
-            ]
+        const control = new TimePicker({
+            value: {
+                path: `genatrixFilterBarModel>/${property.name}`,
+                type: new Time()
+            }
         });
 
         return control;
     }
 
+    private getSelect(property: EntityProperty) {
+        const type = new ODataBoolean();
+        const control = new Select({
+            selectedKey: {
+                path: `genatrixFilterBarModel>/${property.name}`
+            },
+            items: [
+                new Item({ key: "NONE", text: LibraryBundle.getText("genatrix.label.notSelected") }),
+                new Item({ key: "YES", text: type.formatValue(true, "string") as string }),
+                new Item({ key: "NO", text: type.formatValue(false, "string") as string })
+            ]
+        });
+
+        this.model.setProperty(`/${property.name}`, "NONE");
+        return control;
+    }
+
     private getNumberInput(property: EntityProperty) {
-        const control = new Input();
+        const control = new MultiInput({ value: { path: "" } });
         return control;
     }
 
     private getStringInput(property: EntityProperty) {
-        const control = new Input();
+        const control = new MultiInput();
+
+        control.addValidator((args: object) => {
+            let test = "x";
+        });
         return control;
     }
 }

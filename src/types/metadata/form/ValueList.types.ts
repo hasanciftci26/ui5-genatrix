@@ -19,6 +19,7 @@ export type ValueListSettings = $ManagedObjectSettings & {
     caseSensitiveSearch?: boolean;
     title?: string;
     valueListWithFixedValues?: boolean;
+    dateRangeOptions?: string;
     parameters?: ValueListParameter[];
 };
 
@@ -36,6 +37,8 @@ declare module "ui5/genatrix/metadata/form/ValueList" {
         setTitle: OptionalPropertySetter<string, ValueList>;
         getValueListWithFixedValues: OptionalPropertyGetter<boolean>;
         setValueListWithFixedValues: OptionalPropertySetter<boolean, ValueList>;
+        getDateRangeOptions: OptionalPropertyGetter<string>;
+        setDateRangeOptions: OptionalPropertySetter<string, ValueList>;
 
         getParameters: AggregationGetterMulti<ValueListParameter>;
         addParameter: AggregationSetterOrAdder<ValueListParameter, ValueList>;
