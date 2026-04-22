@@ -8,5 +8,14 @@ export type FilterBarGeneratorSettings = {
     searchSupported: boolean;
     caseSensitiveSearch: boolean;
     dateRangeOptions?: string;
+    datePattern?: string;
+    timePattern?: string;
+    dateTimeSeparator: string;
+    dateFirst: boolean;
+    groupingEnabled: boolean;
+    groupingSeparator?: string;
+    groupingSize: number;
+    decimalSeparator?: string;
+    parseEmptyValueToZero: boolean;
     oDataModel: ODataModel;
 };

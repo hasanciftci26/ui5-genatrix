@@ -48,6 +48,11 @@ export type CustomDateTimeSettings = CustomTypeBase & {
 
 export type CustomFilterBarFieldSettings = {
     property: EntityProperty;
+    groupingEnabled: boolean;
+    groupingSeparator?: string;
+    groupingSize: number;
+    decimalSeparator?: string;
+    parseEmptyValueToZero: boolean;    
 };
 
 export type CustomFilterBarFieldOperator =

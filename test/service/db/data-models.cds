@@ -10,8 +10,10 @@ entity Employees {
 };
 
 entity Countries {
-    key code       : String(5);
-        name       : String(100);
-        population : Integer;
-        hasStates  : Boolean;
+    key code          : String(5);
+        name          : String(100);
+        population    : Integer;
+        averageSalary : Decimal(7, 3);
+        hasStates     : Boolean;
+        createdOn     : Date;
 };

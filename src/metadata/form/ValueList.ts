@@ -20,7 +20,16 @@ export default class ValueList extends ManagedObject {
             caseSensitiveSearch: { type: "boolean", defaultValue: false },
             title: { type: "string" },
             valueListWithFixedValues: { type: "boolean", defaultValue: false },
-            dateRangeOptions: { type: "string" }
+            dateRangeOptions: { type: "string" },
+            datePattern: { type: "string" },
+            timePattern: { type: "string" },
+            dateTimeSeparator: { type: "string", defaultValue: " " },
+            dateFirst: { type: "boolean", defaultValue: true },
+            groupingEnabled: { type: "boolean", defaultValue: true },
+            groupingSeparator: { type: "string" },
+            groupingSize: { type: "int", defaultValue: 3 },
+            decimalSeparator: { type: "string" },
+            parseEmptyValueToZero: { type: "boolean", defaultValue: false }
         },
         defaultAggregation: "parameters",
         aggregations: {
@@ -60,6 +69,16 @@ export default class ValueList extends ManagedObject {
             parameters: parameters,
             searchSupported: this.getSearchSupported() ?? true,
             caseSensitiveSearch: this.getCaseSensitiveSearch() ?? false,
+            dateRangeOptions: this.getDateRangeOptions(),
+            datePattern: this.getDatePattern(),
+            timePattern: this.getTimePattern(),
+            dateTimeSeparator: this.getDateTimeSeparator() || " ",
+            dateFirst: this.getDateFirst() ?? true,
+            groupingEnabled: this.getGroupingEnabled() ?? true,
+            groupingSeparator: this.getGroupingSeparator(),
+            groupingSize: this.getGroupingSize() ?? 3,
+            decimalSeparator: this.getDecimalSeparator(),
+            parseEmptyValueToZero: this.getParseEmptyValueToZero() ?? false,
             oDataModel: this.getODataModelFromParent()
         });
 

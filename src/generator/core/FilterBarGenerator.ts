@@ -1,3 +1,4 @@
+import DynamicDateFormat from "sap/m/DynamicDateFormat";
 import DynamicDateRange, { DynamicDateRange$ChangeEvent } from "sap/m/DynamicDateRange";
 import SearchField from "sap/m/SearchField";
 import Select from "sap/m/Select";
@@ -109,6 +110,27 @@ export default class FilterBarGenerator extends BaseObject {
             standardOptions: this.settings.dateRangeOptions?.split(",")
         });
 
+        if (property.type === "Edm.DateTime" && property.displayFormat === "Date" && this.settings.datePattern) {
+            const formatter = DynamicDateFormat.getInstance({
+                date: {
+                    pattern: this.settings.datePattern
+                }
+            });
+
+            control.setFormatter(formatter);
+        } else if (this.settings.datePattern && this.settings.timePattern) {
+            const pattern = this.settings.dateFirst ? `${this.settings.datePattern}${this.settings.dateTimeSeparator}${this.settings.timePattern}` :
+                `${this.settings.timePattern}${this.settings.dateTimeSeparator}${this.settings.datePattern}`;
+
+            const formatter = DynamicDateFormat.getInstance({
+                datetime: {
+                    pattern: pattern
+                }
+            });
+
+            control.setFormatter(formatter);
+        }
+
         control.attachChange(this.onDateRangeChange, this);
         return control;
     }
@@ -125,11 +147,19 @@ export default class FilterBarGenerator extends BaseObject {
         const control = new TimePicker({
             value: {
                 path: `${this.modelName}>/${property.name}`,
-                type: new Time()
+                type: new Time(this.getTimeFormatOptions())
             }
         });
 
         return control;
+    }
+
+    private getTimeFormatOptions() {
+        if (this.settings.timePattern) {
+            return {
+                pattern: this.settings.timePattern
+            };
+        }
     }
 
     private getSelect(property: EntityProperty) {
@@ -151,6 +181,13 @@ export default class FilterBarGenerator extends BaseObject {
     }
 
     private getInput(property: EntityProperty) {
-        return CustomFBMultiInput.createInstance(property, this.modelName);
+        return CustomFBMultiInput.createInstance(this.modelName, {
+            property: property,
+            groupingEnabled: this.settings.groupingEnabled,
+            groupingSeparator: this.settings.groupingSeparator,
+            groupingSize: this.settings.groupingSize,
+            decimalSeparator: this.settings.decimalSeparator,
+            parseEmptyValueToZero: this.settings.parseEmptyValueToZero
+        });
     }
 }

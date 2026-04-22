@@ -57,6 +57,8 @@
                                         <formMetadata:ValueList
                                             propertyName="countryCode"
                                             entitySet="Countries"
+                                            datePattern="dd MMMM y"
+                                            decimalSeparator=","
                                         >
                                             <formMetadata:ValueListParameter
                                                 type="InOut"
@@ -73,7 +75,15 @@
                                             />
                                             <formMetadata:ValueListParameter
                                                 type="DisplayOnly"
+                                                valueListProperty="averageSalary"
+                                            />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
                                                 valueListProperty="hasStates"
+                                            />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
+                                                valueListProperty="createdOn"
                                             />
                                         </formMetadata:ValueList>
                                     </form:valueLists>

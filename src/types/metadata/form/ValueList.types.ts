@@ -20,6 +20,15 @@ export type ValueListSettings = $ManagedObjectSettings & {
     title?: string;
     valueListWithFixedValues?: boolean;
     dateRangeOptions?: string;
+    datePattern?: string;
+    timePattern?: string;
+    dateTimeSeparator?: string;
+    dateFirst?: boolean;
+    groupingEnabled?: boolean;
+    groupingSeparator?: string;
+    groupingSize?: number;
+    decimalSeparator?: string;
+    parseEmptyValueToZero?: boolean;    
     parameters?: ValueListParameter[];
 };
 
@@ -39,6 +48,24 @@ declare module "ui5/genatrix/metadata/form/ValueList" {
         setValueListWithFixedValues: OptionalPropertySetter<boolean, ValueList>;
         getDateRangeOptions: OptionalPropertyGetter<string>;
         setDateRangeOptions: OptionalPropertySetter<string, ValueList>;
+        getDatePattern: OptionalPropertyGetter<string>;
+        setDatePattern: OptionalPropertySetter<string, ValueList>;
+        getTimePattern: OptionalPropertyGetter<string>;
+        setTimePattern: OptionalPropertySetter<string, ValueList>;
+        getDateTimeSeparator: OptionalPropertyGetter<string>;
+        setDateTimeSeparator: OptionalPropertySetter<string, ValueList>;
+        getDateFirst: OptionalPropertyGetter<boolean>;
+        setDateFirst: OptionalPropertySetter<boolean, ValueList>;
+        getGroupingEnabled: OptionalPropertyGetter<boolean>;
+        setGroupingEnabled: OptionalPropertySetter<boolean, ValueList>;
+        getGroupingSeparator: OptionalPropertyGetter<string>;
+        setGroupingSeparator: OptionalPropertySetter<string, ValueList>;
+        getGroupingSize: OptionalPropertyGetter<number>;
+        setGroupingSize: OptionalPropertySetter<number, ValueList>;
+        getDecimalSeparator: OptionalPropertyGetter<string>;
+        setDecimalSeparator: OptionalPropertySetter<string, ValueList>;
+        getParseEmptyValueToZero: OptionalPropertyGetter<boolean>;
+        setParseEmptyValueToZero: OptionalPropertySetter<boolean, ValueList>;        
 
         getParameters: AggregationGetterMulti<ValueListParameter>;
         addParameter: AggregationSetterOrAdder<ValueListParameter, ValueList>;

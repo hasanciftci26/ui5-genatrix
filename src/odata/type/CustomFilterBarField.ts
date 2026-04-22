@@ -1,7 +1,4 @@
-import ODataBoolean from "sap/ui/model/odata/type/Boolean";
 import Byte from "sap/ui/model/odata/type/Byte";
-import ODataDate from "sap/ui/model/odata/type/Date";
-import DateTime from "sap/ui/model/odata/type/DateTime";
 import Decimal from "sap/ui/model/odata/type/Decimal";
 import Double from "sap/ui/model/odata/type/Double";
 import Guid from "sap/ui/model/odata/type/Guid";
@@ -11,10 +8,14 @@ import Int64 from "sap/ui/model/odata/type/Int64";
 import SByte from "sap/ui/model/odata/type/SByte";
 import Single from "sap/ui/model/odata/type/Single";
 import ODataString from "sap/ui/model/odata/type/String";
-import Time from "sap/ui/model/odata/type/Time";
 import SimpleType from "sap/ui/model/SimpleType";
 import ValidateException from "sap/ui/model/ValidateException";
-import { CustomFilterBarFieldOperator, CustomFilterBarFieldSettings } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
+import {
+    CustomFilterBarFieldOperator,
+    CustomFilterBarFieldSettings,
+    NumberConstraints,
+    NumberFormatOptions
+} from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
@@ -234,38 +235,26 @@ export default class CustomFilterBarField extends SimpleType {
 
     private getInternalType() {
         switch (this.settings.property.type) {
-            case "Edm.Boolean":
-                return new ODataBoolean();
             case "Edm.Byte":
-                return new Byte();
+                return new Byte(this.getNumberFormatOptions(), this.getNumberConstraints());
             case "Edm.SByte":
-                return new SByte();
+                return new SByte(this.getNumberFormatOptions(), this.getNumberConstraints());
             case "Edm.Int16":
-                return new Int16();
+                return new Int16(this.getNumberFormatOptions(), this.getNumberConstraints());
             case "Edm.Int32":
-                return new Int32();
+                return new Int32(this.getNumberFormatOptions(), this.getNumberConstraints());
             case "Edm.Int64":
-                return new Int64({});
+                return new Int64(this.getNumberFormatOptions() || { parseEmptyValueToZero: false }, this.getNumberConstraints() || { nullable: true });
             case "Edm.Single":
-                return new Single();
+                return new Single(this.getNumberFormatOptions(), this.getNumberConstraints());
             case "Edm.Double":
-                return new Double();
+                return new Double(this.getNumberFormatOptions(), this.getNumberConstraints());
             case "Edm.Decimal":
-                return new Decimal();
-            case "Edm.DateTime":
-                if (this.settings.property.displayFormat === "Date") {
-                    return new ODataDate();
-                } else {
-                    return new DateTime();
-                }
-            case "Edm.DateTimeOffset":
-                return new DateTime();
-            case "Edm.Time":
-                return new Time();
+                return new Decimal(this.getNumberFormatOptions(), this.getNumberConstraints());
             case "Edm.Guid":
                 return new Guid();
             default:
-                return new ODataString();
+                return new ODataString(undefined, { maxLength: this.settings.property.maxLength });
         }
     }
 
@@ -299,6 +288,58 @@ export default class CustomFilterBarField extends SimpleType {
                 }
 
                 break;
+        }
+    }
+
+    private getNumberFormatOptions() {
+        const groupingSeparator = this.settings.groupingSeparator;
+        const decimalSeparator = this.settings.decimalSeparator;
+        const formatOptions: NumberFormatOptions = {
+            groupingEnabled: this.settings.groupingEnabled,
+            groupingSize: this.settings.groupingSize,
+            parseEmptyValueToZero: this.settings.parseEmptyValueToZero
+        };
+
+        if (groupingSeparator && decimalSeparator) {
+            if (groupingSeparator === decimalSeparator) {
+                throw new Error("Grouping Separator and Decimal Separator cannot be identical");
+            }
+
+            formatOptions.groupingSeparator = groupingSeparator;
+            formatOptions.decimalSeparator = decimalSeparator;
+        } else if (groupingSeparator) {
+            formatOptions.groupingSeparator = groupingSeparator;
+            formatOptions.decimalSeparator = this.getCounterNumberSeparator(groupingSeparator);
+        } else if (decimalSeparator) {
+            formatOptions.decimalSeparator = decimalSeparator;
+            formatOptions.groupingSeparator = this.getCounterNumberSeparator(decimalSeparator);
+        }
+
+        return formatOptions;
+    }
+
+    private getNumberConstraints() {
+        const constraints: NumberConstraints = {
+            precision: this.settings.property.precision,
+            scale: this.settings.property.scale
+        };
+        const isEmpty = Object.values(constraints).every(value => value == null);
+
+        if (isEmpty) {
+            return;
+        }
+
+        return constraints;
+    }
+
+    private getCounterNumberSeparator(separator: string) {
+        switch (separator) {
+            case ".":
+                return ",";
+            case ",":
+                return ".";
+            default:
+                return ",";
         }
     }
 }

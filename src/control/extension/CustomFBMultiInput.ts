@@ -2,7 +2,7 @@ import MultiInput, { $MultiInputSettings } from "sap/m/MultiInput";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import CustomFBToken from "ui5/genatrix/control/extension/CustomFBToken";
 import CustomFilterBarField from "ui5/genatrix/odata/type/CustomFilterBarField";
-import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
+import { CustomFilterBarFieldSettings } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
 
 /**
  * @namespace ui5.genatrix.control.extension
@@ -21,13 +21,11 @@ export default class CustomFBMultiInput extends MultiInput {
         }
     }
 
-    public static createInstance(entityProperty: EntityProperty, modelName: string) {
+    public static createInstance(modelName: string, settings: CustomFilterBarFieldSettings) {
         const instance = new CustomFBMultiInput({
             value: {
-                path: `${modelName}>/${entityProperty.name}`,
-                type: new CustomFilterBarField({
-                    property: entityProperty
-                })
+                path: `${modelName}>/${settings.property.name}`,
+                type: new CustomFilterBarField(settings)
             }
         });
 
