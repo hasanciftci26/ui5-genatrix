@@ -1,5 +1,6 @@
 import DynamicDateFormat from "sap/m/DynamicDateFormat";
 import DynamicDateRange, { DynamicDateRange$ChangeEvent } from "sap/m/DynamicDateRange";
+import Input from "sap/m/Input";
 import SearchField from "sap/m/SearchField";
 import Select from "sap/m/Select";
 import TimePicker from "sap/m/TimePicker";
@@ -13,6 +14,8 @@ import ODataBoolean from "sap/ui/model/odata/type/Boolean";
 import ODataString from "sap/ui/model/odata/type/String";
 import Time from "sap/ui/model/odata/type/Time";
 import CustomFBMultiInput from "ui5/genatrix/control/extension/CustomFBMultiInput";
+import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
+import ValueListParameter from "ui5/genatrix/metadata/form/ValueListParameter";
 import { FilterBarGeneratorSettings } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
@@ -64,7 +67,7 @@ export default class FilterBarGenerator extends BaseObject {
                 continue;
             }
 
-            const control = this.generateControl(property);
+            const control = this.generateControl(property, param);
             Messaging.registerObject(control, true);
 
             items.push(new FilterGroupItem({
@@ -90,7 +93,7 @@ export default class FilterBarGenerator extends BaseObject {
         return searchField;
     }
 
-    private generateControl(property: EntityProperty) {
+    private generateControl(property: EntityProperty, param: ValueListParameter) {
         switch (property.type) {
             case "Edm.DateTime":
             case "Edm.DateTimeOffset":
@@ -100,7 +103,11 @@ export default class FilterBarGenerator extends BaseObject {
             case "Edm.Boolean":
                 return this.getSelect(property);
             default:
-                return this.getInput(property);
+                if (param.getFilterRestriction() === FilterRestriction.SingleValue) {
+                    return this.getSingleInput(property);
+                } else {
+                    return this.getMultiInput(property);
+                }
         }
     }
 
@@ -180,7 +187,12 @@ export default class FilterBarGenerator extends BaseObject {
         return control;
     }
 
-    private getInput(property: EntityProperty) {
+    // TODO
+    private getSingleInput(property: EntityProperty) {
+        return new Input({});
+    }
+
+    private getMultiInput(property: EntityProperty) {
         return CustomFBMultiInput.createInstance(this.modelName, {
             property: property,
             groupingEnabled: this.settings.groupingEnabled,

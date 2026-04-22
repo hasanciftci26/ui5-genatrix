@@ -1,5 +1,5 @@
 import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
-import FilterExpressionRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterExpressionRestriction";
+import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
 import ParameterType from "ui5/genatrix/metadata/enum/valuelist/ParameterType";
 import {
     OptionalPropertyGetter,
@@ -7,14 +7,14 @@ import {
 } from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
 type ParameterT = typeof ParameterType[keyof typeof ParameterType];
-type FilterExpressionRestrictionType = typeof FilterExpressionRestriction[keyof typeof FilterExpressionRestriction];
+type FilterRestrictionType = typeof FilterRestriction[keyof typeof FilterRestriction];
 
 export type ValueListParameterSettings = $ManagedObjectSettings & {
     type?: ParameterT;
     localDataProperty?: string;
     valueListProperty?: string;
     valueListPropertyLabel?: string;
-    filterExpressionRestriction?: FilterExpressionRestrictionType;
+    filterRestriction?: FilterRestrictionType;
 };
 
 declare module "ui5/genatrix/metadata/form/ValueListParameter" {
@@ -27,7 +27,7 @@ declare module "ui5/genatrix/metadata/form/ValueListParameter" {
         setValueListProperty: OptionalPropertySetter<string, ValueListParameter>;
         getValueListPropertyLabel: OptionalPropertyGetter<string>;
         setValueListPropertyLabel: OptionalPropertySetter<string, ValueListParameter>;
-        getFilterExpressionRestriction: OptionalPropertyGetter<FilterExpressionRestrictionType>;
-        setFilterExpressionRestriction: OptionalPropertySetter<FilterExpressionRestrictionType, ValueListParameter>;
+        getFilterRestriction: OptionalPropertyGetter<FilterRestrictionType>;
+        setFilterRestriction: OptionalPropertySetter<FilterRestrictionType, ValueListParameter>;
     }
 }

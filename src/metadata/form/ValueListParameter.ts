@@ -1,5 +1,5 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
-import FilterExpressionRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterExpressionRestriction";
+import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
 import ParameterType from "ui5/genatrix/metadata/enum/valuelist/ParameterType";
 import { ValueListParameterSettings } from "ui5/genatrix/types/metadata/form/ValueListParameter.types";
 
@@ -15,10 +15,7 @@ export default class ValueListParameter extends ManagedObject {
             localDataProperty: { type: "string" },
             valueListProperty: { type: "string" },
             valueListPropertyLabel: { type: "string" },
-            filterExpressionRestriction: {
-                type: "ui5.genatrix.metadata.enum.valuelist.FilterExpressionRestriction",
-                defaultValue: FilterExpressionRestriction.MultiValue
-            }
+            filterRestriction: { type: "ui5.genatrix.metadata.enum.valuelist.FilterRestriction", defaultValue: FilterRestriction.MultiValue }
         }
     };
 
