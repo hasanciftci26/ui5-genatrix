@@ -29,7 +29,8 @@ export default class ValueList extends ManagedObject {
             groupingSeparator: { type: "string" },
             groupingSize: { type: "int", defaultValue: 3 },
             decimalSeparator: { type: "string" },
-            parseEmptyValueToZero: { type: "boolean", defaultValue: false }
+            parseEmptyValueToZero: { type: "boolean", defaultValue: false },
+            filterBarExpanded: { type: "boolean", defaultValue: false }
         },
         defaultAggregation: "parameters",
         aggregations: {
@@ -79,6 +80,7 @@ export default class ValueList extends ManagedObject {
             groupingSize: this.getGroupingSize() ?? 3,
             decimalSeparator: this.getDecimalSeparator(),
             parseEmptyValueToZero: this.getParseEmptyValueToZero() ?? false,
+            filterBarExpanded: this.getFilterBarExpanded() ?? false,
             oDataModel: this.getODataModelFromParent()
         });
 

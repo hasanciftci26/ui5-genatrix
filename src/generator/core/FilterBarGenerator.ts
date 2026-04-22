@@ -37,7 +37,7 @@ export default class FilterBarGenerator extends BaseObject {
             isRunningInValueHelpDialog: true,
             filterGroupItems: this.getFilterGroupItems(),
             showClearOnFB: false,
-            filterBarExpanded: false
+            filterBarExpanded: this.settings.filterBarExpanded
         });
 
         if (this.settings.searchSupported) {

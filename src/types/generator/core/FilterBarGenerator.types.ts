@@ -17,5 +17,6 @@ export type FilterBarGeneratorSettings = {
     groupingSize: number;
     decimalSeparator?: string;
     parseEmptyValueToZero: boolean;
+    filterBarExpanded: boolean;
     oDataModel: ODataModel;
 };
