@@ -69,7 +69,11 @@
                                             />
                                             <formMetadata:ValueListParameter
                                                 type="DisplayOnly"
-                                                valueListProperty="testField"
+                                                valueListProperty="population"
+                                            />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
+                                                valueListProperty="hasStates"
                                             />
                                         </formMetadata:ValueList>
                                     </form:valueLists>

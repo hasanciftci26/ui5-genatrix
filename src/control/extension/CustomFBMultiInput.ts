@@ -1,6 +1,6 @@
 import MultiInput, { $MultiInputSettings } from "sap/m/MultiInput";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
-import CustomToken from "ui5/genatrix/control/extension/CustomToken";
+import CustomFBToken from "ui5/genatrix/control/extension/CustomFBToken";
 import CustomFilterBarField from "ui5/genatrix/odata/type/CustomFilterBarField";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 
@@ -35,12 +35,11 @@ export default class CustomFBMultiInput extends MultiInput {
             try {
                 const userInput = instance.getUserInput();
 
-                return new CustomToken({
-                    value: userInput.parsedValue,
-                    operator: userInput.operator
-                }, {
-                    key: userInput.formattedValue, 
-                    text: userInput.formattedValue
+                return new CustomFBToken({
+                    key: userInput.formattedValue,
+                    text: userInput.formattedValue,
+                    filterValue: userInput.parsedValue,
+                    filterOperator: userInput.operator
                 });
             } catch {
                 return;

@@ -61,6 +61,8 @@ export type CustomFilterBarFieldOperator =
     "NOT_LE" |
     "LT" |
     "NOT_LT" |
+    "BT" |
+    "NOT_BT" |
     "CONTAINS" |
     "NOT_CONTAINS" |
     "STARTS_WITH" |

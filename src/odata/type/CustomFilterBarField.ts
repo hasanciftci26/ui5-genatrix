@@ -32,22 +32,54 @@ export default class CustomFilterBarField extends SimpleType {
     }
 
     public override formatValue(value: any, targetType: "string") {
-        const formattedValue = this.internalType.formatValue(value, targetType) as string;
-        return this.formatValueWithOperator(formattedValue);
+        if (this.operator === "BT" || this.operator === "NOT_BT") {
+            const [low, high] = value.split("...");
+            const lowFormatted = this.internalType.formatValue(Number(low), targetType) as string;
+            const highFormatted = this.internalType.formatValue(Number(high), targetType) as string;
+            return this.formatValueWithOperator(`${lowFormatted}...${highFormatted}`);
+        } else {
+            const formattedValue = this.internalType.formatValue(value, targetType) as string;
+            return this.formatValueWithOperator(formattedValue);
+        }
     }
 
     public override parseValue(value: string, sourceType: "string") {
-        this.operator = this.extractOperator(value);
-        return this.internalType.parseValue(this.clearValueFromOperator(value), sourceType);
+        const correctedValue = this.getValueNoBrackets(value);
+        this.operator = this.extractOperator(correctedValue);
+
+        if (this.operator === "BT" || this.operator === "NOT_BT") {
+            const parts = this.removeOperatorFromValue(correctedValue).split("...");
+            const low = this.internalType.parseValue(parts[0], sourceType);
+            const high = this.internalType.parseValue(parts[1], sourceType);
+
+            return `${low}...${high}`;
+        } else {
+            return this.internalType.parseValue(this.removeOperatorFromValue(correctedValue), sourceType);
+        }
     }
 
     public override validateValue(value: any) {
         this.validateOperator();
-        void this.internalType.validateValue(value);
+
+        if (this.operator === "BT" || this.operator === "NOT_BT") {
+            const [low, high] = value.split("...");
+            void this.internalType.validateValue(Number(low));
+            void this.internalType.validateValue(Number(high));
+
+            if (Number(low) >= Number(high)) {
+                throw new ValidateException(LibraryBundle.getText("genatrix.error.invalidRange"));
+            }
+        } else {
+            void this.internalType.validateValue(value);
+        }
     }
 
     public getOperator() {
         return this.operator;
+    }
+
+    private getValueNoBrackets(value: string) {
+        return value.startsWith("!(") && value.endsWith(")") ? value.replace("(", "").replace(")", "") : value;
     }
 
     private formatValueWithOperator(value: string) {
@@ -82,12 +114,14 @@ export default class CustomFilterBarField extends SimpleType {
                 return `!(*${value})`;
             case "ENDS_WITH":
                 return `*${value}`;
+            case "NOT_BT":
+                return `!(${value})`;
             default:
                 return value;
         }
     }
 
-    private clearValueFromOperator(value: string) {
+    private removeOperatorFromValue(value: string) {
         switch (this.operator) {
             case "NOT_GE":
             case "NOT_LE":
@@ -114,6 +148,8 @@ export default class CustomFilterBarField extends SimpleType {
             case "NOT_ENDS_WITH":
                 return value.slice(2);
             case "ENDS_WITH":
+                return value.slice(1);
+            case "NOT_BT":
                 return value.slice(1);
             default:
                 return value;
@@ -185,6 +221,14 @@ export default class CustomFilterBarField extends SimpleType {
             return "ENDS_WITH";
         }
 
+        const isNegated = value.startsWith("!");
+        const raw = isNegated ? value.slice(1) : value;
+        const parts = raw.split("...");
+
+        if (parts.length === 2 && parts[0] !== "" && parts[1] !== "") {
+            return isNegated ? "NOT_BT" : "BT";
+        }
+
         return "EQ";
     }
 
@@ -248,6 +292,8 @@ export default class CustomFilterBarField extends SimpleType {
             case "NOT_LE":
             case "LT":
             case "NOT_LT":
+            case "BT":
+            case "NOT_BT":
                 if (numericTypes.includes(this.settings.property.type) === false) {
                     throw new ValidateException(LibraryBundle.getText("genatrix.error.invalidNumericOperator"));
                 }
