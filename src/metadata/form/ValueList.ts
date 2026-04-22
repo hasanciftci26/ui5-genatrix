@@ -92,6 +92,7 @@ export default class ValueList extends ManagedObject {
 
         this.vhd.attachOk(this.onConfirm, this);
         this.vhd.attachCancel(this.onCancel, this);
+        this.vhd.attachAfterClose(this.onAfterClose, this);
 
         await this.bindTable();
         this.vhd.update();
@@ -112,7 +113,11 @@ export default class ValueList extends ManagedObject {
     }
 
     private onCancel() {
+        this.vhd.close();
+    }
 
+    private onAfterClose() {
+        this.vhd.destroy();
     }
 
     private getEntitySetOrThrow() {
