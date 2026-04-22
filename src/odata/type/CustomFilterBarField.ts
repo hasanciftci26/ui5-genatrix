@@ -35,8 +35,8 @@ export default class CustomFilterBarField extends SimpleType {
     public override formatValue(value: any, targetType: "string") {
         if (this.operator === "BT" || this.operator === "NOT_BT") {
             const [low, high] = value.split("...");
-            const lowFormatted = this.internalType.formatValue(Number(low), targetType) as string;
-            const highFormatted = this.internalType.formatValue(Number(high), targetType) as string;
+            const lowFormatted = this.internalType.formatValue(this.getValueAsNumber(low), targetType) as string;
+            const highFormatted = this.internalType.formatValue(this.getValueAsNumber(high), targetType) as string;
             return this.formatValueWithOperator(`${lowFormatted}...${highFormatted}`);
         } else {
             const formattedValue = this.internalType.formatValue(value, targetType) as string;
@@ -64,10 +64,10 @@ export default class CustomFilterBarField extends SimpleType {
 
         if (this.operator === "BT" || this.operator === "NOT_BT") {
             const [low, high] = value.split("...");
-            void this.internalType.validateValue(Number(low));
-            void this.internalType.validateValue(Number(high));
+            void this.internalType.validateValue(this.getValueAsNumber(low));
+            void this.internalType.validateValue(this.getValueAsNumber(high));
 
-            if (Number(low) >= Number(high)) {
+            if (this.getValueAsNumber(low, true) >= this.getValueAsNumber(high, true)) {
                 throw new ValidateException(LibraryBundle.getText("genatrix.error.invalidRange"));
             }
         } else {
@@ -81,6 +81,22 @@ export default class CustomFilterBarField extends SimpleType {
 
     private getValueNoBrackets(value: string) {
         return value.startsWith("!(") && value.endsWith(")") ? value.replace("(", "").replace(")", "") : value;
+    }
+
+    private getValueAsNumber(value: any, comparison = false) {
+        if (comparison) {
+            if (this.settings.property.type === "Edm.Int64") {
+                return BigInt(value);
+            } else {
+                return Number(value);
+            }
+        } else {
+            if (this.settings.property.type === "Edm.Decimal" || this.settings.property.type === "Edm.Int64") {
+                return value;
+            } else {
+                return Number(value);
+            }
+        }
     }
 
     private formatValueWithOperator(value: string) {
