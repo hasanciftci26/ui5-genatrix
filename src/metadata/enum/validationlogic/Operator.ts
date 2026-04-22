@@ -1,6 +1,6 @@
 import DataType from "sap/ui/base/DataType";
 
-const ValidationOperator = {
+const Operator = {
     EQ: "EQ",
     NE: "NE",
     In: "In",
@@ -21,6 +21,6 @@ const ValidationOperator = {
     RegExp: "RegExp"
 } as const;
 
-DataType.registerEnum("ui5.genatrix.metadata.form.enum.ValidationOperator", ValidationOperator);
+DataType.registerEnum("ui5.genatrix.metadata.enum.validationlogic.Operator", Operator);
 
-export default ValidationOperator;
+export default Operator;

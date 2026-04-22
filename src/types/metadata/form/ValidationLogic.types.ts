@@ -10,21 +10,21 @@ import {
     OptionalPropertyGetter,
     OptionalPropertySetter
 } from "ui5/genatrix/types/global/ManagedObjectClass.types";
-import ValidationLogicalOperator from "ui5/genatrix/metadata/form/enum/ValidationLogicalOperator";
-import ValidationOperator from "ui5/genatrix/metadata/form/enum/ValidationOperator";
+import LogicalOperator from "ui5/genatrix/metadata/enum/validationlogic/LogicalOperator";
+import Operator from "ui5/genatrix/metadata/enum/validationlogic/Operator";
 import ValidationCondition from "ui5/genatrix/metadata/form/ValidationCondition";
 
 export type ValidatorFunction = (value: any) => Promise<boolean> | boolean;
-export type ValidationOperatorType = typeof ValidationOperator[keyof typeof ValidationOperator];
-export type ValidationLogicalOperatorType = typeof ValidationLogicalOperator[keyof typeof ValidationLogicalOperator];
+export type OperatorType = typeof Operator[keyof typeof Operator];
+export type LogicalOperatorType = typeof LogicalOperator[keyof typeof LogicalOperator];
 
 export type ValidationLogicSettings = $ManagedObjectSettings & {
     propertyName?: string;
-    operator?: ValidationOperatorType;
+    operator?: OperatorType;
     value1?: any;
     value2?: any;
     errorMessage?: string;
-    logicalOperator?: ValidationLogicalOperatorType;
+    logicalOperator?: LogicalOperatorType;
     validator?: ValidatorFunction;
     conditions?: ValidationCondition[];
 };
@@ -33,16 +33,16 @@ declare module "ui5/genatrix/metadata/form/ValidationLogic" {
     export default interface ValidationLogic {
         getPropertyName: OptionalPropertyGetter<string>;
         setPropertyName: OptionalPropertySetter<string, ValidationLogic>;
-        getOperator: OptionalPropertyGetter<ValidationOperatorType>;
-        setOperator: OptionalPropertySetter<ValidationOperatorType, ValidationLogic>;
+        getOperator: OptionalPropertyGetter<OperatorType>;
+        setOperator: OptionalPropertySetter<OperatorType, ValidationLogic>;
         getValue1: OptionalPropertyGetter<any>;
         setValue1: OptionalPropertySetter<any, ValidationLogic>;
         getValue2: OptionalPropertyGetter<any>;
         setValue2: OptionalPropertySetter<any, ValidationLogic>;
         getErrorMessage: OptionalPropertyGetter<string>;
         setErrorMessage: OptionalPropertySetter<string, ValidationLogic>;
-        getLogicalOperator: OptionalPropertyGetter<ValidationLogicalOperatorType>;
-        setLogicalOperator: OptionalPropertySetter<ValidationLogicalOperatorType, ValidationLogic>;
+        getLogicalOperator: OptionalPropertyGetter<LogicalOperatorType>;
+        setLogicalOperator: OptionalPropertySetter<LogicalOperatorType, ValidationLogic>;
         getValidator: OptionalPropertyGetter<ValidatorFunction>;
         setValidator: OptionalPropertySetter<ValidatorFunction, ValidationLogic>;
 

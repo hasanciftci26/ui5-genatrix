@@ -2,8 +2,8 @@ import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import ValidateException from "sap/ui/model/ValidateException";
 import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
-import ValidationLogicalOperator from "ui5/genatrix/metadata/form/enum/ValidationLogicalOperator";
-import ValidationOperator from "ui5/genatrix/metadata/form/enum/ValidationOperator";
+import LogicalOperator from "ui5/genatrix/metadata/enum/validationlogic/LogicalOperator";
+import Operator from "ui5/genatrix/metadata/enum/validationlogic/Operator";
 import { ValidationLogicSettings } from "ui5/genatrix/types/metadata/form/ValidationLogic.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
@@ -20,11 +20,11 @@ export default class ValidationLogic extends ManagedObject {
         final: true,
         properties: {
             propertyName: { type: "string" },
-            operator: { type: "ui5.genatrix.metadata.form.enum.ValidationOperator", defaultValue: ValidationOperator.EQ },
+            operator: { type: "ui5.genatrix.metadata.enum.validationlogic.Operator", defaultValue: Operator.EQ },
             value1: { type: "any" },
             value2: { type: "any" },
             errorMessage: { type: "string" },
-            logicalOperator: { type: "ui5.genatrix.metadata.form.enum.ValidationLogicalOperator", defaultValue: ValidationLogicalOperator.And },
+            logicalOperator: { type: "ui5.genatrix.metadata.enum.validationlogic.LogicalOperator", defaultValue: LogicalOperator.And },
             validator: { type: "function" }
         },
         defaultAggregation: "conditions",
@@ -62,9 +62,9 @@ export default class ValidationLogic extends ManagedObject {
 
         const context = this.getContextFromParent();
         const conditions = this.getConditions();
-        const logicalOperator = this.getLogicalOperator() || ValidationLogicalOperator.And;
+        const logicalOperator = this.getLogicalOperator() || LogicalOperator.And;
         const conditionsSatisfied = conditions.length === 0 ||
-            (logicalOperator === ValidationLogicalOperator.And ? conditions.every(cond => cond.check(context)) : conditions.some(cond => cond.check(context)));
+            (logicalOperator === LogicalOperator.And ? conditions.every(cond => cond.check(context)) : conditions.some(cond => cond.check(context)));
 
         if (!conditionsSatisfied) {
             this.hideBusy(property, busyModel);
@@ -82,7 +82,7 @@ export default class ValidationLogic extends ManagedObject {
     private isValid(context: ContextV2 | ContextV4, value: any) {
         return this.engine.run({
             rawPropertyValue: value,
-            operator: this.getOperator() || ValidationOperator.EQ,
+            operator: this.getOperator() || Operator.EQ,
             rawValue1: this.getValue1(),
             rawValue2: this.getValue2(),
             context: context

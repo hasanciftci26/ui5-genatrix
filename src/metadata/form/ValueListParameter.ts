@@ -1,5 +1,6 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
-import ValueListParameterType from "ui5/genatrix/metadata/form/enum/ValueListParameterType";
+import FilterExpressionRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterExpressionRestriction";
+import ParameterType from "ui5/genatrix/metadata/enum/valuelist/ParameterType";
 import { ValueListParameterSettings } from "ui5/genatrix/types/metadata/form/ValueListParameter.types";
 
 /**
@@ -10,10 +11,14 @@ export default class ValueListParameter extends ManagedObject {
         library: "ui5.genatrix",
         final: true,
         properties: {
-            type: { type: "ui5.genatrix.metadata.form.enum.ValueListParameterType", defaultValue: ValueListParameterType.InOut },
+            type: { type: "ui5.genatrix.metadata.enum.valuelist.ParameterType", defaultValue: ParameterType.InOut },
             localDataProperty: { type: "string" },
             valueListProperty: { type: "string" },
-            valueListPropertyLabel: { type: "string" }
+            valueListPropertyLabel: { type: "string" },
+            filterExpressionRestriction: {
+                type: "ui5.genatrix.metadata.enum.valuelist.FilterExpressionRestriction",
+                defaultValue: FilterExpressionRestriction.MultiValue
+            }
         }
     };
 
@@ -36,9 +41,9 @@ export default class ValueListParameter extends ManagedObject {
         }
 
         switch (paramType) {
-            case ValueListParameterType.In:
-            case ValueListParameterType.InOut:
-            case ValueListParameterType.Out:
+            case ParameterType.In:
+            case ParameterType.InOut:
+            case ParameterType.Out:
                 if (this.getLocalDataProperty() == null || this.getValueListProperty() == null) {
                     this.throwRuntimeError(
                         "Both localDataProperty and valueListProperty are required for the following ValueListParameter types: In, InOut, Out"
