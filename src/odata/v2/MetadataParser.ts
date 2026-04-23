@@ -22,9 +22,9 @@ export default class MetadataParser extends BaseObject {
                 label: opt.getLabel()
             }));
         } else {
-            userDefinedLabels = settings.valueListParameters.map(param => ({
-                propertyName: param.getValueListProperty(),
-                label: param.getValueListPropertyLabel()
+            userDefinedLabels = settings.valueListPropertyOptions.map(opt => ({
+                propertyName: opt.getPropertyName(),
+                label: opt.getLabel()
             }));
         }
 

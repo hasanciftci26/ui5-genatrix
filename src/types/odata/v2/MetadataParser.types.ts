@@ -2,6 +2,7 @@ import { Property } from "sap/ui/model/odata/ODataMetaModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import PropertyOption from "ui5/genatrix/metadata/form/PropertyOption";
 import ValueListParameter from "ui5/genatrix/metadata/form/ValueListParameter";
+import ValueListPropertyOption from "ui5/genatrix/metadata/form/ValueListPropertyOption";
 import { FormModeType } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
 
 type MetadataParserForm = {
@@ -23,6 +24,7 @@ type MetadataParserValueList = {
     filterBarWithParametersOnly: boolean;
     nonFilterableProperties: string[];
     valueListParameters: ValueListParameter[];
+    valueListPropertyOptions: ValueListPropertyOption[];
 };
 
 export type MetadataParserSettings = MetadataParserForm | MetadataParserValueList;

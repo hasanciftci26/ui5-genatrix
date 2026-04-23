@@ -36,7 +36,8 @@ export default class ValueList extends ManagedObject {
         },
         defaultAggregation: "parameters",
         aggregations: {
-            parameters: { type: "ui5.genatrix.metadata.form.ValueListParameter", multiple: true, singularName: "parameter" }
+            parameters: { type: "ui5.genatrix.metadata.form.ValueListParameter", multiple: true, singularName: "parameter" },
+            propertyOptions: { type: "ui5.genatrix.metadata.form.ValueListPropertyOption", multiple: true, singularName: "propertyOption" }
         }
     };
     private vhd: ValueHelpDialog;
@@ -64,6 +65,7 @@ export default class ValueList extends ManagedObject {
             filterBarWithParametersOnly: this.getFilterBarWithParametersOnly() ?? false,
             nonFilterableProperties: Array.from(new Set(this.getNonFilterableProperties()?.split(",") || [])),
             valueListParameters: parameters,
+            valueListPropertyOptions: this.getPropertyOptions()
         });
 
         const entitySet = this.getEntitySetOrThrow();
@@ -71,7 +73,7 @@ export default class ValueList extends ManagedObject {
 
         this.filterBarGenerator = new FilterBarGenerator({
             properties: properties,
-            parameters: parameters,
+            propertyOptions: this.getPropertyOptions(),
             searchSupported: this.getSearchSupported() ?? true,
             caseSensitiveSearch: this.getCaseSensitiveSearch() ?? false,
             dateRangeOptions: this.getDateRangeOptions(),

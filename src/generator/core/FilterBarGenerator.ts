@@ -16,7 +16,7 @@ import CustomFBInput from "ui5/genatrix/control/extension/CustomFBInput";
 import CustomFBMultiInput from "ui5/genatrix/control/extension/CustomFBMultiInput";
 import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
 import { FilterBarGeneratorSettings } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
-import { FilterRestrictionType } from "ui5/genatrix/types/metadata/form/ValueListParameter.types";
+import { FilterRestrictionType } from "ui5/genatrix/types/metadata/form/ValueListPropertyOption.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
@@ -62,8 +62,9 @@ export default class FilterBarGenerator extends BaseObject {
         const properties = this.settings.properties.filter(prop => prop.filterable);
 
         for (const property of properties) {
-            const param = this.settings.parameters.find(param => param.getValueListProperty() === property.name);
-            const control = this.generateControl(property, param?.getFilterRestriction() || FilterRestriction.MultiValue);
+            const propertyOptions = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name);
+            const filterRestriction = propertyOptions?.getFilterRestriction() || FilterRestriction.MultiValue;
+            const control = this.generateControl(property, filterRestriction);
 
             Messaging.registerObject(control, true);
 

@@ -1,5 +1,6 @@
 import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
 import ValueListParameter from "ui5/genatrix/metadata/form/ValueListParameter";
+import ValueListPropertyOption from "ui5/genatrix/metadata/form/ValueListPropertyOption";
 import {
     AggregationBinder,
     AggregationDestroyer,
@@ -33,6 +34,7 @@ export type ValueListSettings = $ManagedObjectSettings & {
     filterBarWithParametersOnly?: boolean;
     nonFilterableProperties?: string;
     parameters?: ValueListParameter[];
+    propertyOptions?: ValueListPropertyOption[];
 };
 
 declare module "ui5/genatrix/metadata/form/ValueList" {
@@ -83,5 +85,13 @@ declare module "ui5/genatrix/metadata/form/ValueList" {
         removeParameter: AggregationRemoverSingle<ValueListParameter>;
         removeAllParameters: AggregationRemoverAll<ValueListParameter>;
         destroyParameters: AggregationDestroyer<ValueList>;
+
+        getPropertyOptions: AggregationGetterMulti<ValueListPropertyOption>;
+        addPropertyOption: AggregationSetterOrAdder<ValueListPropertyOption, ValueList>;
+        insertPropertyOption: AggregationInserter<ValueListPropertyOption, ValueList>;
+        bindPropertyOptions: AggregationBinder<ValueList>;
+        removePropertyOption: AggregationRemoverSingle<ValueListPropertyOption>;
+        removeAllPropertyOptions: AggregationRemoverAll<ValueListPropertyOption>;
+        destroyPropertyOptions: AggregationDestroyer<ValueList>;        
     }
 }
