@@ -9,20 +9,23 @@ import { CustomFilterBarFieldSettings } from "ui5/genatrix/types/odata/type/Cust
  */
 export default class CustomFBMultiInput extends MultiInput {
     static readonly renderer = {};
+    private readonly propertyName: string;
 
-    constructor(settings?: $MultiInputSettings);
-    constructor(id?: string, settings?: $MultiInputSettings);
+    constructor(propertyName: string, settings?: $MultiInputSettings);
+    constructor(propertyName: string, id?: string, settings?: $MultiInputSettings);
 
-    constructor(idOrSettings?: string | $MultiInputSettings, settings?: $MultiInputSettings) {
+    constructor(propertyName: string, idOrSettings?: string | $MultiInputSettings, settings?: $MultiInputSettings) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
             super(idOrSettings);
         }
+
+        this.propertyName = propertyName;
     }
 
-    public static createInstance(modelName: string, settings: CustomFilterBarFieldSettings) {
-        const instance = new CustomFBMultiInput({
+    public static createInstance(propertyName: string, modelName: string, settings: CustomFilterBarFieldSettings) {
+        const instance = new CustomFBMultiInput(propertyName, {
             value: {
                 path: `${modelName}>/${settings.property.name}`,
                 type: new CustomFilterBarField(settings)

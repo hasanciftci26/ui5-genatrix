@@ -1,3 +1,4 @@
+import FilterOperator from "sap/ui/model/FilterOperator";
 import Byte from "sap/ui/model/odata/type/Byte";
 import Decimal from "sap/ui/model/odata/type/Decimal";
 import Double from "sap/ui/model/odata/type/Double";
@@ -77,6 +78,47 @@ export default class CustomFilterBarField extends SimpleType {
 
     public getOperator() {
         return this.operator;
+    }
+
+    public getFilterOperator() {
+        switch (this.operator) {
+            case "NOT_GE":
+                return FilterOperator.LT;
+            case "NOT_LE":
+                return FilterOperator.GT;
+            case "NOT_GT":
+                return FilterOperator.LE;
+            case "NOT_LT":
+                return FilterOperator.GE;
+            case "NE":
+                return FilterOperator.NE;
+            case "GE":
+                return FilterOperator.GE;
+            case "LE":
+                return FilterOperator.LE;
+            case "GT":
+                return FilterOperator.GT;
+            case "LT":
+                return FilterOperator.LT;
+            case "NOT_CONTAINS":
+                return FilterOperator.NotContains;
+            case "CONTAINS":
+                return FilterOperator.Contains;
+            case "NOT_STARTS_WITH":
+                return FilterOperator.NotStartsWith;
+            case "STARTS_WITH":
+                return FilterOperator.StartsWith;
+            case "NOT_ENDS_WITH":
+                return FilterOperator.NotEndsWith;
+            case "ENDS_WITH":
+                return FilterOperator.EndsWith;
+            case "NOT_BT":
+                return FilterOperator.NB;
+            case "BT":
+                return FilterOperator.BT;
+            default:
+                return FilterOperator.EQ;
+        }
     }
 
     private getValueNoBrackets(value: string) {

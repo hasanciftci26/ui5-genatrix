@@ -35,6 +35,7 @@ export type CustomNumberSettings = CustomTypeBase & {
 
 export type DateTimeConstraints = {
     displayFormat: "Date";
+    nullable?: boolean;
 };
 
 export type DateTimeFormatOptions = {

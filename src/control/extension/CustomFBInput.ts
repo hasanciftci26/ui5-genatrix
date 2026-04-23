@@ -1,4 +1,5 @@
 import Input, { $InputSettings } from "sap/m/Input";
+import Filter from "sap/ui/model/Filter";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import CustomFilterBarField from "ui5/genatrix/odata/type/CustomFilterBarField";
 import { CustomFilterBarFieldSettings } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
@@ -8,20 +9,23 @@ import { CustomFilterBarFieldSettings } from "ui5/genatrix/types/odata/type/Cust
  */
 export default class CustomFBInput extends Input {
     static readonly renderer = {};
+    private readonly propertyName: string;
 
-    constructor(settings?: $InputSettings);
-    constructor(id?: string, settings?: $InputSettings);
+    constructor(propertyName: string, settings?: $InputSettings);
+    constructor(propertyName: string, id?: string, settings?: $InputSettings);
 
-    constructor(idOrSettings?: string | $InputSettings, settings?: $InputSettings) {
+    constructor(propertyName: string, idOrSettings?: string | $InputSettings, settings?: $InputSettings) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
             super(idOrSettings);
         }
+
+        this.propertyName = propertyName;
     }
 
-    public static createInstance(modelName: string, settings: CustomFilterBarFieldSettings) {
-        const instance = new CustomFBInput({
+    public static createInstance(propertyName: string, modelName: string, settings: CustomFilterBarFieldSettings) {
+        const instance = new CustomFBInput(propertyName, {
             value: {
                 path: `${modelName}>/${settings.property.name}`,
                 type: new CustomFilterBarField(settings)
@@ -31,18 +35,22 @@ export default class CustomFBInput extends Input {
         return instance;
     }
 
-    public getUserInput() {
+    public getFilter(caseSensitive: boolean) {
         const binding = this.getBinding("value") as PropertyBinding;
         const value = this.getProperty("value");
         const type = binding.getType() as CustomFilterBarField;
         const parsedValue = type.parseValue(value, "string");
+        const operator = type.getFilterOperator();
 
         void type.validateValue(parsedValue);
 
-        return {
-            formattedValue: type.formatValue(parsedValue, "string") as string,
-            parsedValue: parsedValue,
-            operator: type.getOperator()
-        };
+        if (parsedValue != null) {
+            return new Filter({
+                path: this.propertyName,
+                operator: operator,
+                value1: parsedValue,
+                caseSensitive: caseSensitive
+            });
+        }
     }
 }

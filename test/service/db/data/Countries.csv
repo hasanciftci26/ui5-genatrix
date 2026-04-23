@@ -1,5 +1,5 @@
-code;name
-DE;Germany
-BG;Bulgaria
-TR;Türkiye
-DK;Denmark
+code;name;createdOn
+DE;Germany;1900-01-01
+BG;Bulgaria;1900-01-01
+TR;Türkiye;1900-01-01
+DK;Denmark;1900-01-01

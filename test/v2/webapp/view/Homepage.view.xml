@@ -58,14 +58,26 @@
                                             propertyName="countryCode"
                                             entitySet="Countries"
                                             datePattern="dd MMMM y"
-                                            decimalSeparator=","
-                                            filterBarWithParametersOnly="true"
                                         >
                                             <formMetadata:ValueListParameter
                                                 type="InOut"
                                                 localDataProperty="countryCode"
                                                 valueListProperty="code"
                                             />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
+                                                valueListProperty="name"
+                                            />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
+                                                valueListProperty="createdOn"
+                                            />
+                                            <formMetadata:propertyOptions>
+                                                <formMetadata:ValueListPropertyOption
+                                                    propertyName="code"
+                                                    filterRestriction="SingleValue"
+                                                />
+                                            </formMetadata:propertyOptions>
                                         </formMetadata:ValueList>
                                     </form:valueLists>
                                 </form:DialogForm>

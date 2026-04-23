@@ -3,11 +3,12 @@ import DynamicDateRange, { DynamicDateRange$ChangeEvent } from "sap/m/DynamicDat
 import SearchField from "sap/m/SearchField";
 import Select from "sap/m/Select";
 import TimePicker from "sap/m/TimePicker";
-import BaseObject from "sap/ui/base/Object";
+import EventProvider from "sap/ui/base/EventProvider";
 import FilterBar from "sap/ui/comp/filterbar/FilterBar";
 import FilterGroupItem from "sap/ui/comp/filterbar/FilterGroupItem";
 import Item from "sap/ui/core/Item";
 import Messaging from "sap/ui/core/Messaging";
+import Filter from "sap/ui/model/Filter";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import ODataBoolean from "sap/ui/model/odata/type/Boolean";
 import ODataString from "sap/ui/model/odata/type/String";
@@ -15,7 +16,7 @@ import Time from "sap/ui/model/odata/type/Time";
 import CustomFBInput from "ui5/genatrix/control/extension/CustomFBInput";
 import CustomFBMultiInput from "ui5/genatrix/control/extension/CustomFBMultiInput";
 import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
-import { FilterBarGeneratorSettings } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
+import { FilterBarGenerator$SearchEventHandler, FilterBarGeneratorSettings } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
 import { FilterRestrictionType } from "ui5/genatrix/types/metadata/form/ValueListPropertyOption.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
@@ -23,11 +24,12 @@ import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 /**
  * @namespace ui5.genatrix.generator.core
  */
-export default class FilterBarGenerator extends BaseObject {
+export default class FilterBarGenerator extends EventProvider {
     private readonly settings: FilterBarGeneratorSettings;
     private readonly model = new JSONModel();
     private readonly modelName = "genatrixFilterBarModel";
     private fb: FilterBar;
+    private searchField?: SearchField;
 
     constructor(settings: FilterBarGeneratorSettings) {
         super();
@@ -44,17 +46,28 @@ export default class FilterBarGenerator extends BaseObject {
         });
 
         if (this.settings.searchSupported) {
-            const searchField = this.getSearchField();
-            this.fb.setBasicSearch(searchField);
+            this.searchField = this.getSearchField();
+            this.fb.setBasicSearch(this.searchField);
 
-            searchField.attachSearch(() => {
+            this.searchField.attachSearch(() => {
                 this.fb.search();
             });
         }
 
         this.model.setDefaultBindingMode("TwoWay");
+        this.fb.attachSearch(this.onSearch, this);
         this.fb.setModel(this.model, this.modelName);
         return this.fb;
+    }
+
+    public attachSearch(handler: FilterBarGenerator$SearchEventHandler, listener?: object) {
+        this.attachEvent("search", handler, listener);
+    }
+
+    private fireSearch(filter?: Filter) {
+        this.fireEvent("search", {
+            filter: filter
+        });
     }
 
     private getFilterGroupItems() {
@@ -186,7 +199,7 @@ export default class FilterBarGenerator extends BaseObject {
     }
 
     private getSingleInput(property: EntityProperty) {
-        return CustomFBInput.createInstance(this.modelName, {
+        return CustomFBInput.createInstance(property.name, this.modelName, {
             property: property,
             groupingEnabled: this.settings.groupingEnabled,
             groupingSeparator: this.settings.groupingSeparator,
@@ -197,7 +210,7 @@ export default class FilterBarGenerator extends BaseObject {
     }
 
     private getMultiInput(property: EntityProperty) {
-        return CustomFBMultiInput.createInstance(this.modelName, {
+        return CustomFBMultiInput.createInstance(property.name, this.modelName, {
             property: property,
             groupingEnabled: this.settings.groupingEnabled,
             groupingSeparator: this.settings.groupingSeparator,
@@ -205,5 +218,58 @@ export default class FilterBarGenerator extends BaseObject {
             decimalSeparator: this.settings.decimalSeparator,
             parseEmptyValueToZero: this.settings.parseEmptyValueToZero
         });
+    }
+
+    private onSearch() {
+        const filter = this.getFilter();
+        this.fireSearch(filter);
+    }
+
+    private getFilter() {
+        const filters: Filter[] = [];
+        const searchFieldFilter = this.getSearchFieldFilter();
+
+        for (const groupItem of this.fb.getFilterGroupItems()) {
+            const control = groupItem.getControl();
+
+            if (control instanceof CustomFBInput) {
+                const filter = control.getFilter(this.settings.caseSensitiveSearch);
+
+                if (filter) {
+                    filters.push(filter);
+                }
+            }
+        }
+
+        if (searchFieldFilter) {
+            filters.push(searchFieldFilter);
+        }
+
+        if (filters.length) {
+            return new Filter({ filters: filters, and: true });
+        }
+    }
+
+    private getSearchFieldFilter() {
+        if (this.searchField) {
+            const value = this.searchField.getValue();
+
+            if (value != null && value !== "") {
+                const properties = this.settings.properties.filter(prop => prop.filterable && prop.type === "Edm.String");
+
+                const filters: Filter[] = properties.map((prop) => {
+                    return new Filter({
+                        path: prop.name,
+                        operator: "Contains",
+                        value1: value,
+                        caseSensitive: this.settings.caseSensitiveSearch
+                    });
+                });
+
+                if (filters.length) {
+                    return new Filter({ filters: filters, and: false });
+                }
+            }
+        }
     }
 }
