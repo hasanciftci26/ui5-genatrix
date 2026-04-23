@@ -53,6 +53,7 @@ export default class MetadataParser extends BaseObject {
                 label: this.labelGenerator.generate(property),
                 readonly: this.isPropertyReadonly(entityType, property),
                 required: this.isPropertyRequired(property),
+                filterable: this.isPropertyFilterable(property),
                 displayFormat: this.getPropertyDisplayFormat(property),
                 precision: this.getPropertyPrecision(property),
                 scale: this.getPropertyScale(property),
@@ -71,20 +72,12 @@ export default class MetadataParser extends BaseObject {
                 return this.getExcludedProperties().includes(property.name);
             }
         } else {
-            return this.settings.valueListParameters.map(param => param.getValueListProperty()).includes(property.name) === false;
+            return this.getExcludedProperties().includes(property.name);
         }
     }
 
     private isKeyProperty(entityType: EntityType, property: MetaModelProperty) {
         return entityType.key.propertyRef.some(ref => ref.name === property.name);
-    }
-
-    private isPropertyRequired(property: MetaModelProperty) {
-        if (property.nullable === "false") {
-            return true;
-        }
-
-        return this.getRequiredProperties().includes(property.name);
     }
 
     private isPropertyReadonly(entityType: EntityType, property: MetaModelProperty) {
@@ -111,12 +104,32 @@ export default class MetadataParser extends BaseObject {
         }
     }
 
-    private getRequiredProperties() {
-        if (this.settings.type === "Form") {
-            const properties = this.settings.propertyOptions.filter(op => op.getPropertyName() && op.getRequired()).map(op => op.getPropertyName()) as string[];
+    private isPropertyRequired(property: MetaModelProperty) {
+        if (property.nullable === "false") {
+            return true;
+        }
 
-            if (this.settings.requiredProperties) {
-                properties.push(...this.settings.requiredProperties.split(","));
+        return this.getRequiredProperties().includes(property.name);
+    }
+
+    private isPropertyFilterable(property: MetaModelProperty) {
+        if (this.settings.type === "Form") {
+            return this.getNonFilterableProperties().includes(property.name) === false;
+        } else {
+            if (this.settings.filterBarWithParametersOnly) {
+                return this.settings.valueListParameters.some(param => param.getValueListProperty() === property.name);
+            } else {
+                return this.getNonFilterableProperties().includes(property.name) === false;
+            }
+        }
+    }
+
+    private getExcludedProperties() {
+        if (this.settings.type === "Form") {
+            const properties = this.settings.propertyOptions.filter(op => op.getPropertyName() && op.getExcluded()).map(op => op.getPropertyName()) as string[];
+
+            if (this.settings.excludedProperties) {
+                properties.push(...this.settings.excludedProperties.split(","));
             }
 
             return Array.from(new Set(properties));
@@ -139,18 +152,22 @@ export default class MetadataParser extends BaseObject {
         }
     }
 
-    private getExcludedProperties() {
+    private getRequiredProperties() {
         if (this.settings.type === "Form") {
-            const properties = this.settings.propertyOptions.filter(op => op.getPropertyName() && op.getExcluded()).map(op => op.getPropertyName()) as string[];
+            const properties = this.settings.propertyOptions.filter(op => op.getPropertyName() && op.getRequired()).map(op => op.getPropertyName()) as string[];
 
-            if (this.settings.excludedProperties) {
-                properties.push(...this.settings.excludedProperties.split(","));
+            if (this.settings.requiredProperties) {
+                properties.push(...this.settings.requiredProperties.split(","));
             }
 
             return Array.from(new Set(properties));
         } else {
             return [];
         }
+    }
+
+    private getNonFilterableProperties() {
+        return this.settings.type === "ValueList" ? this.settings.nonFilterableProperties : [];
     }
 
     private getPropertyDisplayFormat(property: MetaModelProperty) {

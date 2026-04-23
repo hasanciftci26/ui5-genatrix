@@ -30,7 +30,9 @@ export default class ValueList extends ManagedObject {
             groupingSize: { type: "int", defaultValue: 3 },
             decimalSeparator: { type: "string" },
             parseEmptyValueToZero: { type: "boolean", defaultValue: false },
-            filterBarExpanded: { type: "boolean", defaultValue: false }
+            filterBarExpanded: { type: "boolean", defaultValue: false },
+            filterBarWithParametersOnly: { type: "boolean", defaultValue: false },
+            nonFilterableProperties: { type: "string" }
         },
         defaultAggregation: "parameters",
         aggregations: {
@@ -59,7 +61,9 @@ export default class ValueList extends ManagedObject {
             type: "ValueList",
             classId: this.getId(),
             model: this.getODataModelFromParent(),
-            valueListParameters: parameters
+            filterBarWithParametersOnly: this.getFilterBarWithParametersOnly() ?? false,
+            nonFilterableProperties: Array.from(new Set(this.getNonFilterableProperties()?.split(",") || [])),
+            valueListParameters: parameters,
         });
 
         const entitySet = this.getEntitySetOrThrow();

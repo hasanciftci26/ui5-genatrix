@@ -59,31 +59,12 @@
                                             entitySet="Countries"
                                             datePattern="dd MMMM y"
                                             decimalSeparator=","
+                                            filterBarWithParametersOnly="true"
                                         >
                                             <formMetadata:ValueListParameter
                                                 type="InOut"
                                                 localDataProperty="countryCode"
                                                 valueListProperty="code"
-                                            />
-                                            <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="name"
-                                            />
-                                            <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="population"
-                                            />
-                                            <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="averageSalary"
-                                            />
-                                            <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="hasStates"
-                                            />
-                                            <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="createdOn"
                                             />
                                         </formMetadata:ValueList>
                                     </form:valueLists>

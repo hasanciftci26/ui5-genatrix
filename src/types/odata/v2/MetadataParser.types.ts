@@ -20,6 +20,8 @@ type MetadataParserValueList = {
     type: "ValueList";
     classId: string;
     model: ODataModel;
+    filterBarWithParametersOnly: boolean;
+    nonFilterableProperties: string[];
     valueListParameters: ValueListParameter[];
 };
 
@@ -32,6 +34,7 @@ export type EntityProperty = {
     label: string;
     readonly: boolean;
     required: boolean;
+    filterable: boolean;
     displayFormat?: PropertyDisplayFormat;
     precision?: number;
     scale?: number;

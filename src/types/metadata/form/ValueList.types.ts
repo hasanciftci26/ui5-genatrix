@@ -30,6 +30,8 @@ export type ValueListSettings = $ManagedObjectSettings & {
     decimalSeparator?: string;
     parseEmptyValueToZero?: boolean;
     filterBarExpanded?: boolean;
+    filterBarWithParametersOnly?: boolean;
+    nonFilterableProperties?: string;
     parameters?: ValueListParameter[];
 };
 
@@ -69,6 +71,10 @@ declare module "ui5/genatrix/metadata/form/ValueList" {
         setParseEmptyValueToZero: OptionalPropertySetter<boolean, ValueList>;
         getFilterBarExpanded: OptionalPropertyGetter<boolean>;
         setFilterBarExpanded: OptionalPropertySetter<boolean, ValueList>;
+        getFilterBarWithParametersOnly: OptionalPropertyGetter<boolean>;
+        setFilterBarWithParametersOnly: OptionalPropertySetter<boolean, ValueList>;
+        getNonFilterableProperties: OptionalPropertyGetter<string>;
+        setNonFilterableProperties: OptionalPropertySetter<string, ValueList>;
 
         getParameters: AggregationGetterMulti<ValueListParameter>;
         addParameter: AggregationSetterOrAdder<ValueListParameter, ValueList>;

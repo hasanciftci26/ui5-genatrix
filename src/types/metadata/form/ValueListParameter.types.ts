@@ -7,7 +7,7 @@ import {
 } from "ui5/genatrix/types/global/ManagedObjectClass.types";
 
 type ParameterT = typeof ParameterType[keyof typeof ParameterType];
-type FilterRestrictionType = typeof FilterRestriction[keyof typeof FilterRestriction];
+export type FilterRestrictionType = typeof FilterRestriction[keyof typeof FilterRestriction];
 
 export type ValueListParameterSettings = $ManagedObjectSettings & {
     type?: ParameterT;
