@@ -1,5 +1,6 @@
 import Input, { $InputSettings } from "sap/m/Input";
 import Filter from "sap/ui/model/Filter";
+import FilterOperator from "sap/ui/model/FilterOperator";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import CustomFilterBarField from "ui5/genatrix/odata/type/CustomFilterBarField";
 import { CustomFilterBarFieldSettings } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
@@ -35,6 +36,7 @@ export default class CustomFBInput extends Input {
         return instance;
     }
 
+    // TODO: BT and NOT_BT handling
     public getFilter(caseSensitive: boolean) {
         const binding = this.getBinding("value") as PropertyBinding;
         const value = this.getProperty("value");
@@ -45,12 +47,23 @@ export default class CustomFBInput extends Input {
         void type.validateValue(parsedValue);
 
         if (parsedValue != null) {
-            return new Filter({
-                path: this.propertyName,
-                operator: operator,
-                value1: parsedValue,
-                caseSensitive: caseSensitive
-            });
+            if (operator === FilterOperator.BT || operator === FilterOperator.NB) {
+                const [low, high] = (parsedValue as string).split("...");
+
+                return new Filter({
+                    path: this.propertyName,
+                    operator: operator,
+                    value1: Number(low),
+                    value2: Number(high)
+                });
+            } else {
+                return new Filter({
+                    path: this.propertyName,
+                    operator: operator,
+                    value1: parsedValue,
+                    caseSensitive: caseSensitive
+                });
+            }
         }
     }
 }

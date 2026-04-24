@@ -225,6 +225,7 @@ export default class FilterBarGenerator extends EventProvider {
         this.fireSearch(filter);
     }
 
+    // TODO: All filters and error handling
     private getFilter() {
         const filters: Filter[] = [];
         const searchFieldFilter = this.getSearchFieldFilter();
@@ -233,6 +234,12 @@ export default class FilterBarGenerator extends EventProvider {
             const control = groupItem.getControl();
 
             if (control instanceof CustomFBInput) {
+                const filter = control.getFilter(this.settings.caseSensitiveSearch);
+
+                if (filter) {
+                    filters.push(filter);
+                }
+            } else if (control instanceof CustomFBMultiInput) {
                 const filter = control.getFilter(this.settings.caseSensitiveSearch);
 
                 if (filter) {

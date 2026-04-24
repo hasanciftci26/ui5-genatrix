@@ -90,9 +90,9 @@ export default class ValueList extends ManagedObject {
             classId: this.getId(),
             model: this.getODataModelFromParent(),
             filterBarWithParametersOnly: this.getFilterBarWithParametersOnly() ?? false,
-            nonFilterableProperties: Array.from(new Set(this.getNonFilterableProperties()?.split(",") || [])),
-            valueListParameters: parameters,
-            valueListPropertyOptions: this.getPropertyOptions()
+            nonFilterableProperties: this.getNonFilterableProperties()?.split(",") || [],
+            parameters: parameters,
+            propertyOptions: this.getPropertyOptions()
         });
 
         const entitySet = this.getEntitySetOrThrow();

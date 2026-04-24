@@ -13,7 +13,7 @@ entity Countries {
     key code          : String(5);
         name          : String(100);
         population    : Integer;
-        averageSalary : Decimal(7, 3);
+        averageSalary : Decimal(7, 2) @Common.Label: 'Average Salary ($)';
         hasStates     : Boolean;
         createdOn     : Date;
 };

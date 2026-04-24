@@ -11,6 +11,7 @@ export type ValueListPropertyOptionSettings = $ManagedObjectSettings & {
     propertyName?: string;
     label?: string;
     filterRestriction?: FilterRestrictionType;
+    filterable?: boolean;
 };
 
 declare module "ui5/genatrix/metadata/form/ValueListPropertyOption" {
@@ -21,5 +22,7 @@ declare module "ui5/genatrix/metadata/form/ValueListPropertyOption" {
         setLabel: OptionalPropertySetter<string, ValueListPropertyOption>;
         getFilterRestriction: OptionalPropertyGetter<FilterRestrictionType>;
         setFilterRestriction: OptionalPropertySetter<FilterRestrictionType, ValueListPropertyOption>;
+        getFilterable: OptionalPropertyGetter<boolean>;
+        setFilterable: OptionalPropertySetter<boolean, ValueListPropertyOption>;
     }
 }

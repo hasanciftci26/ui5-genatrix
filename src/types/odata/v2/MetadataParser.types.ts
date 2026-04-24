@@ -23,8 +23,8 @@ type MetadataParserValueList = {
     model: ODataModel;
     filterBarWithParametersOnly: boolean;
     nonFilterableProperties: string[];
-    valueListParameters: ValueListParameter[];
-    valueListPropertyOptions: ValueListPropertyOption[];
+    parameters: ValueListParameter[];
+    propertyOptions: ValueListPropertyOption[];
 };
 
 export type MetadataParserSettings = MetadataParserForm | MetadataParserValueList;

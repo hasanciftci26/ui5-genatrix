@@ -70,11 +70,31 @@
                                             />
                                             <formMetadata:ValueListParameter
                                                 type="DisplayOnly"
+                                                valueListProperty="population"
+                                            />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
+                                                valueListProperty="averageSalary"
+                                            />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
                                                 valueListProperty="createdOn"
                                             />
                                             <formMetadata:propertyOptions>
                                                 <formMetadata:ValueListPropertyOption
                                                     propertyName="code"
+                                                    filterRestriction="SingleValue"
+                                                />
+                                                <formMetadata:ValueListPropertyOption
+                                                    propertyName="name"
+                                                    label="Country Name"
+                                                />
+                                                <formMetadata:ValueListPropertyOption
+                                                    propertyName="createdOn"
+                                                    filterable="false"
+                                                />
+                                                <formMetadata:ValueListPropertyOption
+                                                    propertyName="population"
                                                     filterRestriction="SingleValue"
                                                 />
                                             </formMetadata:propertyOptions>

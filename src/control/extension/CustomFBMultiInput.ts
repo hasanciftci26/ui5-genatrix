@@ -1,4 +1,5 @@
 import MultiInput, { $MultiInputSettings } from "sap/m/MultiInput";
+import Filter from "sap/ui/model/Filter";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import CustomFBToken from "ui5/genatrix/control/extension/CustomFBToken";
 import CustomFilterBarField from "ui5/genatrix/odata/type/CustomFilterBarField";
@@ -36,7 +37,7 @@ export default class CustomFBMultiInput extends MultiInput {
             try {
                 const userInput = instance.getUserInput();
 
-                return new CustomFBToken({
+                return new CustomFBToken(propertyName, {
                     key: userInput.formattedValue,
                     text: userInput.formattedValue,
                     filterValue: userInput.parsedValue,
@@ -63,5 +64,13 @@ export default class CustomFBMultiInput extends MultiInput {
             parsedValue: parsedValue,
             operator: type.getOperator()
         };
+    }
+
+    public getFilter(caseSensitive: boolean) {
+        const filters = (this.getTokens() as CustomFBToken[]).map(token => token.getFilter(caseSensitive));
+
+        if (filters.length) {
+            return new Filter({ filters: filters, and: false });
+        }
     }
 }

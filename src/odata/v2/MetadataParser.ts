@@ -22,7 +22,7 @@ export default class MetadataParser extends BaseObject {
                 label: opt.getLabel()
             }));
         } else {
-            userDefinedLabels = settings.valueListPropertyOptions.map(opt => ({
+            userDefinedLabels = settings.propertyOptions.map(opt => ({
                 propertyName: opt.getPropertyName(),
                 label: opt.getLabel()
             }));
@@ -117,7 +117,8 @@ export default class MetadataParser extends BaseObject {
             return this.getNonFilterableProperties().includes(property.name) === false;
         } else {
             if (this.settings.filterBarWithParametersOnly) {
-                return this.settings.valueListParameters.some(param => param.getValueListProperty() === property.name);
+                const isPropertyParameter = this.settings.parameters.some(param => param.getValueListProperty() === property.name);
+                return isPropertyParameter ? this.getNonFilterableProperties().includes(property.name) === false : false;
             } else {
                 return this.getNonFilterableProperties().includes(property.name) === false;
             }
@@ -167,7 +168,21 @@ export default class MetadataParser extends BaseObject {
     }
 
     private getNonFilterableProperties() {
-        return this.settings.type === "ValueList" ? this.settings.nonFilterableProperties : [];
+        if (this.settings.type === "Form") {
+            return [];
+        } else {
+            const nonFilterableProperties = this.settings.nonFilterableProperties;
+
+            for (const opt of this.settings.propertyOptions) {
+                const propertyName = opt.getPropertyName();
+
+                if (propertyName && opt.getFilterable() === false) {
+                    nonFilterableProperties.push(propertyName);
+                }
+            }
+
+            return Array.from(new Set(nonFilterableProperties));
+        }
     }
 
     private getPropertyDisplayFormat(property: MetaModelProperty) {

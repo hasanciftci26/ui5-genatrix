@@ -12,7 +12,8 @@ export default class ValueListPropertyOption extends ManagedObject {
         properties: {
             propertyName: { type: "string" },
             label: { type: "string" },
-            filterRestriction: { type: "ui5.genatrix.metadata.enum.valuelist.FilterRestriction", defaultValue: FilterRestriction.MultiValue }
+            filterRestriction: { type: "ui5.genatrix.metadata.enum.valuelist.FilterRestriction", defaultValue: FilterRestriction.MultiValue },
+            filterable: { type: "boolean", defaultValue: true }
         }
     };
 
