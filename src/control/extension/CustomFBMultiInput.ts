@@ -27,6 +27,7 @@ export default class CustomFBMultiInput extends MultiInput {
 
     public static createInstance(propertyName: string, modelName: string, settings: CustomFilterBarFieldSettings) {
         const instance = new CustomFBMultiInput(propertyName, {
+            showValueHelp: true,
             value: {
                 path: `${modelName}>/${settings.property.name}`,
                 type: new CustomFilterBarField(settings)

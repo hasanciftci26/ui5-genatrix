@@ -27,6 +27,7 @@ export default class CustomFBInput extends Input {
 
     public static createInstance(propertyName: string, modelName: string, settings: CustomFilterBarFieldSettings) {
         const instance = new CustomFBInput(propertyName, {
+            showValueHelp: true,
             value: {
                 path: `${modelName}>/${settings.property.name}`,
                 type: new CustomFilterBarField(settings)

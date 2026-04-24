@@ -17,6 +17,7 @@ import Time from "sap/ui/model/odata/type/Time";
 import Context from "sap/ui/model/odata/v2/Context";
 import CustomFBInput from "ui5/genatrix/control/extension/CustomFBInput";
 import CustomFBMultiInput from "ui5/genatrix/control/extension/CustomFBMultiInput";
+import ConditionsGenerator from "ui5/genatrix/generator/core/ConditionsGenerator";
 import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
 import ParameterType from "ui5/genatrix/metadata/enum/valuelist/ParameterType";
 import {
@@ -38,6 +39,7 @@ export default class FilterBarGenerator extends EventProvider {
     private readonly controls: FilterBarControl[] = [];
     private fb: FilterBar;
     private searchField?: SearchField;
+    private conditionsGenerator?: ConditionsGenerator;
 
     constructor(settings: FilterBarGeneratorSettings) {
         super();
@@ -286,11 +288,13 @@ export default class FilterBarGenerator extends EventProvider {
         });
 
         input.attachSubmit(() => this.fb.search());
+        input.attachValueHelpRequest(this.openSingleRangeValueHelpDialog, this);
+
         return input;
     }
 
     private getMultiInput(property: EntityProperty) {
-        return CustomFBMultiInput.createInstance(property.name, this.modelName, {
+        const input = CustomFBMultiInput.createInstance(property.name, this.modelName, {
             property: property,
             groupingEnabled: this.settings.groupingEnabled,
             groupingSeparator: this.settings.groupingSeparator,
@@ -298,6 +302,9 @@ export default class FilterBarGenerator extends EventProvider {
             decimalSeparator: this.settings.decimalSeparator,
             parseEmptyValueToZero: this.settings.parseEmptyValueToZero
         });
+
+        input.attachValueHelpRequest(this.openMultiRangeValueHelpDialog, this);
+        return input;
     }
 
     private onSearch() {
@@ -472,6 +479,30 @@ export default class FilterBarGenerator extends EventProvider {
         }
 
         return false;
+    }
+
+    private openSingleRangeValueHelpDialog() {
+        if (this.conditionsGenerator) {
+            this.conditionsGenerator.destroy();
+        }
+
+        this.conditionsGenerator = new ConditionsGenerator({
+            type: "Single"
+        });
+
+        this.conditionsGenerator.open();
+    }
+
+    private openMultiRangeValueHelpDialog() {
+        if (this.conditionsGenerator) {
+            this.conditionsGenerator.destroy();
+        }
+
+        this.conditionsGenerator = new ConditionsGenerator({
+            type: "Multi"
+        });
+
+        this.conditionsGenerator.open();
     }
 
     private convertTimeToODataFormat(date: Date) {
