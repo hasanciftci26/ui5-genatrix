@@ -14,10 +14,16 @@ import JSONModel from "sap/ui/model/json/JSONModel";
 import ODataBoolean from "sap/ui/model/odata/type/Boolean";
 import ODataString from "sap/ui/model/odata/type/String";
 import Time from "sap/ui/model/odata/type/Time";
+import Context from "sap/ui/model/odata/v2/Context";
 import CustomFBInput from "ui5/genatrix/control/extension/CustomFBInput";
 import CustomFBMultiInput from "ui5/genatrix/control/extension/CustomFBMultiInput";
 import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
-import { FilterBarGenerator$SearchEventHandler, FilterBarGeneratorSettings } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
+import ParameterType from "ui5/genatrix/metadata/enum/valuelist/ParameterType";
+import {
+    FilterBarControl,
+    FilterBarGenerator$SearchEventHandler,
+    FilterBarGeneratorSettings
+} from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
 import { FilterRestrictionType } from "ui5/genatrix/types/metadata/form/ValueListPropertyOption.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
@@ -29,6 +35,7 @@ export default class FilterBarGenerator extends EventProvider {
     private readonly settings: FilterBarGeneratorSettings;
     private readonly model = new JSONModel();
     private readonly modelName = "genatrixFilterBarModel";
+    private readonly controls: FilterBarControl[] = [];
     private fb: FilterBar;
     private searchField?: SearchField;
 
@@ -61,6 +68,67 @@ export default class FilterBarGenerator extends EventProvider {
         return this.fb;
     }
 
+    public setInitialFilters(context: Context) {
+        const parameters = this.settings.parameters.filter(param => param.getType() === ParameterType.In || param.getType() === ParameterType.InOut);
+        let triggerSearch = false;
+
+        for (const param of parameters) {
+            const property = this.settings.properties.find(prop => prop.name === param.getValueListProperty());
+
+            if (!property) {
+                continue;
+            }
+
+            const value = context.getProperty(param.getLocalDataProperty() as string);
+
+            if (value == null || value === "") {
+                continue;
+            }
+
+            const control = this.controls.find(cont => cont.propertyName === property.name)?.control;
+
+            if (!control) {
+                continue;
+            }
+
+            if (control instanceof CustomFBInput) {
+                const success = control.setInitialValue(value);
+
+                if (success) {
+                    triggerSearch = true;
+                }
+            } else if (control instanceof CustomFBMultiInput) {
+                const success = control.addInitialToken(value);
+
+                if (success) {
+                    triggerSearch = true;
+                }
+            } else if (control instanceof Select) {
+                const success = this.setInitialSelectValue(control, value);
+
+                if (success) {
+                    triggerSearch = true;
+                }
+            } else if (control instanceof TimePicker) {
+                const success = this.setInitialTimePickerValue(control, value);
+
+                if (success) {
+                    triggerSearch = true;
+                }
+            } else if (control instanceof DynamicDateRange) {
+                const success = this.setInitialDynamicDateRangeValue(control, value);
+
+                if (success) {
+                    triggerSearch = true;
+                }
+            }
+        }
+
+        if (triggerSearch) {
+            this.fb.search();
+        }
+    }
+
     public attachSearch(handler: FilterBarGenerator$SearchEventHandler, listener?: object) {
         this.attachEvent("search", handler, listener);
     }
@@ -82,6 +150,11 @@ export default class FilterBarGenerator extends EventProvider {
             const control = this.generateControl(property, filterRestriction);
 
             Messaging.registerObject(control, true);
+
+            this.controls.push({
+                propertyName: property.name,
+                control: control
+            });
 
             items.push(new FilterGroupItem({
                 groupName: "__$INTERNAL$",
@@ -360,12 +433,57 @@ export default class FilterBarGenerator extends EventProvider {
         }
     }
 
+    private setInitialSelectValue(control: Select, value: any) {
+        if (typeof value === "boolean") {
+            control.setSelectedKey(value ? "YES" : "NO");
+            return true;
+        }
+
+        return false;
+    }
+
+    private setInitialTimePickerValue(control: TimePicker, value: any) {
+        if (value instanceof Date) {
+            const date = new Date(1970, 0, 1, value.getHours(), value.getMinutes(), value.getSeconds());
+            control.setDateValue(date);
+            return true;
+        } else if (this.hasMilliseconds(value)) {
+            const totalSeconds = Math.floor(value.ms / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            const date = new Date(1970, 0, 1, hours, minutes, seconds);
+
+            control.setDateValue(date);
+            return true;
+        }
+
+        return false;
+    }
+
+    private setInitialDynamicDateRangeValue(control: DynamicDateRange, value: any) {
+        if (value instanceof Date) {
+            control.setValue({
+                operator: "DATE",
+                values: [value]
+            });
+
+            return true;
+        }
+
+        return false;
+    }
+
     private convertTimeToODataFormat(date: Date) {
         return `PT${this.padTimeNumber(date.getHours())}H${this.padTimeNumber(date.getMinutes())}M${this.padTimeNumber(date.getSeconds())}S`;
     }
 
     private padTimeNumber(number: number) {
         return number.toString().padStart(2, "0");
+    }
+
+    private hasMilliseconds(value: any): value is { ms: number; } {
+        return typeof value === "object" && value != null && "ms" in value && typeof value.ms === "number";
     }
 
     private throwUserInputError(): never {

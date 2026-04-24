@@ -63,7 +63,7 @@
                                             <formMetadata:ValueListParameter
                                                 type="InOut"
                                                 localDataProperty="countryCode"
-                                                valueListProperty="code"
+                                                valueListProperty="population"
                                             />
                                             <formMetadata:ValueListParameter
                                                 type="DisplayOnly"
@@ -74,22 +74,15 @@
                                                 valueListProperty="population"
                                             />
                                             <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="averageSalary"
+                                                type="Out"
+                                                localDataProperty="workingStartAt"
+                                                valueListProperty="foundedAt"
                                             />
                                             <formMetadata:ValueListParameter
                                                 type="DisplayOnly"
                                                 valueListProperty="foundedOn"
                                             />
-                                            <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="foundedAt"
-                                            />
                                             <formMetadata:propertyOptions>
-                                                <formMetadata:ValueListPropertyOption
-                                                    propertyName="code"
-                                                    filterRestriction="SingleValue"
-                                                />
                                                 <formMetadata:ValueListPropertyOption
                                                     propertyName="name"
                                                     label="Country Name"

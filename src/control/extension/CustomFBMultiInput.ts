@@ -73,4 +73,25 @@ export default class CustomFBMultiInput extends MultiInput {
             return new Filter({ filters: filters, and: false });
         }
     }
+
+    public addInitialToken(value: any) {
+        try {
+            const binding = this.getBinding("value") as PropertyBinding;
+            const type = binding.getType() as CustomFilterBarField;
+            const parsedValue = type.parseValue(value, "string");
+
+            void type.validateValue(parsedValue);
+
+            this.addToken(new CustomFBToken(this.propertyName, {
+                key: type.formatValue(parsedValue, "string"),
+                text: type.formatValue(parsedValue, "string"),
+                filterValue: parsedValue,
+                filterOperator: "EQ"
+            }));
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
 }

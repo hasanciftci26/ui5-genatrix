@@ -65,4 +65,19 @@ export default class CustomFBInput extends Input {
             }
         }
     }
+
+    public setInitialValue(value: any) {
+        try {
+            const binding = this.getBinding("value") as PropertyBinding;
+            const type = binding.getType() as CustomFilterBarField;
+            const parsedValue = type.parseValue(value, "string");
+
+            void type.validateValue(parsedValue);
+            this.setValue(parsedValue);
+
+            return true;
+        } catch {
+            return false;
+        }
+    }
 }

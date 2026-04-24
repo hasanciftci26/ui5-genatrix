@@ -34,6 +34,8 @@ import DateTime from "sap/ui/model/odata/type/DateTime";
 import Time from "sap/ui/model/odata/type/Time";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
+import Context from "sap/ui/model/odata/v2/Context";
+import ParameterType from "ui5/genatrix/metadata/enum/valuelist/ParameterType";
 
 /**
  * @namespace ui5.genatrix.metadata.form
@@ -69,6 +71,14 @@ export default class ValueList extends ManagedObject {
         aggregations: {
             parameters: { type: "ui5.genatrix.metadata.form.ValueListParameter", multiple: true, singularName: "parameter" },
             propertyOptions: { type: "ui5.genatrix.metadata.form.ValueListPropertyOption", multiple: true, singularName: "propertyOption" }
+        },
+        events: {
+            itemSelected: {
+                allowPreventDefault: false,
+                parameters: {
+                    context: { type: "object" }
+                }
+            }
         }
     };
     private vhd: ValueHelpDialog;
@@ -104,6 +114,7 @@ export default class ValueList extends ManagedObject {
 
         this.filterBarGenerator = new FilterBarGenerator({
             properties: properties,
+            parameters: parameters,
             propertyOptions: this.getPropertyOptions(),
             searchSupported: this.getSearchSupported() ?? true,
             caseSensitiveSearch: this.getCaseSensitiveSearch() ?? false,
@@ -141,6 +152,7 @@ export default class ValueList extends ManagedObject {
             this.vhd.open();
         }
 
+        this.filterBarGenerator.setInitialFilters(this.getContextFromParent());
         this.hideBusy();
     }
 
@@ -178,7 +190,7 @@ export default class ValueList extends ManagedObject {
         for (const parameter of parameters) {
             const property = properties.find(property => property.name === parameter.getValueListProperty());
 
-            if (parameter.getType() === "In" || parameter.getType() === "FilterOnly" || !property) {
+            if (parameter.getType() === ParameterType.In || parameter.getType() === ParameterType.FilterOnly || !property) {
                 continue;
             }
 
@@ -212,7 +224,7 @@ export default class ValueList extends ManagedObject {
         for (const parameter of parameters) {
             const property = properties.find(property => property.name === parameter.getValueListProperty());
 
-            if (parameter.getType() === "In" || parameter.getType() === "FilterOnly" || !property) {
+            if (parameter.getType() === ParameterType.In || parameter.getType() === ParameterType.FilterOnly || !property) {
                 continue;
             }
 
@@ -246,8 +258,42 @@ export default class ValueList extends ManagedObject {
         }
     }
 
-    private onConfirm(event: ValueHelpDialog$OkEvent) {
-        event.getParameters();
+    private async onConfirm(event: ValueHelpDialog$OkEvent) {
+        const table = await event.getSource().getTableAsync();
+
+        if (table instanceof GridTable) {
+            const [selectedIndex] = table.getSelectedIndices();
+            const context = table.getContextByIndex(selectedIndex as number) as Context;
+
+            this.setOutValues(context);
+
+            this.fireItemSelected({
+                context: context
+            });
+        }
+
+        if (table instanceof ResponsiveTable) {
+            const context = table.getSelectedItem().getBindingContext() as Context;
+            this.setOutValues(context);
+
+            this.fireItemSelected({
+                context: context
+            });
+        }
+
+        this.vhd.close();
+    }
+
+    private setOutValues(context: Context) {
+        for (const param of this.getParameters()) {
+            if (param.getType() !== ParameterType.Out && param.getType() !== ParameterType.InOut) {
+                continue;
+            }
+
+            const value = context.getProperty(param.getValueListProperty() as string);
+            const path = this.getParameterPath(param.getLocalDataProperty() as string);
+            this.getODataModelFromParent().setProperty(path, value);
+        }
     }
 
     private onCancel() {
@@ -437,7 +483,7 @@ export default class ValueList extends ManagedObject {
             this.throwRuntimeError("At least one ValueListParameter is required");
         }
 
-        const hasOutParameter = parameters.some(param => param.getType() === "InOut" || param.getType() === "Out");
+        const hasOutParameter = parameters.some(param => param.getType() === ParameterType.InOut || param.getType() === ParameterType.Out);
 
         if (!hasOutParameter) {
             this.throwRuntimeError("At least one ValueListParameter with InOut or Out type must be provided");
@@ -457,6 +503,15 @@ export default class ValueList extends ManagedObject {
     private getODataModelFromParent() {
         const parent = this.getParent() as DialogForm;
         return parent.getODataModel();
+    }
+
+    private getContextFromParent() {
+        const parent = this.getParent() as DialogForm;
+        return parent.getContext();
+    }
+
+    private getParameterPath(propertyName: string) {
+        return `${this.getContextFromParent().getPath()}/${propertyName}`;
     }
 
     private throwRuntimeError(message: string): never {

@@ -1,4 +1,7 @@
+import Event from "sap/ui/base/Event";
 import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
+import Context from "sap/ui/model/odata/v2/Context";
+import ValueList from "ui5/genatrix/metadata/form/ValueList";
 import ValueListParameter from "ui5/genatrix/metadata/form/ValueListParameter";
 import ValueListPropertyOption from "ui5/genatrix/metadata/form/ValueListPropertyOption";
 import {
@@ -38,6 +41,12 @@ export type ValueListSettings = $ManagedObjectSettings & {
     parameters?: ValueListParameter[];
     propertyOptions?: ValueListPropertyOption[];
 };
+
+export type ValueList$ItemSelectedEventParameters = {
+    context: Context;
+};
+
+export type ValueList$ItemSelectedEvent = Event<ValueList$ItemSelectedEventParameters, ValueList>;
 
 declare module "ui5/genatrix/metadata/form/ValueList" {
     export default interface ValueList {
@@ -99,5 +108,9 @@ declare module "ui5/genatrix/metadata/form/ValueList" {
         removePropertyOption: AggregationRemoverSingle<ValueListPropertyOption>;
         removeAllPropertyOptions: AggregationRemoverAll<ValueListPropertyOption>;
         destroyPropertyOptions: AggregationDestroyer<ValueList>;
+
+        attachItemSelected(handler: (event: ValueList$ItemSelectedEvent) => void, listener?: object): ValueList;
+        attachItemSelected(data: object, handler: (event: ValueList$ItemSelectedEvent) => void, listener?: object): ValueList;
+        fireItemSelected: (parameters?: ValueList$ItemSelectedEventParameters) => ValueList;
     }
 }
