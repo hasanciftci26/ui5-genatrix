@@ -36,7 +36,6 @@ export default class CustomFBInput extends Input {
         return instance;
     }
 
-    // TODO: BT and NOT_BT handling
     public getFilter(caseSensitive: boolean) {
         const binding = this.getBinding("value") as PropertyBinding;
         const value = this.getProperty("value");

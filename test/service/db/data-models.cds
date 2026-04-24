@@ -15,5 +15,6 @@ entity Countries {
         population    : Integer;
         averageSalary : Decimal(7, 2) @Common.Label: 'Average Salary ($)';
         hasStates     : Boolean;
-        createdOn     : Date;
+        foundedOn     : Date;
+        foundedAt     : Time;
 };

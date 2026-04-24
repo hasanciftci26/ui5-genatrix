@@ -33,6 +33,8 @@ export type ValueListSettings = $ManagedObjectSettings & {
     filterBarExpanded?: boolean;
     filterBarWithParametersOnly?: boolean;
     nonFilterableProperties?: string;
+    showUserInputError?: boolean;
+    userInputErrorMessage?: string;
     parameters?: ValueListParameter[];
     propertyOptions?: ValueListPropertyOption[];
 };
@@ -77,6 +79,10 @@ declare module "ui5/genatrix/metadata/form/ValueList" {
         setFilterBarWithParametersOnly: OptionalPropertySetter<boolean, ValueList>;
         getNonFilterableProperties: OptionalPropertyGetter<string>;
         setNonFilterableProperties: OptionalPropertySetter<string, ValueList>;
+        getShowUserInputError: OptionalPropertyGetter<boolean>;
+        setShowUserInputError: OptionalPropertySetter<boolean, ValueList>;
+        getUserInputErrorMessage: OptionalPropertyGetter<string>;
+        setUserInputErrorMessage: OptionalPropertySetter<string, ValueList>;
 
         getParameters: AggregationGetterMulti<ValueListParameter>;
         addParameter: AggregationSetterOrAdder<ValueListParameter, ValueList>;
@@ -92,6 +98,6 @@ declare module "ui5/genatrix/metadata/form/ValueList" {
         bindPropertyOptions: AggregationBinder<ValueList>;
         removePropertyOption: AggregationRemoverSingle<ValueListPropertyOption>;
         removeAllPropertyOptions: AggregationRemoverAll<ValueListPropertyOption>;
-        destroyPropertyOptions: AggregationDestroyer<ValueList>;        
+        destroyPropertyOptions: AggregationDestroyer<ValueList>;
     }
 }

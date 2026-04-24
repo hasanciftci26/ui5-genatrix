@@ -58,6 +58,7 @@
                                             propertyName="countryCode"
                                             entitySet="Countries"
                                             datePattern="dd MMMM y"
+                                            timePattern="HH:mm"
                                         >
                                             <formMetadata:ValueListParameter
                                                 type="InOut"
@@ -78,7 +79,11 @@
                                             />
                                             <formMetadata:ValueListParameter
                                                 type="DisplayOnly"
-                                                valueListProperty="createdOn"
+                                                valueListProperty="foundedOn"
+                                            />
+                                            <formMetadata:ValueListParameter
+                                                type="DisplayOnly"
+                                                valueListProperty="foundedAt"
                                             />
                                             <formMetadata:propertyOptions>
                                                 <formMetadata:ValueListPropertyOption

@@ -6,6 +6,7 @@ import ValueListPropertyOption from "ui5/genatrix/metadata/form/ValueListPropert
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 
 export type FilterBarGenerator$SearchEventParameters = {
+    userInputError: boolean;
     filter?: Filter;
 };
 

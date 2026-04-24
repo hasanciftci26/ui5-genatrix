@@ -7,6 +7,7 @@ import EventProvider from "sap/ui/base/EventProvider";
 import FilterBar from "sap/ui/comp/filterbar/FilterBar";
 import FilterGroupItem from "sap/ui/comp/filterbar/FilterGroupItem";
 import Item from "sap/ui/core/Item";
+import { ValueState } from "sap/ui/core/library";
 import Messaging from "sap/ui/core/Messaging";
 import Filter from "sap/ui/model/Filter";
 import JSONModel from "sap/ui/model/json/JSONModel";
@@ -64,8 +65,9 @@ export default class FilterBarGenerator extends EventProvider {
         this.attachEvent("search", handler, listener);
     }
 
-    private fireSearch(filter?: Filter) {
+    private fireSearch(userInputError: boolean, filter?: Filter) {
         this.fireEvent("search", {
+            userInputError: userInputError,
             filter: filter
         });
     }
@@ -163,6 +165,7 @@ export default class FilterBarGenerator extends EventProvider {
 
     private getTimePicker(property: EntityProperty) {
         const control = new TimePicker({
+            name: property.name,
             value: {
                 path: `${this.modelName}>/${property.name}`,
                 type: new Time(this.getTimeFormatOptions())
@@ -184,6 +187,7 @@ export default class FilterBarGenerator extends EventProvider {
         const type = new ODataBoolean();
 
         const control = new Select({
+            name: property.name,
             selectedKey: {
                 path: `${this.modelName}>/${property.name}`
             },
@@ -199,7 +203,7 @@ export default class FilterBarGenerator extends EventProvider {
     }
 
     private getSingleInput(property: EntityProperty) {
-        return CustomFBInput.createInstance(property.name, this.modelName, {
+        const input = CustomFBInput.createInstance(property.name, this.modelName, {
             property: property,
             groupingEnabled: this.settings.groupingEnabled,
             groupingSeparator: this.settings.groupingSeparator,
@@ -207,6 +211,9 @@ export default class FilterBarGenerator extends EventProvider {
             decimalSeparator: this.settings.decimalSeparator,
             parseEmptyValueToZero: this.settings.parseEmptyValueToZero
         });
+
+        input.attachSubmit(() => this.fb.search());
+        return input;
     }
 
     private getMultiInput(property: EntityProperty) {
@@ -221,50 +228,123 @@ export default class FilterBarGenerator extends EventProvider {
     }
 
     private onSearch() {
-        const filter = this.getFilter();
-        this.fireSearch(filter);
+        try {
+            const filter = this.getFilter();
+            this.fireSearch(false, filter);
+        } catch {
+            this.fireSearch(true);
+        }
     }
 
-    // TODO: All filters and error handling
     private getFilter() {
         const filters: Filter[] = [];
-        const searchFieldFilter = this.getSearchFieldFilter();
 
         for (const groupItem of this.fb.getFilterGroupItems()) {
             const control = groupItem.getControl();
 
             if (control instanceof CustomFBInput) {
-                const filter = control.getFilter(this.settings.caseSensitiveSearch);
-
-                if (filter) {
-                    filters.push(filter);
-                }
+                this.addInputFilter(control, filters);
             } else if (control instanceof CustomFBMultiInput) {
-                const filter = control.getFilter(this.settings.caseSensitiveSearch);
-
-                if (filter) {
-                    filters.push(filter);
-                }
+                this.addMultiInputFilter(control, filters);
+            } else if (control instanceof Select) {
+                this.addSelectFilter(control, filters);
+            } else if (control instanceof TimePicker) {
+                this.addTimePickerFilter(control, filters);
+            } else if (control instanceof DynamicDateRange) {
+                this.addDynamicDateRangeFilter(control, filters);
             }
         }
 
-        if (searchFieldFilter) {
-            filters.push(searchFieldFilter);
-        }
+        this.addSearchFieldFilter(filters);
 
         if (filters.length) {
             return new Filter({ filters: filters, and: true });
         }
     }
 
-    private getSearchFieldFilter() {
+    private addInputFilter(control: CustomFBInput, filters: Filter[]) {
+        if (control.getValueState() === ValueState.Error) {
+            this.throwUserInputError();
+        }
+
+        const filter = control.getFilter(this.settings.caseSensitiveSearch);
+
+        if (filter) {
+            filters.push(filter);
+        }
+    }
+
+    private addMultiInputFilter(control: CustomFBMultiInput, filters: Filter[]) {
+        if (control.getValueState() === ValueState.Error) {
+            this.throwUserInputError();
+        }
+
+        const filter = control.getFilter(this.settings.caseSensitiveSearch);
+
+        if (filter) {
+            filters.push(filter);
+        }
+    }
+
+    private addSelectFilter(control: Select, filters: Filter[]) {
+        if (control.getValueState() === ValueState.Error) {
+            this.throwUserInputError();
+        }
+
+        const selectedKey = control.getSelectedKey();
+        const propertyName = control.getName();
+
+        if (selectedKey === "NONE") {
+            return;
+        }
+
+        filters.push(new Filter(propertyName, "EQ", selectedKey === "YES"));
+    }
+
+    private addTimePickerFilter(control: TimePicker, filters: Filter[]) {
+        if (control.getValueState() === ValueState.Error) {
+            this.throwUserInputError();
+        }
+
+        const dateValue = control.getDateValue();
+
+        if (dateValue != null) {
+            const propertyName = control.getName();
+            const value = this.convertTimeToODataFormat(dateValue);
+
+            filters.push(new Filter(propertyName, "EQ", value));
+        }
+    }
+
+    private addDynamicDateRangeFilter(control: DynamicDateRange, filters: Filter[]) {
+        if (control.getValueState() === ValueState.Error) {
+            this.throwUserInputError();
+        }
+
+        const value = control.getValue();
+
+        if (value) {
+            const dates = DynamicDateRange.toDates(value, "Default");
+            const propertyName = control.getName();
+
+            if (value.operator === "FROM" || value.operator === "FROMDATETIME") {
+                filters.push(new Filter(propertyName, "GT", dates[0]));
+            } else if (value.operator === "TO" || value.operator === "TODATETIME") {
+                filters.push(new Filter(propertyName, "LT", dates[0]));
+            } else {
+                filters.push(new Filter(propertyName, "BT", dates[0], dates[1]));
+            }
+        }
+    }
+
+    private addSearchFieldFilter(filters: Filter[]) {
         if (this.searchField) {
             const value = this.searchField.getValue();
 
             if (value != null && value !== "") {
                 const properties = this.settings.properties.filter(prop => prop.filterable && prop.type === "Edm.String");
 
-                const filters: Filter[] = properties.map((prop) => {
+                const subFilters: Filter[] = properties.map((prop) => {
                     return new Filter({
                         path: prop.name,
                         operator: "Contains",
@@ -273,10 +353,22 @@ export default class FilterBarGenerator extends EventProvider {
                     });
                 });
 
-                if (filters.length) {
-                    return new Filter({ filters: filters, and: false });
+                if (subFilters.length) {
+                    filters.push(new Filter({ filters: subFilters, and: false }));
                 }
             }
         }
+    }
+
+    private convertTimeToODataFormat(date: Date) {
+        return `PT${this.padTimeNumber(date.getHours())}H${this.padTimeNumber(date.getMinutes())}M${this.padTimeNumber(date.getSeconds())}S`;
+    }
+
+    private padTimeNumber(number: number) {
+        return number.toString().padStart(2, "0");
+    }
+
+    private throwUserInputError(): never {
+        throw new Error("FilterBar user input error.");
     }
 }

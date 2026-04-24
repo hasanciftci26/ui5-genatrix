@@ -1,5 +1,5 @@
-code;name;population;averageSalary;createdOn
-DE;Germany;85000000;5370.55;1900-01-01
-BG;Bulgaria;6700000;1500.84;1900-01-01
-TR;Türkiye;85000000;1105.34;1900-01-01
-DK;Denmark;6000000;7423.46;1900-01-01
+code;name;population;averageSalary;hasStates;foundedOn;foundedAt
+DE;Germany;85000000;5370.55;true;1949-05-23;10:00:00
+BG;Bulgaria;6700000;1500.84;false;1991-07-12;11:00:00
+TR;Türkiye;85000000;1105.34;false;1923-10-29;12:00:00
+DK;Denmark;6000000;7423.46;false;1849-06-05;13:00:00

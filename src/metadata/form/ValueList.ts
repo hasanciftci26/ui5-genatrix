@@ -32,6 +32,8 @@ import Guid from "sap/ui/model/odata/type/Guid";
 import ODataDate from "sap/ui/model/odata/type/Date";
 import DateTime from "sap/ui/model/odata/type/DateTime";
 import Time from "sap/ui/model/odata/type/Time";
+import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
+import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
 
 /**
  * @namespace ui5.genatrix.metadata.form
@@ -59,7 +61,9 @@ export default class ValueList extends ManagedObject {
             parseEmptyValueToZero: { type: "boolean", defaultValue: false },
             filterBarExpanded: { type: "boolean", defaultValue: false },
             filterBarWithParametersOnly: { type: "boolean", defaultValue: false },
-            nonFilterableProperties: { type: "string" }
+            nonFilterableProperties: { type: "string" },
+            showUserInputError: { type: "boolean", defaultValue: true },
+            userInputErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.valueListUserInput") }
         },
         defaultAggregation: "parameters",
         aggregations: {
@@ -224,16 +228,21 @@ export default class ValueList extends ManagedObject {
 
     private async onSearch(event: FilterBarGenerator$SearchEvent) {
         const filter = event.getParameter("filter");
-        const binding = await this.getListBinding();
+        const userInputError = event.getParameter("userInputError");
 
-        if (!binding) {
-            return;
-        }
-
-        if (filter) {
-            binding.filter(filter);
+        if (userInputError) {
+            if (this.getShowUserInputError()) {
+                const errorMessage = this.getUserInputErrorMessage() || LibraryBundle.getText("genatrix.error.valueListUserInput");
+                CustomMessageBox.error(errorMessage);
+            }
         } else {
-            binding.filter();
+            const binding = await this.getListBinding();
+
+            if (!binding) {
+                return;
+            }
+
+            binding.filter(filter);
         }
     }
 
