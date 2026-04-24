@@ -190,7 +190,7 @@ export default class ValueList extends ManagedObject {
         for (const parameter of parameters) {
             const property = properties.find(property => property.name === parameter.getValueListProperty());
 
-            if (parameter.getType() === ParameterType.In || parameter.getType() === ParameterType.FilterOnly || !property) {
+            if (parameter.getType() === ParameterType.FilterOnly || !property) {
                 continue;
             }
 
@@ -224,7 +224,7 @@ export default class ValueList extends ManagedObject {
         for (const parameter of parameters) {
             const property = properties.find(property => property.name === parameter.getValueListProperty());
 
-            if (parameter.getType() === ParameterType.In || parameter.getType() === ParameterType.FilterOnly || !property) {
+            if (parameter.getType() === ParameterType.FilterOnly || !property) {
                 continue;
             }
 

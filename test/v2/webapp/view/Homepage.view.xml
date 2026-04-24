@@ -52,6 +52,8 @@
                                 <form:DialogForm
                                     entitySet="Employees"
                                     datePattern="dd MMMM y"
+                                    groupingSeparator=" "
+                                    decimalSeparator=","
                                 >
                                     <form:valueLists>
                                         <formMetadata:ValueList
@@ -61,41 +63,20 @@
                                             timePattern="HH:mm"
                                         >
                                             <formMetadata:ValueListParameter
-                                                type="InOut"
+                                                type="Out"
                                                 localDataProperty="countryCode"
-                                                valueListProperty="population"
-                                            />
-                                            <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="name"
-                                            />
-                                            <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="population"
+                                                valueListProperty="code"
                                             />
                                             <formMetadata:ValueListParameter
                                                 type="Out"
-                                                localDataProperty="workingStartAt"
-                                                valueListProperty="foundedAt"
+                                                localDataProperty="firstName"
+                                                valueListProperty="name"
                                             />
                                             <formMetadata:ValueListParameter
-                                                type="DisplayOnly"
-                                                valueListProperty="foundedOn"
+                                                type="Out"
+                                                localDataProperty="fixedSalary"
+                                                valueListProperty="averageSalary"
                                             />
-                                            <formMetadata:propertyOptions>
-                                                <formMetadata:ValueListPropertyOption
-                                                    propertyName="name"
-                                                    label="Country Name"
-                                                />
-                                                <formMetadata:ValueListPropertyOption
-                                                    propertyName="createdOn"
-                                                    filterable="false"
-                                                />
-                                                <formMetadata:ValueListPropertyOption
-                                                    propertyName="population"
-                                                    filterRestriction="SingleValue"
-                                                />
-                                            </formMetadata:propertyOptions>
                                         </formMetadata:ValueList>
                                     </form:valueLists>
                                 </form:DialogForm>
