@@ -288,7 +288,10 @@ export default class FilterBarGenerator extends EventProvider {
         });
 
         input.attachSubmit(() => this.fb.search());
-        input.attachValueHelpRequest(this.openSingleRangeValueHelpDialog, this);
+
+        input.attachValueHelpRequest((event) => {
+            this.openRangeValueHelpDialog("Single", property, event.getSource());
+        });
 
         return input;
     }
@@ -303,7 +306,10 @@ export default class FilterBarGenerator extends EventProvider {
             parseEmptyValueToZero: this.settings.parseEmptyValueToZero
         });
 
-        input.attachValueHelpRequest(this.openMultiRangeValueHelpDialog, this);
+        input.attachValueHelpRequest((event) => {
+            this.openRangeValueHelpDialog("Multi", property, event.getSource());
+        });
+
         return input;
     }
 
@@ -481,25 +487,24 @@ export default class FilterBarGenerator extends EventProvider {
         return false;
     }
 
-    private openSingleRangeValueHelpDialog() {
+    private openRangeValueHelpDialog(type: "Single" | "Multi", property: EntityProperty, source: CustomFBInput | CustomFBMultiInput) {
         if (this.conditionsGenerator) {
             this.conditionsGenerator.destroy();
         }
 
         this.conditionsGenerator = new ConditionsGenerator({
-            type: "Single"
-        });
-
-        this.conditionsGenerator.open();
-    }
-
-    private openMultiRangeValueHelpDialog() {
-        if (this.conditionsGenerator) {
-            this.conditionsGenerator.destroy();
-        }
-
-        this.conditionsGenerator = new ConditionsGenerator({
-            type: "Multi"
+            type: type,
+            property: property,
+            source: source,
+            groupingEnabled: this.settings.groupingEnabled,
+            groupingSeparator: this.settings.groupingSeparator,
+            groupingSize: this.settings.groupingSize,
+            decimalSeparator: this.settings.decimalSeparator,
+            parseEmptyValueToZero: this.settings.parseEmptyValueToZero,
+            datePattern: this.settings.datePattern,
+            timePattern: this.settings.timePattern,
+            dateTimeSeparator: this.settings.dateTimeSeparator,
+            dateFirst: this.settings.dateFirst
         });
 
         this.conditionsGenerator.open();

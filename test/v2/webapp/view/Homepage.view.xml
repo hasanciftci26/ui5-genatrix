@@ -54,6 +54,7 @@
                                     datePattern="dd MMMM y"
                                     groupingSeparator=" "
                                     decimalSeparator=","
+                                    submitSuccess="onSubmitSuccess"
                                 >
                                     <form:valueLists>
                                         <formMetadata:ValueList
@@ -77,6 +78,12 @@
                                                 localDataProperty="fixedSalary"
                                                 valueListProperty="averageSalary"
                                             />
+                                            <formMetadata:propertyOptions>
+                                                <formMetadata:ValueListPropertyOption
+                                                    propertyName="population"
+                                                    filterRestriction="SingleValue"
+                                                />
+                                            </formMetadata:propertyOptions>
                                         </formMetadata:ValueList>
                                     </form:valueLists>
                                 </form:DialogForm>

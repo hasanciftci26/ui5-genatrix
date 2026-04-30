@@ -75,7 +75,7 @@ export default class CustomFBMultiInput extends MultiInput {
         }
     }
 
-    public addInitialToken(value: any) {
+    public addInitialToken(value: any, range = false) {
         try {
             const binding = this.getBinding("value") as PropertyBinding;
             const type = binding.getType() as CustomFilterBarField;
@@ -87,7 +87,7 @@ export default class CustomFBMultiInput extends MultiInput {
                 key: type.formatValue(parsedValue, "string"),
                 text: type.formatValue(parsedValue, "string"),
                 filterValue: parsedValue,
-                filterOperator: "EQ"
+                filterOperator: range ? type.getOperator() : "EQ"
             }));
 
             return true;

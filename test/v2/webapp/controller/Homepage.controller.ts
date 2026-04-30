@@ -1,6 +1,6 @@
 import DialogForm from "ui5/genatrix/control/v2/form/DialogForm";
 import BaseController from "ui5/genatrix/test/v2/controller/BaseController";
-import { DialogForm$FormValidationErrorEvent } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
+import { DialogForm$FormValidationErrorEvent, DialogForm$SubmitSuccessEvent } from "ui5/genatrix/types/control/v2/form/DialogForm.types";
 
 /**
  * @namespace ui5.genatrix.test.v2.controller
@@ -24,6 +24,10 @@ export default class Homepage extends BaseController {
 
     public onFormValidationError(event: DialogForm$FormValidationErrorEvent) {
         let test = "x";
+    }
+
+    public onSubmitSuccess(event: DialogForm$SubmitSuccessEvent) {
+        
     }
 
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
