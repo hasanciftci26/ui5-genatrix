@@ -41,6 +41,7 @@ import { Input$SuggestEvent } from "sap/m/Input";
 import Filter from "sap/ui/model/Filter";
 import TextArrangement from "ui5/genatrix/control/enum/form/TextArrangement";
 import { TextArrangementType } from "ui5/genatrix/types/control/global/Form.types";
+import Item from "sap/ui/core/Item";
 
 /**
  * @namespace ui5.genatrix.metadata.form
@@ -100,9 +101,9 @@ export default class ValueList extends ManagedObject {
         }
     }
 
-    public async open() {
+    public async open(sourceProperty: string) {
         this.showBusy();
-        const parameters = this.getParametersOrThrow();
+        const parameters = this.getParametersOrThrow(sourceProperty);
 
         const metadataParser = new MetadataParser({
             type: "ValueList",
@@ -161,8 +162,8 @@ export default class ValueList extends ManagedObject {
         this.hideBusy();
     }
 
-    public async bindSuggestionRows(input: CustomInput) {
-        const parameters = this.getParametersOrThrow();
+    public async bindSuggestionRows(input: CustomInput, sourceProperty: string) {
+        const parameters = this.getParametersOrThrow(sourceProperty);
 
         const metadataParser = new MetadataParser({
             type: "ValueList",
@@ -178,8 +179,46 @@ export default class ValueList extends ManagedObject {
         const properties = await metadataParser.getEntityProperties(entitySet);
         const columns = this.addSuggestionColumns(input, properties, parameters);
 
+        const sourcePropertyParam = parameters.find((param) => {
+            return (param.getLocalDataProperty() === sourceProperty) && (param.getType() === ParameterType.InOut || param.getType() === ParameterType.Out);
+        }) as ValueListParameter;
+
+        const valueListPropertyOptions = this.getPropertyOptions().find(opt => opt.getPropertyName() === sourcePropertyParam.getValueListProperty());
+        const valueListTextProperty = properties.find(prop => prop.name === valueListPropertyOptions?.getTextProperty());
+        const textArrangement = valueListPropertyOptions?.getTextArrangement() || TextArrangement.TextFirst;
+
         input.setFilterSuggests(false);
         input.attachSuggest({ properties: columns.filter }, this.onSuggest, this);
+        input.setTextFormatMode("Key");
+
+        if (valueListTextProperty) {
+            switch (textArrangement) {
+                case TextArrangement.TextFirst:
+                    input.setTextFormatMode("ValueKey");
+                    break;
+                case TextArrangement.TextLast:
+                    input.setTextFormatMode("KeyValue");
+                    break;
+                case TextArrangement.TextOnly:
+                    input.setTextFormatMode("Value");
+                    break;
+            }
+        }
+
+        input.setSuggestionRowValidator((columnListItem: ColumnListItem) => {
+            const context = columnListItem.getBindingContext() as Context;
+            const keyValue = context.getProperty(sourcePropertyParam.getValueListProperty() as string);
+            let textValue = keyValue;
+
+            if (valueListTextProperty) {
+                textValue = context.getProperty(valueListTextProperty.name);
+            }
+
+            return new Item({
+                key: context.getProperty(sourcePropertyParam.getValueListProperty() as string),
+                text: textValue
+            });
+        });
 
         input.bindSuggestionRows({
             path: "/" + this.getEntitySet(),
@@ -620,7 +659,7 @@ export default class ValueList extends ManagedObject {
         return entitySet;
     }
 
-    private getParametersOrThrow() {
+    private getParametersOrThrow(sourceProperty: string) {
         const parameters = this.getParameters().map(param => param.getOrThrow());
 
         if (!parameters.length) {
@@ -631,6 +670,40 @@ export default class ValueList extends ManagedObject {
 
         if (!hasOutParameter) {
             this.throwRuntimeError("At least one ValueListParameter with InOut or Out type must be provided");
+        }
+
+        const propertyHasParam = parameters.some((param) => {
+            return (param.getLocalDataProperty() === sourceProperty) && (param.getType() === ParameterType.InOut || param.getType() === ParameterType.Out);
+        });
+
+        if (!propertyHasParam) {
+            this.throwRuntimeError("Property: " + sourceProperty + " must have a ValueListParameter with InOut or Out type");
+        }
+
+        const outParams = new Set();
+        let duplicateKey: string | null = null;
+
+        const duplicateOutParam = parameters.some((param) => {
+            const type = param.getType();
+
+            if (type === ParameterType.InOut || type === ParameterType.Out) {
+                const key = param.getLocalDataProperty() as string;
+
+                if (outParams.has(key)) {
+                    duplicateKey = key;
+                    return true;
+                }
+
+                outParams.add(key);
+            }
+
+            return false;
+        });
+
+        if (duplicateOutParam) {
+            this.throwRuntimeError(
+                `The Local Data Property "${duplicateKey}" is assigned more than once for InOut/Out parameters. Each property can only be used once.`
+            );
         }
 
         return parameters;

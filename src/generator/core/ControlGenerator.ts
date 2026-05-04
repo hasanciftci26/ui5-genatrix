@@ -187,7 +187,7 @@ export default class ControlGenerator extends BaseObject {
             showValueHelp: true,
             showSuggestion: true,
             valueHelpRequest: () => {
-                void valueList.open();
+                void valueList.open(property.name);
             },
             busyIndicatorDelay: 0,
             busy: {
@@ -201,7 +201,7 @@ export default class ControlGenerator extends BaseObject {
             }
         });
 
-        await valueList.bindSuggestionRows(input);
+        await valueList.bindSuggestionRows(input, property.name);
         return input;
     }
 
