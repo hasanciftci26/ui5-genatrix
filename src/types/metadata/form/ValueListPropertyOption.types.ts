@@ -1,6 +1,6 @@
 import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
-import { TextArrangementType } from "sap/ui/comp/library";
 import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
+import { TextArrangementType } from "ui5/genatrix/types/control/global/Form.types";
 import {
     OptionalPropertyGetter,
     OptionalPropertySetter

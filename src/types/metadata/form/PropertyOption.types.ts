@@ -1,6 +1,6 @@
 import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
-import { TextArrangementType } from "sap/ui/comp/library";
 import LayoutData from "sap/ui/core/LayoutData";
+import { TextArrangementType } from "ui5/genatrix/types/control/global/Form.types";
 import {
     AggregationGetterSingle,
     AggregationSetterOrAdder,

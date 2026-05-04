@@ -9,7 +9,7 @@ import GridTableColumn from "sap/ui/table/Column";
 import FilterBarGenerator from "ui5/genatrix/generator/core/FilterBarGenerator";
 import MetadataParser from "ui5/genatrix/odata/v2/MetadataParser";
 import { FilterBarGenerator$SearchEvent } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
-import { ValueListSettings } from "ui5/genatrix/types/metadata/form/ValueList.types";
+import { SuggestHandlerData, ValueListSettings } from "ui5/genatrix/types/metadata/form/ValueList.types";
 import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import ValueListParameter from "ui5/genatrix/metadata/form/ValueListParameter";
@@ -36,7 +36,11 @@ import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
 import Context from "sap/ui/model/odata/v2/Context";
 import ParameterType from "ui5/genatrix/metadata/enum/valuelist/ParameterType";
-import { TextArrangementType } from "sap/ui/comp/library";
+import CustomInput from "ui5/genatrix/control/extension/CustomInput";
+import { Input$SuggestEvent } from "sap/m/Input";
+import Filter from "sap/ui/model/Filter";
+import TextArrangement from "ui5/genatrix/control/enum/form/TextArrangement";
+import { TextArrangementType } from "ui5/genatrix/types/control/global/Form.types";
 
 /**
  * @namespace ui5.genatrix.metadata.form
@@ -157,6 +161,35 @@ export default class ValueList extends ManagedObject {
         this.hideBusy();
     }
 
+    public async bindSuggestionRows(input: CustomInput) {
+        const parameters = this.getParametersOrThrow();
+
+        const metadataParser = new MetadataParser({
+            type: "ValueList",
+            classId: this.getId(),
+            model: this.getODataModelFromParent(),
+            filterBarWithParametersOnly: this.getFilterBarWithParametersOnly() ?? false,
+            nonFilterableProperties: this.getNonFilterableProperties()?.split(",") || [],
+            parameters: parameters,
+            propertyOptions: this.getPropertyOptions()
+        });
+
+        const entitySet = this.getEntitySetOrThrow();
+        const properties = await metadataParser.getEntityProperties(entitySet);
+        const columns = this.addSuggestionColumns(input, properties, parameters);
+
+        input.setFilterSuggests(false);
+        input.attachSuggest({ properties: columns.filter }, this.onSuggest, this);
+
+        input.bindSuggestionRows({
+            path: "/" + this.getEntitySet(),
+            length: 99999,
+            template: new ColumnListItem({
+                cells: columns.cells
+            })
+        });
+    }
+
     private async bindTable(properties: EntityProperty[], parameters: ValueListParameter[]) {
         const table = await this.vhd.getTableAsync();
 
@@ -203,7 +236,7 @@ export default class ValueList extends ManagedObject {
             }));
 
             // Add as a separate column
-            if (textProperty && propertyOptions?.getTextArrangement() === TextArrangementType.TextSeparate) {
+            if (textProperty && propertyOptions?.getTextArrangement() === TextArrangement.TextSeparate) {
                 table.addColumn(new GridTableColumn({
                     label: new Label({ text: textProperty.label }),
                     template: this.getTextControl(textProperty)
@@ -248,7 +281,7 @@ export default class ValueList extends ManagedObject {
             cells.push(this.getTextControl(property, textProperty, propertyOptions?.getTextArrangement()));
 
             // Add as a separate column
-            if (textProperty && propertyOptions?.getTextArrangement() === TextArrangementType.TextSeparate) {
+            if (textProperty && propertyOptions?.getTextArrangement() === TextArrangement.TextSeparate) {
                 table.addColumn(new ResponsiveTableColumn({
                     header: new Label({ text: textProperty.label })
                 }));
@@ -258,6 +291,74 @@ export default class ValueList extends ManagedObject {
         }
 
         return cells;
+    }
+
+    private addSuggestionColumns(input: CustomInput, properties: EntityProperty[], parameters: ValueListParameter[]) {
+        const cells: Control[] = [];
+        const filter: string[] = [];
+
+        for (const parameter of parameters) {
+            const property = properties.find(property => property.name === parameter.getValueListProperty());
+            const propertyOptions = this.getPropertyOptions().find(opt => opt.getPropertyName() === parameter.getValueListProperty());
+            const textProperty = properties.find(property => property.name === propertyOptions?.getTextProperty());
+
+            if (parameter.getType() === ParameterType.FilterOnly || !property) {
+                continue;
+            }
+
+            input.addSuggestionColumn(new ResponsiveTableColumn({
+                header: new Label({ text: property.label })
+            }));
+
+            cells.push(this.getTextControl(property, textProperty, propertyOptions?.getTextArrangement()));
+
+            if (property.type === "Edm.String") {
+                filter.push(property.name);
+            }
+
+            // Add as a separate column
+            if (textProperty && propertyOptions?.getTextArrangement() === TextArrangement.TextSeparate) {
+                input.addSuggestionColumn(new ResponsiveTableColumn({
+                    header: new Label({ text: textProperty.label })
+                }));
+
+                cells.push(this.getTextControl(textProperty));
+            }
+
+            if (textProperty?.type === "Edm.String") {
+                filter.push(textProperty.name);
+            }
+        }
+
+        return {
+            cells: cells,
+            filter: filter
+        };
+    }
+
+    private onSuggest(event: Input$SuggestEvent, filter: SuggestHandlerData) {
+        const value = event.getParameter("suggestValue");
+        const binding = event.getSource().getBinding("suggestionRows") as ODataListBinding;
+
+        if (value && filter.properties.length) {
+            const filters: Filter[] = [];
+
+            for (const property of filter.properties) {
+                filters.push(new Filter({
+                    path: property,
+                    operator: "Contains",
+                    value1: value,
+                    caseSensitive: this.getCaseSensitiveSearch() ?? false
+                }));
+            }
+
+            binding.filter(new Filter({
+                filters: filters,
+                and: false
+            }));
+        } else {
+            binding.filter();
+        }
     }
 
     private async onSearch(event: FilterBarGenerator$SearchEvent) {
@@ -327,18 +428,18 @@ export default class ValueList extends ManagedObject {
     }
 
     private getTextControl(property: EntityProperty, textProperty?: EntityProperty, textArrangement?: TextArrangementType) {
-        if (textProperty && textArrangement !== TextArrangementType.TextSeparate) {
-            const arrangement = textArrangement || TextArrangementType.TextFirst;
+        if (textProperty && textArrangement !== TextArrangement.TextSeparate) {
+            const arrangement = textArrangement || TextArrangement.TextFirst;
             let bindingPath = `{${property.name}}`;
 
             switch (arrangement) {
-                case TextArrangementType.TextFirst:
+                case TextArrangement.TextFirst:
                     bindingPath = `{${textProperty.name}} ({${property.name}})`;
                     break;
-                case TextArrangementType.TextLast:
+                case TextArrangement.TextLast:
                     bindingPath = `{${property.name}} ({${textProperty.name}})`;
                     break;
-                case TextArrangementType.TextOnly:
+                case TextArrangement.TextOnly:
                     bindingPath = `{${textProperty.name}}`;
                     break;
             }

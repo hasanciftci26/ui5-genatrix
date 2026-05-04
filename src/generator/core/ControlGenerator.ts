@@ -42,7 +42,7 @@ export default class ControlGenerator extends BaseObject {
         this.busyModel.setDefaultBindingMode("TwoWay");
     }
 
-    public generate(property: EntityProperty) {
+    public async generate(property: EntityProperty) {
         const type = this.getODataType(property);
 
         if (property.readonly) {
@@ -55,7 +55,7 @@ export default class ControlGenerator extends BaseObject {
 
             return control;
         } else {
-            const control = this.getEditableControl(property, type);
+            const control = await this.getEditableControl(property, type);
             const propertyOptions = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name);
             const layoutData = propertyOptions?.getLayoutData();
 
@@ -89,7 +89,7 @@ export default class ControlGenerator extends BaseObject {
         });
     }
 
-    private getEditableControl(property: EntityProperty, type: Type) {
+    private async getEditableControl(property: EntityProperty, type: Type) {
         switch (property.type) {
             case "Edm.Boolean":
                 return new CheckBox({
@@ -153,7 +153,7 @@ export default class ControlGenerator extends BaseObject {
         }
     }
 
-    private generateInput(property: EntityProperty, type: Type) {
+    private async generateInput(property: EntityProperty, type: Type) {
         const valueList = this.settings.valueLists.find(list => list.getPropertyName() === property.name);
 
         if (valueList && ["Edm.String", "Edm.Guid"].includes(property.type)) {
@@ -182,9 +182,10 @@ export default class ControlGenerator extends BaseObject {
         });
     }
 
-    private generateInputWithValueList(property: EntityProperty, type: Type, valueList: ValueList) {
-        return new CustomInput(property.name, {
+    private async generateInputWithValueList(property: EntityProperty, type: Type, valueList: ValueList) {
+        const input = new CustomInput(property.name, {
             showValueHelp: true,
+            showSuggestion: true,
             valueHelpRequest: () => {
                 void valueList.open();
             },
@@ -199,6 +200,9 @@ export default class ControlGenerator extends BaseObject {
                 type: type
             }
         });
+
+        await valueList.bindSuggestionRows(input);
+        return input;
     }
 
     // TODO

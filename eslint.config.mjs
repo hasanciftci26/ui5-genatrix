@@ -107,7 +107,7 @@ export default [
         rules: baseRules
     },
     {
-        files: ["**/*.types.ts"],
+        files: ["**/*.types.ts", "**/*.d.ts"],
         languageOptions: {
             parser: parserTypescript,
             parserOptions: {

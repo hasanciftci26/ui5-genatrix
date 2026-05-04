@@ -74,10 +74,12 @@ export default class FormGenerator extends BaseObject {
         const elements: FormElement[] = [];
 
         for (const property of properties) {
+            const control = await this.controlGenerator.generate(property);
+
             elements.push({
                 propertyName: property.name,
                 label: new Label({ text: property.label }),
-                control: this.controlGenerator.generate(property),
+                control: control,
                 grouped: false
             });
         }

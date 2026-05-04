@@ -48,6 +48,10 @@ export type ValueList$ItemSelectedEventParameters = {
 
 export type ValueList$ItemSelectedEvent = Event<ValueList$ItemSelectedEventParameters, ValueList>;
 
+export type SuggestHandlerData = {
+    properties: string[];
+};
+
 declare module "ui5/genatrix/metadata/form/ValueList" {
     export default interface ValueList {
         getPropertyName: OptionalPropertyGetter<string>;

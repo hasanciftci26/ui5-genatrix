@@ -1,5 +1,5 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
-import { TextArrangementType } from "sap/ui/comp/library";
+import TextArrangement from "ui5/genatrix/control/enum/form/TextArrangement";
 import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
 import { ValueListPropertyOptionSettings } from "ui5/genatrix/types/metadata/form/ValueListPropertyOption.types";
 
@@ -16,7 +16,7 @@ export default class ValueListPropertyOption extends ManagedObject {
             filterRestriction: { type: "ui5.genatrix.metadata.enum.valuelist.FilterRestriction", defaultValue: FilterRestriction.MultiValue },
             filterable: { type: "boolean", defaultValue: true },
             textProperty: { type: "string" },
-            textArrangement: { type: "sap.ui.comp.TextArrangementType", defaultValue: TextArrangementType.TextFirst }
+            textArrangement: { type: "ui5.genatrix.control.enum.form.TextArrangement", defaultValue: TextArrangement.TextFirst }
         }
     };
 
