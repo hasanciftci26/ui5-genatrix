@@ -1,4 +1,5 @@
 import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
+import { TextArrangementType } from "sap/ui/comp/library";
 import FilterRestriction from "ui5/genatrix/metadata/enum/valuelist/FilterRestriction";
 import {
     OptionalPropertyGetter,
@@ -12,6 +13,8 @@ export type ValueListPropertyOptionSettings = $ManagedObjectSettings & {
     label?: string;
     filterRestriction?: FilterRestrictionType;
     filterable?: boolean;
+    textProperty?: string;
+    textArrangement?: TextArrangementType;
 };
 
 declare module "ui5/genatrix/metadata/form/ValueListPropertyOption" {
@@ -24,5 +27,9 @@ declare module "ui5/genatrix/metadata/form/ValueListPropertyOption" {
         setFilterRestriction: OptionalPropertySetter<FilterRestrictionType, ValueListPropertyOption>;
         getFilterable: OptionalPropertyGetter<boolean>;
         setFilterable: OptionalPropertySetter<boolean, ValueListPropertyOption>;
+        getTextProperty: OptionalPropertyGetter<string>;
+        setTextProperty: OptionalPropertySetter<string, ValueListPropertyOption>;
+        getTextArrangement: OptionalPropertyGetter<TextArrangementType>;
+        setTextArrangement: OptionalPropertySetter<TextArrangementType, ValueListPropertyOption>;
     }
 }

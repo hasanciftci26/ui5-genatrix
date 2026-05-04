@@ -1,4 +1,5 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
+import { TextArrangementType } from "sap/ui/comp/library";
 import { PropertyOptionSettings } from "ui5/genatrix/types/metadata/form/PropertyOption.types";
 
 /**
@@ -25,7 +26,9 @@ export default class PropertyOption extends ManagedObject {
             parseEmptyValueToZero: { type: "boolean", defaultValue: false },
             maximumValue: { type: "string" },
             minimumValue: { type: "string" },
-            requiredErrorMessage: { type: "string" }
+            requiredErrorMessage: { type: "string" },
+            textProperty: { type: "string" },
+            textArrangement: { type: "sap.ui.comp.TextArrangementType", defaultValue: TextArrangementType.TextFirst }
         },
         aggregations: {
             layoutData: { type: "sap.ui.core.LayoutData", multiple: false }

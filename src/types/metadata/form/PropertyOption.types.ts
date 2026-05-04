@@ -1,4 +1,5 @@
 import { $ManagedObjectSettings } from "sap/ui/base/ManagedObject";
+import { TextArrangementType } from "sap/ui/comp/library";
 import LayoutData from "sap/ui/core/LayoutData";
 import {
     AggregationGetterSingle,
@@ -25,6 +26,8 @@ export type PropertyOptionSettings = $ManagedObjectSettings & {
     maximumValue?: string;
     minimumValue?: string;
     requiredErrorMessage?: string;
+    textProperty?: string;
+    textArrangement?: TextArrangementType;    
     layoutData?: LayoutData;
 };
 
@@ -64,6 +67,10 @@ declare module "ui5/genatrix/metadata/form/PropertyOption" {
         setMaximumValue: OptionalPropertySetter<string, PropertyOption>;
         getRequiredErrorMessage: OptionalPropertyGetter<string>;
         setRequiredErrorMessage: OptionalPropertySetter<string, PropertyOption>;
+        getTextProperty: OptionalPropertyGetter<string>;
+        setTextProperty: OptionalPropertySetter<string, PropertyOption>;
+        getTextArrangement: OptionalPropertyGetter<TextArrangementType>;
+        setTextArrangement: OptionalPropertySetter<TextArrangementType, PropertyOption>;        
         getLayoutData: AggregationGetterSingle<LayoutData>;
         setLayoutData: AggregationSetterOrAdder<LayoutData, PropertyOption>;
     }

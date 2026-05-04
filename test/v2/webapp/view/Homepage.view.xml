@@ -68,17 +68,12 @@
                                                 localDataProperty="countryCode"
                                                 valueListProperty="code"
                                             />
-                                            <formMetadata:ValueListParameter
-                                                type="Out"
-                                                localDataProperty="firstName"
-                                                valueListProperty="name"
-                                            />
-                                            <formMetadata:ValueListParameter
-                                                type="Out"
-                                                localDataProperty="fixedSalary"
-                                                valueListProperty="averageSalary"
-                                            />
                                             <formMetadata:propertyOptions>
+                                                <formMetadata:ValueListPropertyOption
+                                                    propertyName="code"
+                                                    textProperty="name"
+                                                    textArrangement="TextOnly"
+                                                />
                                                 <formMetadata:ValueListPropertyOption
                                                     propertyName="population"
                                                     filterRestriction="SingleValue"

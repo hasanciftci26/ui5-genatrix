@@ -36,6 +36,7 @@ import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
 import Context from "sap/ui/model/odata/v2/Context";
 import ParameterType from "ui5/genatrix/metadata/enum/valuelist/ParameterType";
+import { TextArrangementType } from "sap/ui/comp/library";
 
 /**
  * @namespace ui5.genatrix.metadata.form
@@ -189,6 +190,8 @@ export default class ValueList extends ManagedObject {
     private addGridTableColumns(table: GridTable, properties: EntityProperty[], parameters: ValueListParameter[]) {
         for (const parameter of parameters) {
             const property = properties.find(property => property.name === parameter.getValueListProperty());
+            const propertyOptions = this.getPropertyOptions().find(opt => opt.getPropertyName() === parameter.getValueListProperty());
+            const textProperty = properties.find(property => property.name === propertyOptions?.getTextProperty());
 
             if (parameter.getType() === ParameterType.FilterOnly || !property) {
                 continue;
@@ -196,8 +199,16 @@ export default class ValueList extends ManagedObject {
 
             table.addColumn(new GridTableColumn({
                 label: new Label({ text: property.label }),
-                template: this.getTextControl(property)
+                template: this.getTextControl(property, textProperty, propertyOptions?.getTextArrangement())
             }));
+
+            // Add as a separate column
+            if (textProperty && propertyOptions?.getTextArrangement() === TextArrangementType.TextSeparate) {
+                table.addColumn(new GridTableColumn({
+                    label: new Label({ text: textProperty.label }),
+                    template: this.getTextControl(textProperty)
+                }));
+            }
         }
     }
 
@@ -223,6 +234,8 @@ export default class ValueList extends ManagedObject {
 
         for (const parameter of parameters) {
             const property = properties.find(property => property.name === parameter.getValueListProperty());
+            const propertyOptions = this.getPropertyOptions().find(opt => opt.getPropertyName() === parameter.getValueListProperty());
+            const textProperty = properties.find(property => property.name === propertyOptions?.getTextProperty());
 
             if (parameter.getType() === ParameterType.FilterOnly || !property) {
                 continue;
@@ -232,7 +245,16 @@ export default class ValueList extends ManagedObject {
                 header: new Label({ text: property.label })
             }));
 
-            cells.push(this.getTextControl(property));
+            cells.push(this.getTextControl(property, textProperty, propertyOptions?.getTextArrangement()));
+
+            // Add as a separate column
+            if (textProperty && propertyOptions?.getTextArrangement() === TextArrangementType.TextSeparate) {
+                table.addColumn(new ResponsiveTableColumn({
+                    header: new Label({ text: textProperty.label })
+                }));
+
+                cells.push(this.getTextControl(textProperty));
+            }
         }
 
         return cells;
@@ -304,13 +326,34 @@ export default class ValueList extends ManagedObject {
         this.vhd.destroy();
     }
 
-    private getTextControl(property: EntityProperty) {
-        return new Text({
-            text: {
-                path: property.name,
-                type: this.getODataType(property)
+    private getTextControl(property: EntityProperty, textProperty?: EntityProperty, textArrangement?: TextArrangementType) {
+        if (textProperty && textArrangement !== TextArrangementType.TextSeparate) {
+            const arrangement = textArrangement || TextArrangementType.TextFirst;
+            let bindingPath = `{${property.name}}`;
+
+            switch (arrangement) {
+                case TextArrangementType.TextFirst:
+                    bindingPath = `{${textProperty.name}} ({${property.name}})`;
+                    break;
+                case TextArrangementType.TextLast:
+                    bindingPath = `{${property.name}} ({${textProperty.name}})`;
+                    break;
+                case TextArrangementType.TextOnly:
+                    bindingPath = `{${textProperty.name}}`;
+                    break;
             }
-        });
+
+            return new Text({
+                text: bindingPath
+            });
+        } else {
+            return new Text({
+                text: {
+                    path: property.name,
+                    type: this.getODataType(property)
+                }
+            });
+        }
     }
 
     private getODataType(property: EntityProperty) {
