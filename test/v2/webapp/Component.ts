@@ -5,7 +5,7 @@ import { createDeviceModel } from "ui5/genatrix/test/v2/model/models";
  * @namespace ui5.genatrix.test.v2
  */
 export default class Component extends UIComponent {
-    public static metadata = {
+    public static readonly metadata = {
         manifest: "json"
     };
 

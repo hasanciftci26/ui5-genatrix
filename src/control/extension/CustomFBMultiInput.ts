@@ -1,32 +1,37 @@
-import MultiInput, { $MultiInputSettings } from "sap/m/MultiInput";
+import MultiInput from "sap/m/MultiInput";
+import { MetadataOptions } from "sap/ui/core/Element";
 import Filter from "sap/ui/model/Filter";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import CustomFBToken from "ui5/genatrix/control/extension/CustomFBToken";
 import CustomFilterBarField from "ui5/genatrix/odata/type/CustomFilterBarField";
+import { CustomFBMultiInputSettings } from "ui5/genatrix/types/control/extension/CustomFBMultiInput.types";
 import { CustomFilterBarFieldSettings } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
 
 /**
  * @namespace ui5.genatrix.control.extension
  */
 export default class CustomFBMultiInput extends MultiInput {
-    static readonly renderer = {};
-    private readonly propertyName: string;
+    public static readonly metadata: MetadataOptions = {
+        properties: {
+            propertyName: { type: "string" }
+        }
+    };
+    public static readonly renderer = {};
 
-    constructor(propertyName: string, settings?: $MultiInputSettings);
-    constructor(propertyName: string, id?: string, settings?: $MultiInputSettings);
+    constructor(settings?: CustomFBMultiInputSettings);
+    constructor(id?: string, settings?: CustomFBMultiInputSettings);
 
-    constructor(propertyName: string, idOrSettings?: string | $MultiInputSettings, settings?: $MultiInputSettings) {
+    constructor(idOrSettings?: string | CustomFBMultiInputSettings, settings?: CustomFBMultiInputSettings) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
             super(idOrSettings);
         }
-
-        this.propertyName = propertyName;
     }
 
-    public static createInstance(propertyName: string, modelName: string, settings: CustomFilterBarFieldSettings) {
-        const instance = new CustomFBMultiInput(propertyName, {
+    public static createInstance(modelName: string, settings: CustomFilterBarFieldSettings) {
+        const instance = new CustomFBMultiInput({
+            propertyName: settings.property.name,
             showValueHelp: true,
             value: {
                 path: `${modelName}>/${settings.property.name}`,
@@ -38,7 +43,8 @@ export default class CustomFBMultiInput extends MultiInput {
             try {
                 const userInput = instance.getUserInput();
 
-                return new CustomFBToken(propertyName, {
+                return new CustomFBToken({
+                    propertyName: settings.property.name,
                     key: userInput.formattedValue,
                     text: userInput.formattedValue,
                     filterValue: userInput.parsedValue,
@@ -83,7 +89,8 @@ export default class CustomFBMultiInput extends MultiInput {
 
             void type.validateValue(parsedValue);
 
-            this.addToken(new CustomFBToken(this.propertyName, {
+            this.addToken(new CustomFBToken({
+                propertyName: this.getPropertyName(),
                 key: type.formatValue(parsedValue, "string"),
                 text: type.formatValue(parsedValue, "string"),
                 filterValue: parsedValue,

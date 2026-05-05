@@ -1,25 +1,29 @@
-import TimePicker, { $TimePickerSettings } from "sap/m/TimePicker";
+import TimePicker from "sap/m/TimePicker";
+import { MetadataOptions } from "sap/ui/core/Element";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import SimpleType from "sap/ui/model/SimpleType";
+import { CustomTimePickerSettings } from "ui5/genatrix/types/control/extension/CustomTimePicker.types";
 
 /**
  * @namespace ui5.genatrix.control.extension
  */
 export default class CustomTimePicker extends TimePicker {
-    static readonly renderer = {};
-    private readonly propertyName: string;
+    public static readonly metadata: MetadataOptions = {
+        properties: {
+            propertyName: { type: "string" }
+        }
+    };
+    public static readonly renderer = {};
 
-    constructor(propertyName: string, settings?: $TimePickerSettings);
-    constructor(propertyName: string, id?: string, settings?: $TimePickerSettings);
+    constructor(settings?: CustomTimePickerSettings);
+    constructor(id?: string, settings?: CustomTimePickerSettings);
 
-    constructor(propertyName: string, idOrSettings?: string | $TimePickerSettings, settings?: $TimePickerSettings) {
+    constructor(idOrSettings?: string | CustomTimePickerSettings, settings?: CustomTimePickerSettings) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
             super(idOrSettings);
         }
-
-        this.propertyName = propertyName;
     }
 
     public async checkValuesValidity() {
@@ -28,9 +32,5 @@ export default class CustomTimePicker extends TimePicker {
         const type = binding.getType() as SimpleType;
 
         await type.validateValue(type.parseValue(value, "string"));
-    }
-
-    public getPropertyName() {
-        return this.propertyName;
     }
 }

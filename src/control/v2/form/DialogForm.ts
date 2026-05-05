@@ -28,7 +28,7 @@ import Response from "ui5/genatrix/odata/v2/Response";
  * @namespace ui5.genatrix.control.v2.form
  */
 export default class DialogForm<ContextDataT extends Record<string, any> = Record<string, any>> extends Control {
-    public static metadata: MetadataOptions = {
+    public static readonly metadata: MetadataOptions = {
         library: "ui5.genatrix",
         properties: {
             entitySet: { type: "string" },

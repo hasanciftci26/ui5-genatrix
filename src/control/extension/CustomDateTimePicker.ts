@@ -1,26 +1,30 @@
-import DateTimePicker, { $DateTimePickerSettings } from "sap/m/DateTimePicker";
+import DateTimePicker from "sap/m/DateTimePicker";
+import { MetadataOptions } from "sap/ui/core/Element";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import SimpleType from "sap/ui/model/SimpleType";
+import { CustomDateTimePickerSettings } from "ui5/genatrix/types/control/extension/CustomDateTimePicker.types";
 
 /**
  * @namespace ui5.genatrix.control.extension
  */
 export default class CustomDateTimePicker extends DateTimePicker {
-    static readonly renderer = {};
-    private readonly propertyName: string;
+    public static readonly metadata: MetadataOptions = {
+        properties: {
+            propertyName: { type: "string" }
+        }
+    };
+    public static readonly renderer = {};
 
-    constructor(propertyName: string, settings?: $DateTimePickerSettings);
-    constructor(propertyName: string, id?: string, settings?: $DateTimePickerSettings);
+    constructor(settings?: CustomDateTimePickerSettings);
+    constructor(id?: string, settings?: CustomDateTimePickerSettings);
 
-    constructor(propertyName: string, idOrSettings?: string | $DateTimePickerSettings, settings?: $DateTimePickerSettings) {
+    constructor(idOrSettings?: string | CustomDateTimePickerSettings, settings?: CustomDateTimePickerSettings) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
             super(idOrSettings);
         }
-
-        this.propertyName = propertyName;
-    }    
+    }
 
     public async checkValuesValidity() {
         const binding = this.getBinding("value") as PropertyBinding;
@@ -29,8 +33,4 @@ export default class CustomDateTimePicker extends DateTimePicker {
 
         await type.validateValue(type.parseValue(value, "string"));
     }
-
-    public getPropertyName() {
-        return this.propertyName;
-    }    
 }

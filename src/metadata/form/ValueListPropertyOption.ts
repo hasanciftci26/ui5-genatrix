@@ -7,7 +7,7 @@ import { ValueListPropertyOptionSettings } from "ui5/genatrix/types/metadata/for
  * @namespace ui5.genatrix.metadata.form
  */
 export default class ValueListPropertyOption extends ManagedObject {
-    public static metadata: MetadataOptions = {
+    public static readonly metadata: MetadataOptions = {
         library: "ui5.genatrix",
         final: true,
         properties: {

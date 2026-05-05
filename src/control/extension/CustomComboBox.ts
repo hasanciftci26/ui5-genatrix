@@ -1,25 +1,29 @@
-import ComboBox, { $ComboBoxSettings } from "sap/m/ComboBox";
+import ComboBox from "sap/m/ComboBox";
+import { MetadataOptions } from "sap/ui/core/Element";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import SimpleType from "sap/ui/model/SimpleType";
+import { CustomComboBoxSettings } from "ui5/genatrix/types/control/extension/CustomComboBox.types";
 
 /**
  * @namespace ui5.genatrix.control.extension
  */
 export default class CustomComboBox extends ComboBox {
-    static readonly renderer = {};
-    private readonly propertyName: string;
+    public static readonly metadata: MetadataOptions = {
+        properties: {
+            propertyName: { type: "string" }
+        }
+    };
+    public static readonly renderer = {};
 
-    constructor(propertyName: string, settings?: $ComboBoxSettings);
-    constructor(propertyName: string, id?: string, settings?: $ComboBoxSettings);
+    constructor(settings?: CustomComboBoxSettings);
+    constructor(id?: string, settings?: CustomComboBoxSettings);
 
-    constructor(propertyName: string, idOrSettings?: string | $ComboBoxSettings, settings?: $ComboBoxSettings) {
+    constructor(idOrSettings?: string | CustomComboBoxSettings, settings?: CustomComboBoxSettings) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
             super(idOrSettings);
         }
-
-        this.propertyName = propertyName;
     }
 
     public async checkValuesValidity() {
@@ -28,9 +32,5 @@ export default class CustomComboBox extends ComboBox {
         const type = binding.getType() as SimpleType;
 
         await type.validateValue(type.parseValue(value, "string"));
-    }
-
-    public getPropertyName() {
-        return this.propertyName;
     }
 }

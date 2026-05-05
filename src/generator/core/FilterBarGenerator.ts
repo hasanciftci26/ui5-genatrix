@@ -278,7 +278,7 @@ export default class FilterBarGenerator extends EventProvider {
     }
 
     private getSingleInput(property: EntityProperty) {
-        const input = CustomFBInput.createInstance(property.name, this.modelName, {
+        const input = CustomFBInput.createInstance(this.modelName, {
             property: property,
             groupingEnabled: this.settings.groupingEnabled,
             groupingSeparator: this.settings.groupingSeparator,
@@ -297,7 +297,7 @@ export default class FilterBarGenerator extends EventProvider {
     }
 
     private getMultiInput(property: EntityProperty) {
-        const input = CustomFBMultiInput.createInstance(property.name, this.modelName, {
+        const input = CustomFBMultiInput.createInstance(this.modelName, {
             property: property,
             groupingEnabled: this.settings.groupingEnabled,
             groupingSeparator: this.settings.groupingSeparator,

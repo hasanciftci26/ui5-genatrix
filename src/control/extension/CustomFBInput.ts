@@ -1,32 +1,37 @@
-import Input, { $InputSettings } from "sap/m/Input";
+import Input from "sap/m/Input";
+import { MetadataOptions } from "sap/ui/core/Element";
 import Filter from "sap/ui/model/Filter";
 import FilterOperator from "sap/ui/model/FilterOperator";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import CustomFilterBarField from "ui5/genatrix/odata/type/CustomFilterBarField";
+import { CustomFBInputSettings } from "ui5/genatrix/types/control/extension/CustomFBInput.types";
 import { CustomFilterBarFieldSettings } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
 
 /**
  * @namespace ui5.genatrix.control.extension
  */
 export default class CustomFBInput extends Input {
-    static readonly renderer = {};
-    private readonly propertyName: string;
+    public static readonly metadata: MetadataOptions = {
+        properties: {
+            propertyName: { type: "string" }
+        }
+    };
+    public static readonly renderer = {};
 
-    constructor(propertyName: string, settings?: $InputSettings);
-    constructor(propertyName: string, id?: string, settings?: $InputSettings);
+    constructor(settings?: CustomFBInputSettings);
+    constructor(id?: string, settings?: CustomFBInputSettings);
 
-    constructor(propertyName: string, idOrSettings?: string | $InputSettings, settings?: $InputSettings) {
+    constructor(idOrSettings?: string | CustomFBInputSettings, settings?: CustomFBInputSettings) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
             super(idOrSettings);
         }
-
-        this.propertyName = propertyName;
     }
 
-    public static createInstance(propertyName: string, modelName: string, settings: CustomFilterBarFieldSettings) {
-        const instance = new CustomFBInput(propertyName, {
+    public static createInstance(modelName: string, settings: CustomFilterBarFieldSettings) {
+        const instance = new CustomFBInput({
+            propertyName: settings.property.name,
             showValueHelp: true,
             value: {
                 path: `${modelName}>/${settings.property.name}`,
@@ -51,14 +56,14 @@ export default class CustomFBInput extends Input {
                 const [low, high] = (parsedValue as string).split("...");
 
                 return new Filter({
-                    path: this.propertyName,
+                    path: this.getPropertyName(),
                     operator: operator,
                     value1: Number(low),
                     value2: Number(high)
                 });
             } else {
                 return new Filter({
-                    path: this.propertyName,
+                    path: this.getPropertyName(),
                     operator: operator,
                     value1: parsedValue,
                     caseSensitive: caseSensitive

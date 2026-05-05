@@ -8,27 +8,25 @@ import { CustomFBTokenSettings } from "ui5/genatrix/types/control/extension/Cust
  * @namespace ui5.genatrix.control.extension
  */
 export default class CustomFBToken extends Token {
-    public static metadata: MetadataOptions = {
+    public static readonly metadata: MetadataOptions = {
         library: "ui5.genatrix",
         properties: {
+            propertyName: { type: "string" },
             filterValue: { type: "any" },
             filterOperator: { type: "string" }
         }
     };
     static readonly renderer = {};
-    private readonly propertyName: string;
 
-    constructor(propertyName: string, settings?: CustomFBTokenSettings);
-    constructor(propertyName: string, id?: string, settings?: CustomFBTokenSettings);
+    constructor(settings?: CustomFBTokenSettings);
+    constructor(id?: string, settings?: CustomFBTokenSettings);
 
-    constructor(propertyName: string, idOrSettings?: string | CustomFBTokenSettings, settings?: CustomFBTokenSettings) {
+    constructor(idOrSettings?: string | CustomFBTokenSettings, settings?: CustomFBTokenSettings) {
         if (typeof idOrSettings === "string") {
             super(idOrSettings, settings);
         } else {
             super(idOrSettings);
         }
-
-        this.propertyName = propertyName;
     }
 
     public getFilter(caseSensitive: boolean) {
@@ -39,14 +37,14 @@ export default class CustomFBToken extends Token {
             const [low, high] = (filterValue as string).split("...");
 
             return new Filter({
-                path: this.propertyName,
+                path: this.getPropertyName(),
                 operator: operator,
                 value1: Number(low),
                 value2: Number(high)
             });
         } else {
             return new Filter({
-                path: this.propertyName,
+                path: this.getPropertyName(),
                 operator: operator,
                 value1: filterValue,
                 caseSensitive: caseSensitive

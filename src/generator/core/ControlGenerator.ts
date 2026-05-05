@@ -100,7 +100,8 @@ export default class ControlGenerator extends BaseObject {
                 });
             case "Edm.DateTime":
                 if (property.displayFormat === "Date") {
-                    return new CustomDatePicker(property.name, {
+                    return new CustomDatePicker({
+                        propertyName: property.name,
                         busyIndicatorDelay: 0,
                         busy: {
                             path: `genatrixBusyModel>/${property.name}`
@@ -112,7 +113,8 @@ export default class ControlGenerator extends BaseObject {
                         }
                     });
                 } else {
-                    return new CustomDateTimePicker(property.name, {
+                    return new CustomDateTimePicker({
+                        propertyName: property.name,
                         busyIndicatorDelay: 0,
                         busy: {
                             path: `genatrixBusyModel>/${property.name}`
@@ -125,7 +127,8 @@ export default class ControlGenerator extends BaseObject {
                     });
                 }
             case "Edm.DateTimeOffset":
-                return new CustomDateTimePicker(property.name, {
+                return new CustomDateTimePicker({
+                    propertyName: property.name,
                     busyIndicatorDelay: 0,
                     busy: {
                         path: `genatrixBusyModel>/${property.name}`
@@ -137,7 +140,8 @@ export default class ControlGenerator extends BaseObject {
                     }
                 });
             case "Edm.Time":
-                return new CustomTimePicker(property.name, {
+                return new CustomTimePicker({
+                    propertyName: property.name,
                     busyIndicatorDelay: 0,
                     busy: {
                         path: `genatrixBusyModel>/${property.name}`
@@ -168,7 +172,8 @@ export default class ControlGenerator extends BaseObject {
     }
 
     private generateInputNoValueList(property: EntityProperty, type: Type) {
-        return new CustomInput(property.name, {
+        return new CustomInput({
+            propertyName: property.name,
             busyIndicatorDelay: 0,
             busy: {
                 path: `genatrixBusyModel>/${property.name}`
@@ -183,7 +188,8 @@ export default class ControlGenerator extends BaseObject {
     }
 
     private async generateInputWithValueList(property: EntityProperty, type: Type, valueList: ValueList) {
-        const input = new CustomInput(property.name, {
+        const input = new CustomInput({
+            propertyName: property.name,
             showValueHelp: true,
             showSuggestion: true,
             valueHelpRequest: () => {
@@ -207,7 +213,7 @@ export default class ControlGenerator extends BaseObject {
 
     // TODO
     private generateComboBox(property: EntityProperty, type: Type, valueList: ValueList) {
-        return new CustomComboBox(property.name);
+        return new CustomComboBox();
     }
 
     private getODataType(property: EntityProperty) {

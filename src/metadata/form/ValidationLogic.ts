@@ -15,7 +15,7 @@ import ValidationEngine from "ui5/genatrix/metadata/form/ValidationEngine";
  * @namespace ui5.genatrix.metadata.form
  */
 export default class ValidationLogic extends ManagedObject {
-    public static metadata: MetadataOptions = {
+    public static readonly metadata: MetadataOptions = {
         library: "ui5.genatrix",
         final: true,
         properties: {
