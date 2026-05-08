@@ -4,6 +4,7 @@ import Context from "sap/ui/model/odata/v2/Context";
 import ValueList from "ui5/genatrix/metadata/form/ValueList";
 import ValueListParameter from "ui5/genatrix/metadata/form/ValueListParameter";
 import ValueListPropertyOption from "ui5/genatrix/metadata/form/ValueListPropertyOption";
+import { TextArrangementType } from "ui5/genatrix/types/control/global/Form.types";
 import {
     AggregationBinder,
     AggregationDestroyer,
@@ -50,6 +51,12 @@ export type ValueList$ItemSelectedEvent = Event<ValueList$ItemSelectedEventParam
 
 export type SuggestHandlerData = {
     properties: string[];
+};
+
+export type ChangeHandlerData = {
+    keyProperty: string;
+    textProperty?: string;
+    textArrangement: TextArrangementType;
 };
 
 declare module "ui5/genatrix/metadata/form/ValueList" {

@@ -9,7 +9,7 @@ import GridTableColumn from "sap/ui/table/Column";
 import FilterBarGenerator from "ui5/genatrix/generator/core/FilterBarGenerator";
 import MetadataParser from "ui5/genatrix/odata/v2/MetadataParser";
 import { FilterBarGenerator$SearchEvent } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
-import { SuggestHandlerData, ValueListSettings } from "ui5/genatrix/types/metadata/form/ValueList.types";
+import { ChangeHandlerData, SuggestHandlerData, ValueListSettings } from "ui5/genatrix/types/metadata/form/ValueList.types";
 import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import ValueListParameter from "ui5/genatrix/metadata/form/ValueListParameter";
@@ -42,6 +42,8 @@ import Filter from "sap/ui/model/Filter";
 import TextArrangement from "ui5/genatrix/control/enum/form/TextArrangement";
 import { TextArrangementType } from "ui5/genatrix/types/control/global/Form.types";
 import Item from "sap/ui/core/Item";
+import ValueListValidator from "ui5/genatrix/metadata/form/ValueListValidator";
+import { CustomInput$ChangeEvent } from "ui5/genatrix/types/control/extension/CustomInput.types";
 
 /**
  * @namespace ui5.genatrix.metadata.form
@@ -87,6 +89,7 @@ export default class ValueList extends ManagedObject {
             }
         }
     };
+    private readonly validator = new ValueListValidator();
     private vhd: ValueHelpDialog;
     private filterBarGenerator: FilterBarGenerator;
 
@@ -191,6 +194,12 @@ export default class ValueList extends ManagedObject {
         input.attachSuggest({ properties: columns.filter }, this.onSuggest, this);
         input.setTextFormatMode("Key");
 
+        input.attachChange({
+            keyProperty: sourcePropertyParam.getValueListProperty() as string,
+            textProperty: valueListTextProperty?.name,
+            textArrangement: textArrangement
+        }, this.onValueListSourceChange, this);
+
         if (valueListTextProperty) {
             switch (textArrangement) {
                 case TextArrangement.TextFirst:
@@ -222,7 +231,6 @@ export default class ValueList extends ManagedObject {
 
         input.bindSuggestionRows({
             path: "/" + this.getEntitySet(),
-            length: 99999,
             template: new ColumnListItem({
                 cells: columns.cells
             })
@@ -707,6 +715,25 @@ export default class ValueList extends ManagedObject {
         }
 
         return parameters;
+    }
+
+    private onValueListSourceChange(event: CustomInput$ChangeEvent, data: ChangeHandlerData) {
+        const input = event.getSource();
+        const value = event.getParameter("value");
+
+        if (input.getSelectedKey() || !value) {
+            return;
+        }
+
+        void this.validator.validateAndSet({
+            value: value,
+            model: this.getODataModelFromParent(),
+            source: input,
+            entitySet: this.getEntitySetOrThrow(),
+            keyProperty: data.keyProperty,
+            textProperty: data.textProperty,
+            textArrangement: data.textArrangement
+        });
     }
 
     private showBusy() {

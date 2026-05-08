@@ -88,6 +88,7 @@ export default class FormGenerator extends BaseObject {
         return this.formContent;
     }
 
+    // TODO Validation for manually entered value list 
     public async validateValues() {
         const invalidProperties: string[] = [];
 

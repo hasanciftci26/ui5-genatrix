@@ -200,8 +200,7 @@ export default class ControlGenerator extends BaseObject {
                 path: `genatrixBusyModel>/${property.name}`
             },
             required: property.required,
-            maxLength: property.maxLength,
-            value: {
+            selectedKey: {
                 path: property.name,
                 type: type
             }
@@ -218,6 +217,8 @@ export default class ControlGenerator extends BaseObject {
 
     private getODataType(property: EntityProperty) {
         const propertyOptions = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name);
+        const validationLogic = this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name);
+
         this.addPropertyToBusyModel(property.name);
 
         switch (property.type) {
@@ -230,7 +231,7 @@ export default class ControlGenerator extends BaseObject {
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.SByte":
                 return new CustomSByte({
@@ -239,7 +240,7 @@ export default class ControlGenerator extends BaseObject {
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.Int16":
                 return new CustomInt16({
@@ -248,7 +249,7 @@ export default class ControlGenerator extends BaseObject {
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.Int32":
                 return new CustomInt32({
@@ -257,7 +258,7 @@ export default class ControlGenerator extends BaseObject {
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.Int64":
                 return new CustomInt64({
@@ -266,7 +267,7 @@ export default class ControlGenerator extends BaseObject {
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.Single":
                 return new CustomSingle({
@@ -275,7 +276,7 @@ export default class ControlGenerator extends BaseObject {
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.Double":
                 return new CustomDouble({
@@ -284,7 +285,7 @@ export default class ControlGenerator extends BaseObject {
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.Decimal":
                 return new CustomDecimal({
@@ -293,7 +294,7 @@ export default class ControlGenerator extends BaseObject {
                     constraints: this.getNumberConstraints(property),
                     formatOptions: this.getNumberFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.DateTime":
                 return new CustomDateTime({
@@ -302,7 +303,7 @@ export default class ControlGenerator extends BaseObject {
                     constraints: this.getDateTimeConstraints(property),
                     formatOptions: this.getDateTimeFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.DateTimeOffset":
                 return new CustomDateTimeOffset({
@@ -310,7 +311,7 @@ export default class ControlGenerator extends BaseObject {
                     busyModel: this.busyModel,
                     formatOptions: this.getDateTimeFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.Time":
                 return new CustomTime({
@@ -318,21 +319,21 @@ export default class ControlGenerator extends BaseObject {
                     busyModel: this.busyModel,
                     formatOptions: this.getDateTimeFormatOptions(property),
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             case "Edm.Guid":
                 return new CustomGuid({
                     property: property,
                     busyModel: this.busyModel,
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
             default:
                 return new CustomString({
                     property: property,
                     busyModel: this.busyModel,
                     propertyOptions: propertyOptions,
-                    validationLogic: this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name)
+                    validationLogic: validationLogic
                 });
         }
     }

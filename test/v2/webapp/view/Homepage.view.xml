@@ -72,6 +72,7 @@
                                                 <formMetadata:ValueListPropertyOption
                                                     propertyName="code"
                                                     textProperty="name"
+                                                    textArrangement="TextOnly"
                                                 />
                                                 <formMetadata:ValueListPropertyOption
                                                     propertyName="population"
