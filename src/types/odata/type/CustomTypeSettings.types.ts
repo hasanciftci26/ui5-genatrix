@@ -56,6 +56,8 @@ export type CustomFilterBarFieldSettings = {
     parseEmptyValueToZero: boolean;    
 };
 
+export type CustomValueListSettings = CustomTypeBase;
+
 export type CustomFilterBarFieldOperator =
     "EQ" |
     "NE" |

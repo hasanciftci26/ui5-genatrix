@@ -9,7 +9,7 @@ import GridTableColumn from "sap/ui/table/Column";
 import FilterBarGenerator from "ui5/genatrix/generator/core/FilterBarGenerator";
 import MetadataParser from "ui5/genatrix/odata/v2/MetadataParser";
 import { FilterBarGenerator$SearchEvent } from "ui5/genatrix/types/generator/core/FilterBarGenerator.types";
-import { ChangeHandlerData, SuggestHandlerData, ValueListSettings } from "ui5/genatrix/types/metadata/form/ValueList.types";
+import { SuggestHandlerData, ValueListSettings } from "ui5/genatrix/types/metadata/form/ValueList.types";
 import ODataListBinding from "sap/ui/model/odata/v2/ODataListBinding";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
 import ValueListParameter from "ui5/genatrix/metadata/form/ValueListParameter";
@@ -43,7 +43,7 @@ import TextArrangement from "ui5/genatrix/control/enum/form/TextArrangement";
 import { TextArrangementType } from "ui5/genatrix/types/control/global/Form.types";
 import Item from "sap/ui/core/Item";
 import ValueListValidator from "ui5/genatrix/metadata/form/ValueListValidator";
-import { CustomInput$ChangeEvent } from "ui5/genatrix/types/control/extension/CustomInput.types";
+import { InputBase$ChangeEvent } from "sap/m/InputBase";
 
 /**
  * @namespace ui5.genatrix.metadata.form
@@ -104,22 +104,11 @@ export default class ValueList extends ManagedObject {
         }
     }
 
-    public async open(sourceProperty: string) {
+    public async open() {
         this.showBusy();
-        const parameters = this.getParametersOrThrow(sourceProperty);
-
-        const metadataParser = new MetadataParser({
-            type: "ValueList",
-            classId: this.getId(),
-            model: this.getODataModelFromParent(),
-            filterBarWithParametersOnly: this.getFilterBarWithParametersOnly() ?? false,
-            nonFilterableProperties: this.getNonFilterableProperties()?.split(",") || [],
-            parameters: parameters,
-            propertyOptions: this.getPropertyOptions()
-        });
-
+        const parameters = this.getParametersOrThrow();
         const entitySet = this.getEntitySetOrThrow();
-        const properties = await metadataParser.getEntityProperties(entitySet);
+        const properties = await this.getValueListProperties(entitySet, parameters);
 
         this.filterBarGenerator = new FilterBarGenerator({
             properties: properties,
@@ -165,28 +154,13 @@ export default class ValueList extends ManagedObject {
         this.hideBusy();
     }
 
-    public async bindSuggestionRows(input: CustomInput, sourceProperty: string) {
-        const parameters = this.getParametersOrThrow(sourceProperty);
-
-        const metadataParser = new MetadataParser({
-            type: "ValueList",
-            classId: this.getId(),
-            model: this.getODataModelFromParent(),
-            filterBarWithParametersOnly: this.getFilterBarWithParametersOnly() ?? false,
-            nonFilterableProperties: this.getNonFilterableProperties()?.split(",") || [],
-            parameters: parameters,
-            propertyOptions: this.getPropertyOptions()
-        });
-
+    public async bindSuggestionRows(input: CustomInput) {
+        const parameters = this.getParametersOrThrow();
         const entitySet = this.getEntitySetOrThrow();
-        const properties = await metadataParser.getEntityProperties(entitySet);
+        const properties = await this.getValueListProperties(entitySet, parameters);
         const columns = this.addSuggestionColumns(input, properties, parameters);
-
-        const sourcePropertyParam = parameters.find((param) => {
-            return (param.getLocalDataProperty() === sourceProperty) && (param.getType() === ParameterType.InOut || param.getType() === ParameterType.Out);
-        }) as ValueListParameter;
-
-        const valueListPropertyOptions = this.getPropertyOptions().find(opt => opt.getPropertyName() === sourcePropertyParam.getValueListProperty());
+        const ownerPropertyParam = this.getOwnerPropertyParameter();
+        const valueListPropertyOptions = this.getPropertyOptions().find(opt => opt.getPropertyName() === ownerPropertyParam.getValueListProperty());
         const valueListTextProperty = properties.find(prop => prop.name === valueListPropertyOptions?.getTextProperty());
         const textArrangement = valueListPropertyOptions?.getTextArrangement() || TextArrangement.TextFirst;
 
@@ -194,11 +168,15 @@ export default class ValueList extends ManagedObject {
         input.attachSuggest({ properties: columns.filter }, this.onSuggest, this);
         input.setTextFormatMode("Key");
 
-        input.attachChange({
-            keyProperty: sourcePropertyParam.getValueListProperty() as string,
-            textProperty: valueListTextProperty?.name,
-            textArrangement: textArrangement
-        }, this.onValueListSourceChange, this);
+        input.attachChange((event: InputBase$ChangeEvent) => {
+            const value = event.getParameter("value");
+
+            if (input.getSelectedKey() || !value) {
+                return;
+            }
+
+            void this.validateValueList(input, value);
+        });
 
         if (valueListTextProperty) {
             switch (textArrangement) {
@@ -216,7 +194,7 @@ export default class ValueList extends ManagedObject {
 
         input.setSuggestionRowValidator((columnListItem: ColumnListItem) => {
             const context = columnListItem.getBindingContext() as Context;
-            const keyValue = context.getProperty(sourcePropertyParam.getValueListProperty() as string);
+            const keyValue = context.getProperty(ownerPropertyParam.getValueListProperty() as string);
             let textValue = keyValue;
 
             if (valueListTextProperty) {
@@ -224,7 +202,7 @@ export default class ValueList extends ManagedObject {
             }
 
             return new Item({
-                key: context.getProperty(sourcePropertyParam.getValueListProperty() as string),
+                key: keyValue,
                 text: textValue
             });
         });
@@ -234,6 +212,26 @@ export default class ValueList extends ManagedObject {
             template: new ColumnListItem({
                 cells: columns.cells
             })
+        });
+    }
+
+    public async validateValueList(input: CustomInput, value: string) {
+        const parameters = this.getParametersOrThrow();
+        const entitySet = this.getEntitySetOrThrow();
+        const properties = await this.getValueListProperties(entitySet, parameters);
+        const ownerPropertyParam = this.getOwnerPropertyParameter();
+        const valueListPropertyOptions = this.getPropertyOptions().find(opt => opt.getPropertyName() === ownerPropertyParam.getValueListProperty());
+        const valueListTextProperty = properties.find(prop => prop.name === valueListPropertyOptions?.getTextProperty());
+        const textArrangement = valueListPropertyOptions?.getTextArrangement() || TextArrangement.TextFirst;
+
+        return this.validator.validateAndSet({
+            value: value,
+            model: this.getODataModelFromParent(),
+            source: input,
+            entitySet: this.getEntitySetOrThrow(),
+            keyProperty: ownerPropertyParam.getValueListProperty() as string,
+            textProperty: valueListTextProperty?.name,
+            textArrangement: textArrangement
         });
     }
 
@@ -667,8 +665,9 @@ export default class ValueList extends ManagedObject {
         return entitySet;
     }
 
-    private getParametersOrThrow(sourceProperty: string) {
+    private getParametersOrThrow() {
         const parameters = this.getParameters().map(param => param.getOrThrow());
+        const ownerProperty = this.getPropertyName() as string;
 
         if (!parameters.length) {
             this.throwRuntimeError("At least one ValueListParameter is required");
@@ -681,11 +680,11 @@ export default class ValueList extends ManagedObject {
         }
 
         const propertyHasParam = parameters.some((param) => {
-            return (param.getLocalDataProperty() === sourceProperty) && (param.getType() === ParameterType.InOut || param.getType() === ParameterType.Out);
+            return (param.getLocalDataProperty() === ownerProperty) && (param.getType() === ParameterType.InOut || param.getType() === ParameterType.Out);
         });
 
         if (!propertyHasParam) {
-            this.throwRuntimeError("Property: " + sourceProperty + " must have a ValueListParameter with InOut or Out type");
+            this.throwRuntimeError("Property: " + ownerProperty + " must have a ValueListParameter with InOut or Out type");
         }
 
         const outParams = new Set();
@@ -717,23 +716,29 @@ export default class ValueList extends ManagedObject {
         return parameters;
     }
 
-    private onValueListSourceChange(event: CustomInput$ChangeEvent, data: ChangeHandlerData) {
-        const input = event.getSource();
-        const value = event.getParameter("value");
+    private getOwnerPropertyParameter() {
+        const ownerProperty = this.getPropertyName() as string;
+        const parameter = this.getParameters().find(param => param.getLocalDataProperty() === ownerProperty);
 
-        if (input.getSelectedKey() || !value) {
-            return;
+        if (!parameter || (parameter.getType() !== ParameterType.InOut && parameter.getType() !== ParameterType.Out)) {
+            this.throwRuntimeError("Property: " + ownerProperty + " must have a ValueListParameter with InOut or Out type");
         }
 
-        void this.validator.validateAndSet({
-            value: value,
+        return parameter;
+    }
+
+    private async getValueListProperties(entitySet: string, parameters: ValueListParameter[]) {
+        const metadataParser = new MetadataParser({
+            type: "ValueList",
+            classId: this.getId(),
             model: this.getODataModelFromParent(),
-            source: input,
-            entitySet: this.getEntitySetOrThrow(),
-            keyProperty: data.keyProperty,
-            textProperty: data.textProperty,
-            textArrangement: data.textArrangement
+            filterBarWithParametersOnly: this.getFilterBarWithParametersOnly() ?? false,
+            nonFilterableProperties: this.getNonFilterableProperties()?.split(",") || [],
+            parameters: parameters,
+            propertyOptions: this.getPropertyOptions()
         });
+
+        return metadataParser.getEntityProperties(entitySet);
     }
 
     private showBusy() {

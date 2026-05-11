@@ -24,6 +24,7 @@ import CustomSByte from "ui5/genatrix/odata/type/CustomSByte";
 import CustomSingle from "ui5/genatrix/odata/type/CustomSingle";
 import CustomString from "ui5/genatrix/odata/type/CustomString";
 import CustomTime from "ui5/genatrix/odata/type/CustomTime";
+import CustomValueList from "ui5/genatrix/odata/type/CustomValueList";
 import { ControlGeneratorSettings } from "ui5/genatrix/types/generator/core/ControlGenerator.types";
 import { DateTimeConstraints, NumberConstraints, NumberFormatOptions } from "ui5/genatrix/types/odata/type/CustomTypeSettings.types";
 import { EntityProperty } from "ui5/genatrix/types/odata/v2/MetadataParser.types";
@@ -190,10 +191,11 @@ export default class ControlGenerator extends BaseObject {
     private async generateInputWithValueList(property: EntityProperty, type: Type, valueList: ValueList) {
         const input = new CustomInput({
             propertyName: property.name,
+            valueListInstance: valueList,
             showValueHelp: true,
             showSuggestion: true,
             valueHelpRequest: () => {
-                void valueList.open(property.name);
+                void valueList.open();
             },
             busyIndicatorDelay: 0,
             busy: {
@@ -206,7 +208,7 @@ export default class ControlGenerator extends BaseObject {
             }
         });
 
-        await valueList.bindSuggestionRows(input, property.name);
+        await valueList.bindSuggestionRows(input);
         return input;
     }
 
@@ -218,6 +220,7 @@ export default class ControlGenerator extends BaseObject {
     private getODataType(property: EntityProperty) {
         const propertyOptions = this.settings.propertyOptions.find(opt => opt.getPropertyName() === property.name);
         const validationLogic = this.settings.validationLogics.find(logic => logic.getPropertyName() === property.name);
+        const valueList = this.settings.valueLists.find(list => list.getPropertyName() === property.name);
 
         this.addPropertyToBusyModel(property.name);
 
@@ -322,19 +325,38 @@ export default class ControlGenerator extends BaseObject {
                     validationLogic: validationLogic
                 });
             case "Edm.Guid":
-                return new CustomGuid({
-                    property: property,
-                    busyModel: this.busyModel,
-                    propertyOptions: propertyOptions,
-                    validationLogic: validationLogic
-                });
+                if (valueList) {
+                    return new CustomValueList({
+                        property: property,
+                        busyModel: this.busyModel,
+                        propertyOptions: propertyOptions,
+                        validationLogic: validationLogic
+                    });
+                } else {
+                    return new CustomGuid({
+                        property: property,
+                        busyModel: this.busyModel,
+                        propertyOptions: propertyOptions,
+                        validationLogic: validationLogic
+                    });
+                }
+
             default:
-                return new CustomString({
-                    property: property,
-                    busyModel: this.busyModel,
-                    propertyOptions: propertyOptions,
-                    validationLogic: validationLogic
-                });
+                if (valueList) {
+                    return new CustomValueList({
+                        property: property,
+                        busyModel: this.busyModel,
+                        propertyOptions: propertyOptions,
+                        validationLogic: validationLogic
+                    });
+                } else {
+                    return new CustomString({
+                        property: property,
+                        busyModel: this.busyModel,
+                        propertyOptions: propertyOptions,
+                        validationLogic: validationLogic
+                    });
+                }
         }
     }
 

@@ -13,6 +13,7 @@ export default class ValueListValidator extends BaseObject {
     private readonly readCache: ReadCache[] = [];
 
     public async validateAndSet(settings: ValidateAndSetSettings) {
+        let success = false;
         this.showBusy(settings.source);
 
         try {
@@ -24,6 +25,7 @@ export default class ValueListValidator extends BaseObject {
                 const keyValue = first[settings.keyProperty];
 
                 if (keyValue) {
+                    success = true;
                     settings.source.setSelectedKey(String(keyValue));
                     this.hideError(settings.source);
                 } else {
@@ -32,12 +34,13 @@ export default class ValueListValidator extends BaseObject {
             } else {
                 this.showError(settings.source);
             }
-
-            this.hideBusy(settings.source);
         } catch {
-            this.hideBusy(settings.source);
             this.showError(settings.source);
+        } finally {
+            this.hideBusy(settings.source);
         }
+
+        return success;
     }
 
     private getReadPromise(settings: ValidateAndSetSettings) {
