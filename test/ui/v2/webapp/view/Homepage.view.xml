@@ -9,6 +9,7 @@
     xmlns:smarttable="sap.ui.comp.smarttable"
     xmlns:table="sap.ui.table"
     xmlns:rowmodes="sap.ui.table.rowmodes"
+    xmlns:form="ui5.genatrix.form.v2"
 >
     <Page
         id="Homepage"
@@ -27,6 +28,7 @@
             </f:ShellBar>
             <FlexBox justifyContent="Center">
                 <VBox width="95%">
+                    <form:EmbeddedForm entitySet="Employees"/>
                     <smartfilterbar:SmartFilterBar
                         id="sfbEmployees"
                         entitySet="Employees"
