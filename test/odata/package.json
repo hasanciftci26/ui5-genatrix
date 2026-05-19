@@ -1,0 +1,27 @@
+{
+	"name": "ui5-genatrix-test-odata",
+	"version": "0.0.1",
+	"description": "UI5 Genatrix Test Backend OData Service",
+	"author": "Hasan Çiftçi (hasanciftcii26@gmail.com)",
+	"license": "UNLICENSED",
+	"keywords": [
+		"sapui5",
+		"odata",
+		"metadata",
+		"generic-ui",
+		"cap",
+		"backend",
+		"service"
+	],
+	"scripts": {
+		"start": "cds watch --profile development --ext py"
+	},
+	"dependencies": {
+		"@cap-js-community/odata-v2-adapter": "1.15.12",
+		"@sap/cds": "9.9.1",
+		"express": "5.2.1"
+	},
+	"devDependencies": {
+		"@cap-js/sqlite": "2.4.0"
+	}
+}
