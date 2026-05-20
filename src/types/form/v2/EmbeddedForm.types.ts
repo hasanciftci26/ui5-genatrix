@@ -1,12 +1,14 @@
 import { $ControlSettings } from "sap/ui/core/Control";
 import { form } from "sap/ui/layout/library";
+import FormMode from "ui5/genatrix/form/enum/FormMode";
 import { OptionalPropertyGetter, OptionalPropertySetter } from "ui5/genatrix/types/global/CustomClass.types";
 
 type SimpleFormLayoutType = form.SimpleFormLayout | keyof typeof form.SimpleFormLayout;
 
-export type EmbeddedFormSettings = $ControlSettings & {
+export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettings & {
     entitySet?: string;
     oDataModelName?: string;
+    formMode?: FormMode | keyof typeof FormMode;
     layout?: SimpleFormLayoutType;
     columnsXL?: number;
     columnsL?: number;
@@ -19,14 +21,18 @@ export type EmbeddedFormSettings = $ControlSettings & {
     emptySpanL?: number;
     emptySpanM?: number;
     emptySpanS?: number;
+    initialData?: T;
 };
 
 declare module "ui5/genatrix/form/v2/EmbeddedForm" {
-    export default interface EmbeddedForm {
+    export default interface EmbeddedForm<T extends Record<string, any> = Record<string, any>> {
         getEntitySet: OptionalPropertyGetter<string>;
 
         getODataModelName: OptionalPropertyGetter<string>;
         setODataModelName: OptionalPropertySetter<string, EmbeddedForm>;
+
+        getFormMode: OptionalPropertyGetter<FormMode | keyof typeof FormMode>;
+        setFormMode: OptionalPropertySetter<FormMode | keyof typeof FormMode, EmbeddedForm>;
 
         getLayout: OptionalPropertyGetter<SimpleFormLayoutType>;
         setLayout: OptionalPropertySetter<SimpleFormLayoutType, EmbeddedForm>;
@@ -60,8 +66,11 @@ declare module "ui5/genatrix/form/v2/EmbeddedForm" {
 
         getEmptySpanM: OptionalPropertyGetter<number>;
         setEmptySpanM: OptionalPropertySetter<number, EmbeddedForm>;
-        
+
         getEmptySpanS: OptionalPropertyGetter<number>;
         setEmptySpanS: OptionalPropertySetter<number, EmbeddedForm>;
+
+        getInitialData: OptionalPropertyGetter<T>;
+        setInitialData: OptionalPropertySetter<T, EmbeddedForm>;
     }
 }
