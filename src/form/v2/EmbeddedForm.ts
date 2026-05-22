@@ -1,4 +1,3 @@
-import ManagedObject from "sap/ui/base/ManagedObject";
 import Control from "sap/ui/core/Control";
 import { MetadataOptions } from "sap/ui/core/Element";
 import View from "sap/ui/core/mvc/View";
@@ -41,7 +40,14 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             contextProvider: { type: "function" },
             contextRef: { type: "any" },
             rowSelectionErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.selectTableRow") },
-            initialized: { type: "boolean", visibility: "hidden", defaultValue: false }
+            formInitialized: { type: "boolean", visibility: "hidden", defaultValue: false }
+        },
+        events: {
+            initalized: {
+                parameters: {
+                    context: { type: "sap.ui.model.odata.v2.Context" }
+                }
+            }
         }
     };
     public static renderer = EmbeddedFormRenderer;
@@ -83,7 +89,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     public isInitialized() {
-        return this.getProperty("initialized") as boolean;
+        return this.getProperty("formInitialized") as boolean;
     }
 
     public async commit() {
@@ -119,7 +125,9 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                 this.innerForm.setBusy(false);
 
                 model.setDefaultBindingMode(BindingMode.TwoWay);
-                this.setProperty("initialized", true);
+                this.setProperty("formInitialized", true);
+                this.fireInitialized({ context: context });
+                this.detachModelContextChange(this.onModelContextChange, this);
             } catch (error) {
                 let errorMessage = "Unexpected error has occured";
 
@@ -150,7 +158,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             emptySpanXL: settings?.emptySpanXL ?? 0,
             emptySpanL: settings?.emptySpanL ?? 0,
             emptySpanM: settings?.emptySpanM ?? 0,
-            emptySpanS: settings?.emptySpanS ?? 0
+            emptySpanS: settings?.emptySpanS ?? 0,
+            layoutData: settings?.layoutData
         });
     }
 
@@ -200,11 +209,11 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         let parent = this.getParent();
 
         while (parent) {
-            if (parent.isA("sap.ui.core.mvc.View")) {
-                return parent as View;
+            if (parent.isA<View>("sap.ui.core.mvc.View")) {
+                return parent;
             }
 
-            parent = (parent as ManagedObject).getParent();
+            parent = parent.getParent();
         }
     }
 

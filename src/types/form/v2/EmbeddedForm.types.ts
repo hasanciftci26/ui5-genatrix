@@ -1,9 +1,17 @@
+import Event from "sap/ui/base/Event";
 import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
 import { $ControlSettings } from "sap/ui/core/Control";
 import { form } from "sap/ui/layout/library";
 import Context from "sap/ui/model/odata/v2/Context";
 import FormMode from "ui5/genatrix/form/enum/FormMode";
+import EmbeddedForm from "ui5/genatrix/form/v2/EmbeddedForm";
 import { OptionalPropertyGetter, OptionalPropertySetter, PropertyGetter, PropertySetter } from "ui5/genatrix/types/global/CustomClass.types";
+
+export type EmbeddedForm$InitializedEventParameters = {
+    context: Context;
+};
+
+export type EmbeddedForm$InitializedEvent = Event<EmbeddedForm$InitializedEventParameters, EmbeddedForm>;
 
 export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettings & {
     entitySet?: string | PropertyBindingInfo | `{${string}}`;
@@ -25,6 +33,7 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     contextProvider?: () => Promise<Context> | Context;
     contextRef?: string | T | Context;
     rowSelectionErrorMessage?: string;
+    initialized?: (event: EmbeddedForm$InitializedEvent) => void;
 };
 
 declare module "ui5/genatrix/form/v2/EmbeddedForm" {
@@ -84,5 +93,9 @@ declare module "ui5/genatrix/form/v2/EmbeddedForm" {
 
         getRowSelectionErrorMessage: PropertyGetter<string>;
         setRowSelectionErrorMessage: PropertySetter<string, EmbeddedForm>;
+
+        attachInitialized(handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
+        attachInitialized(data: object, handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
+        fireInitialized: (parameters?: EmbeddedForm$InitializedEventParameters) => EmbeddedForm;
     }
 }
