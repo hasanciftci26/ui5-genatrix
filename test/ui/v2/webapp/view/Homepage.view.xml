@@ -28,7 +28,7 @@
             </f:ShellBar>
             <FlexBox justifyContent="Center">
                 <VBox width="95%">
-                    <form:EmbeddedForm entitySet="Employees"/>
+                    <form:EmbeddedForm id="frmTest" entitySet="Employees"/>
                     <smartfilterbar:SmartFilterBar
                         id="sfbEmployees"
                         entitySet="Employees"

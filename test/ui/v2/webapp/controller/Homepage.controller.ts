@@ -1,3 +1,4 @@
+import EmbeddedForm from "ui5/genatrix/form/v2/EmbeddedForm";
 import BaseController from "ui5/genatrix/test/ui/v2/controller/BaseController";
 
 /**
@@ -25,6 +26,6 @@ export default class Homepage extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     private onRoutePatternMatched() {
-
+        this.getById<EmbeddedForm>("frmTest").bindElement("/Employees('123')");
     }
 }

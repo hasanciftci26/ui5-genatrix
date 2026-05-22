@@ -1,12 +1,18 @@
+import ManagedObject from "sap/ui/base/ManagedObject";
 import Control from "sap/ui/core/Control";
 import { MetadataOptions } from "sap/ui/core/Element";
+import View from "sap/ui/core/mvc/View";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
+import { form as formLayoutUI5 } from "sap/ui/layout/library";
 import BindingMode from "sap/ui/model/BindingMode";
-import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import FormMode from "ui5/genatrix/form/enum/FormMode";
 import EmbeddedFormRenderer from "ui5/genatrix/form/v2/EmbeddedFormRenderer";
 import FormContentGenerator from "ui5/genatrix/generator/v2/FormContentGenerator";
+import ContextManager from "ui5/genatrix/odata/v2/ContextManager";
 import { EmbeddedFormSettings } from "ui5/genatrix/types/form/v2/EmbeddedForm.types";
+import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
+import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 import FormContentValidator from "ui5/genatrix/validator/v2/FormContentValidator";
 
 /**
@@ -18,30 +24,31 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         properties: {
             entitySet: { type: "string" },
             oDataModelName: { type: "string" },
-            formMode: { type: "ui5.genatrix.form.enum.FormMode" },
-            layout: { type: "sap.ui.layout.form.SimpleFormLayout" },
-            columnsXL: { type: "int" },
-            columnsL: { type: "int" },
-            columnsM: { type: "int" },
-            labelSpanXL: { type: "int" },
-            labelSpanL: { type: "int" },
-            labelSpanM: { type: "int" },
-            labelSpanS: { type: "int" },
-            emptySpanXL: { type: "int" },
-            emptySpanL: { type: "int" },
-            emptySpanM: { type: "int" },
-            emptySpanS: { type: "int" },
-            initialData: { type: "object" },
+            formMode: { type: "ui5.genatrix.form.enum.FormMode", defaultValue: FormMode.Create },
+            layout: { type: "sap.ui.layout.form.SimpleFormLayout", defaultValue: formLayoutUI5.SimpleFormLayout.ResponsiveGridLayout },
+            columnsXL: { type: "int", defaultValue: 1 },
+            columnsL: { type: "int", defaultValue: 1 },
+            columnsM: { type: "int", defaultValue: 1 },
+            labelSpanXL: { type: "int", defaultValue: 12 },
+            labelSpanL: { type: "int", defaultValue: 12 },
+            labelSpanM: { type: "int", defaultValue: 12 },
+            labelSpanS: { type: "int", defaultValue: 12 },
+            emptySpanXL: { type: "int", defaultValue: 12 },
+            emptySpanL: { type: "int", defaultValue: 0 },
+            emptySpanM: { type: "int", defaultValue: 0 },
+            emptySpanS: { type: "int", defaultValue: 0 },
+            initialData: { type: "object", bindable: false },
+            contextProvider: { type: "function" },
+            contextRef: { type: "any" },
+            rowSelectionErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.selectTableRow") },
             initialized: { type: "boolean", visibility: "hidden", defaultValue: false }
-        },
-        aggregations: {
-            form: { type: "sap.ui.layout.form.SimpleForm", multiple: false, visibility: "hidden" }
         }
     };
     public static renderer = EmbeddedFormRenderer;
+    private innerForm: SimpleForm;
     private generator: FormContentGenerator;
     private validator: FormContentValidator;
-    private context: Context;
+    private contextManager: ContextManager;
 
     constructor(settings?: EmbeddedFormSettings<T>);
     constructor(id?: string, settings?: EmbeddedFormSettings<T>);
@@ -57,14 +64,18 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         this.attachModelContextChange(this.onModelContextChange, this);
     }
 
+    public getInnerForm() {
+        return this.innerForm;
+    }
+
     public getContext() {
-        return this.context;
+        return this.contextManager.getContext();
     }
 
     public setEntitySet(value?: string) {
         let entitySet = value;
 
-        if (entitySet && entitySet.startsWith("/")) {
+        if (entitySet?.startsWith("/")) {
             entitySet = entitySet.slice(1);
         }
 
@@ -79,24 +90,34 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
 
     }
 
+    public async refresh() {
+
+    }
+
+    public reset() {
+        this.contextManager.reset();
+    }
+
     private async onModelContextChange() {
         const model = this.getModel();
 
         if (!this.isInitialized() && model instanceof ODataModel) {
             this.generator = this.createGenerator();
             this.validator = this.createValidator(this.generator);
+            this.contextManager = this.createContextManager(model);
 
             try {
                 const content = await this.generator.generate();
-                const form = this.getForm();
-
-                this.context = await this.createContext(model);
+                const context = await this.contextManager.create();
 
                 for (const control of content) {
-                    form.addContent(control);
+                    this.innerForm.addContent(control);
                 }
 
-                form.setBusy(false);
+                this.innerForm.setModel(model);
+                this.innerForm.setBindingContext(context);
+                this.innerForm.setBusy(false);
+
                 model.setDefaultBindingMode(BindingMode.TwoWay);
                 this.setProperty("initialized", true);
             } catch (error) {
@@ -106,20 +127,19 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                     errorMessage = error.message;
                 }
 
-                this.generator.destroy();
-                this.validator.destroy();
+                CustomMessageBox.error(errorMessage);
                 this.throwRuntimeError(errorMessage);
             }
         }
     }
 
     private createForm(settings?: EmbeddedFormSettings<T>) {
-        const form = new SimpleForm(`${this.getId()}--Form`, {
+        this.innerForm = new SimpleForm(`${this.getId()}--Form`, {
             busyIndicatorDelay: 0,
             busy: true,
             editable: true,
             adjustLabelSpan: false,
-            layout: settings?.layout || "ResponsiveGridLayout",
+            layout: settings?.layout || formLayoutUI5.SimpleFormLayout.ResponsiveGridLayout,
             columnsXL: settings?.columnsXL ?? 1,
             columnsL: settings?.columnsL ?? 1,
             columnsM: settings?.columnsM ?? 1,
@@ -132,8 +152,6 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             emptySpanM: settings?.emptySpanM ?? 0,
             emptySpanS: settings?.emptySpanS ?? 0
         });
-
-        this.setAggregation("form", form);
     }
 
     private createGenerator() {
@@ -152,32 +170,42 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         return validator;
     }
 
-    // TODO for different modes (Create, Update, Read, Delete)
-    private async createContext(model: ODataModel) {
-        const entitySet = this.getEntitySetOrThrow();
-        const context = model.createEntry(`/${entitySet}`, {
-            properties: this.getInitialData()
+    private createContextManager(model: ODataModel) {
+        const contextManager = new ContextManager({
+            oDataModel: model,
+            oDataModelName: this.getODataModelName(),
+            entitySet: this.getEntitySetOrThrow(),
+            formMode: this.getFormMode(),
+            view: this.getView(),
+            initialData: this.getInitialData(),
+            contextProvider: this.getContextProvider(),
+            contextRef: this.getContextRef(),
+            rowSelectionErrorMessage: this.getRowSelectionErrorMessage()
         });
 
-        if (!context) {
-            this.throwRuntimeError("Context (sap.ui.model.odata.v2) could not be created for the entity set: " + entitySet);
-        }
-
-        return context;
-    }
-
-    private getForm() {
-        return this.getAggregation("form") as SimpleForm;
+        return contextManager;
     }
 
     private getEntitySetOrThrow() {
         const entitySet = this.getEntitySet();
 
         if (!entitySet) {
-            this.throwRuntimeError("entitySet is a required property");
+            throw new Error("entitySet is a required property");
         }
 
         return entitySet;
+    }
+
+    private getView() {
+        let parent = this.getParent();
+
+        while (parent) {
+            if (parent.isA("sap.ui.core.mvc.View")) {
+                return parent as View;
+            }
+
+            parent = (parent as ManagedObject).getParent();
+        }
     }
 
     private hasMessage(obj: any): obj is { message: string; } {
