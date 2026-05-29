@@ -188,8 +188,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             view: this.getView(),
             initialData: this.getInitialData(),
             contextProvider: this.getContextProvider(),
-            contextRef: this.getContextRef(),
-            rowSelectionErrorMessage: this.getRowSelectionErrorMessage()
+            contextRef: this.getContextRef()
         });
 
         return contextManager;

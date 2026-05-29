@@ -11,6 +11,5 @@ export type ContextManagerSettings<T extends Record<string, any>> = {
     view?: View;
     initialData?: T;
     contextProvider?: () => Promise<Context> | Context;
-    contextRef?: string | T | Context;
-    rowSelectionErrorMessage: string;
+    contextRef?: T | Context;
 };

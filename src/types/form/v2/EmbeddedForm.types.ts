@@ -31,8 +31,7 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     emptySpanS?: number | PropertyBindingInfo | `{${string}}`;
     initialData?: T;
     contextProvider?: () => Promise<Context> | Context;
-    contextRef?: string | T | Context;
-    rowSelectionErrorMessage?: string;
+    contextRef?: T | Context;
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
 };
 
@@ -88,11 +87,8 @@ declare module "ui5/genatrix/form/v2/EmbeddedForm" {
         getContextProvider: OptionalPropertyGetter<() => Promise<Context> | Context>;
         setContextProvider: OptionalPropertySetter<() => Promise<Context> | Context, EmbeddedForm>;
 
-        getContextRef: OptionalPropertyGetter<string | T | Context>;
-        setContextRef: OptionalPropertySetter<string | T | Context, EmbeddedForm>;
-
-        getRowSelectionErrorMessage: PropertyGetter<string>;
-        setRowSelectionErrorMessage: PropertySetter<string, EmbeddedForm>;
+        getContextRef: OptionalPropertyGetter<T | Context>;
+        setContextRef: OptionalPropertySetter<T | Context, EmbeddedForm>;
 
         attachInitialized(handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
         attachInitialized(data: object, handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
