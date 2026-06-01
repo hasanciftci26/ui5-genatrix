@@ -16,7 +16,6 @@ import ContextManagerV2 from "ui5/genatrix/odata/v2/ContextManager";
 import ContextManagerV4 from "ui5/genatrix/odata/v4/ContextManager";
 import { EmbeddedFormSettings } from "ui5/genatrix/types/form/EmbeddedForm.types";
 import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
-import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 import FormContentValidatorBase from "ui5/genatrix/validator/FormContentValidatorBase";
 import FormContentValidatorV2 from "ui5/genatrix/validator/v2/FormContentValidator";
 import FormContentValidatorV4 from "ui5/genatrix/validator/v4/FormContentValidator";
@@ -44,11 +43,23 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             emptySpanL: { type: "int", defaultValue: 0 },
             emptySpanM: { type: "int", defaultValue: 0 },
             emptySpanS: { type: "int", defaultValue: 0 },
+            datePattern: { type: "string" },
+            timePattern: { type: "string" },
+            dateTimeSeparator: { type: "string", defaultValue: " " },
+            dateFirst: { type: "boolean", defaultValue: true },
+            groupingEnabled: { type: "boolean", defaultValue: true },
+            groupingSeparator: { type: "string" },
+            groupingSize: { type: "int", defaultValue: 3 },
+            decimalSeparator: { type: "string" },
+            parseEmptyValueToZero: { type: "boolean", defaultValue: false },
             initialData: { type: "object", bindable: false },
             contextProvider: { type: "function" },
             contextRef: { type: "any" },
-            rowSelectionErrorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.selectTableRow") },
             formInitialized: { type: "boolean", visibility: "hidden", defaultValue: false }
+        },
+        defaultAggregation: "propertyConfigurations",
+        aggregations: {
+            propertyConfigurations: { type: "ui5.genatrix.form.PropertyConfiguration", multiple: true, singularName: "propertyConfiguration" }
         },
         events: {
             initalized: {
@@ -189,7 +200,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
 
     private createGeneratorV2(model: ODataModelV2) {
         const generator = new FormContentGeneratorV2(model, {
-            entitySet: this.getEntitySetOrThrow()
+            entitySet: this.getEntitySetOrThrow(),
+            propertyConfigurations: this.getPropertyConfigurations()
         });
 
         return generator;
@@ -197,7 +209,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
 
     private createGeneratorV4(model: ODataModelV4) {
         const generator = new FormContentGeneratorV4(model, {
-            entitySet: this.getEntitySetOrThrow()
+            entitySet: this.getEntitySetOrThrow(),
+            propertyConfigurations: this.getPropertyConfigurations()
         });
 
         return generator;

@@ -5,7 +5,20 @@ import { form } from "sap/ui/layout/library";
 import Context from "sap/ui/model/Context";
 import EmbeddedForm from "ui5/genatrix/form/EmbeddedForm";
 import FormMode from "ui5/genatrix/form/enum/FormMode";
-import { OptionalPropertyGetter, OptionalPropertySetter, PropertyGetter, PropertySetter } from "ui5/genatrix/types/global/CustomClass.types";
+import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
+import {
+    AggregationBinder,
+    AggregationDestroyer,
+    AggregationGetterMulti,
+    AggregationInserter,
+    AggregationRemoverAll,
+    AggregationRemoverSingle,
+    AggregationSetterOrAdder,
+    OptionalPropertyGetter,
+    OptionalPropertySetter,
+    PropertyGetter,
+    PropertySetter
+} from "ui5/genatrix/types/global/CustomClass.types";
 
 export type EmbeddedForm$InitializedEventParameters = {
     context: Context;
@@ -30,9 +43,19 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     emptySpanL?: number | PropertyBindingInfo | `{${string}}`;
     emptySpanM?: number | PropertyBindingInfo | `{${string}}`;
     emptySpanS?: number | PropertyBindingInfo | `{${string}}`;
+    datePattern?: string | PropertyBindingInfo | `{${string}}`;
+    timePattern?: string | PropertyBindingInfo | `{${string}}`;
+    dateTimeSeparator?: string | PropertyBindingInfo | `{${string}}`;
+    dateFirst?: boolean | PropertyBindingInfo | `{${string}}`;
+    groupingEnabled?: boolean | PropertyBindingInfo | `{${string}}`;
+    groupingSeparator?: string | PropertyBindingInfo | `{${string}}`;
+    groupingSize?: number | PropertyBindingInfo | `{${string}}`;
+    decimalSeparator?: string | PropertyBindingInfo | `{${string}}`;
+    parseEmptyValueToZero?: boolean | PropertyBindingInfo | `{${string}}`;
     initialData?: T;
     contextProvider?: () => Promise<Context> | Context;
     contextRef?: T | Context;
+    propertyConfigurations?: PropertyConfiguration[];
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
 };
 
@@ -84,6 +107,33 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         getEmptySpanS: PropertyGetter<number>;
         setEmptySpanS: PropertySetter<number, EmbeddedForm>;
 
+        getDatePattern: OptionalPropertyGetter<string>;
+        setDatePattern: OptionalPropertySetter<string, EmbeddedForm>;
+
+        getTimePattern: OptionalPropertyGetter<string>;
+        setTimePattern: OptionalPropertySetter<string, EmbeddedForm>;
+
+        getDateTimeSeparator: PropertyGetter<string>;
+        setDateTimeSeparator: PropertySetter<string, EmbeddedForm>;
+
+        getDateFirst: PropertyGetter<boolean>;
+        setDateFirst: PropertySetter<boolean, EmbeddedForm>;
+
+        getGroupingEnabled: PropertyGetter<boolean>;
+        setGroupingEnabled: PropertySetter<boolean, EmbeddedForm>;
+
+        getGroupingSeparator: OptionalPropertyGetter<string>;
+        setGroupingSeparator: OptionalPropertySetter<string, EmbeddedForm>;
+
+        getGroupingSize: PropertyGetter<number>;
+        setGroupingSize: PropertySetter<number, EmbeddedForm>;
+
+        getDecimalSeparator: OptionalPropertyGetter<string>;
+        setDecimalSeparator: OptionalPropertySetter<string, EmbeddedForm>;
+
+        getParseEmptyValueToZero: PropertyGetter<boolean>;
+        setParseEmptyValueToZero: PropertySetter<boolean, EmbeddedForm>;
+
         getInitialData: OptionalPropertyGetter<T>;
         setInitialData: OptionalPropertySetter<T, EmbeddedForm>;
 
@@ -92,6 +142,14 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
 
         getContextRef: OptionalPropertyGetter<T | Context>;
         setContextRef: OptionalPropertySetter<T | Context, EmbeddedForm>;
+
+        getPropertyConfigurations: AggregationGetterMulti<PropertyConfiguration>;
+        addPropertyConfiguration: AggregationSetterOrAdder<PropertyConfiguration, EmbeddedForm>;
+        insertPropertyConfiguration: AggregationInserter<PropertyConfiguration, EmbeddedForm>;
+        bindPropertyConfigurations: AggregationBinder<EmbeddedForm>;
+        removePropertyConfiguration: AggregationRemoverSingle<PropertyConfiguration>;
+        removeAllPropertyConfigurations: AggregationRemoverAll<PropertyConfiguration>;
+        destroyPropertyConfigurations: AggregationDestroyer<EmbeddedForm>;
 
         attachInitialized(handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
         attachInitialized(data: object, handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
