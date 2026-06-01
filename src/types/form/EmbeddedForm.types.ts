@@ -16,6 +16,7 @@ export type EmbeddedForm$InitializedEvent = Event<EmbeddedForm$InitializedEventP
 export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettings & {
     entitySet?: string | PropertyBindingInfo | `{${string}}`;
     oDataModelName?: string | PropertyBindingInfo | `{${string}}`;
+    updateGroupId?: string | PropertyBindingInfo | `{${string}}`;
     formMode?: FormMode | keyof typeof FormMode | PropertyBindingInfo | `{${string}}`;
     layout?: form.SimpleFormLayout | keyof typeof form.SimpleFormLayout | PropertyBindingInfo | `{${string}}`;
     columnsXL?: number | PropertyBindingInfo | `{${string}}`;
@@ -41,6 +42,8 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
 
         getODataModelName: OptionalPropertyGetter<string>;
         setODataModelName: OptionalPropertySetter<string, EmbeddedForm>;
+
+        getUpdateGroupId: PropertyGetter<string>;
 
         getFormMode: PropertyGetter<FormMode | keyof typeof FormMode>;
         setFormMode: PropertySetter<FormMode | keyof typeof FormMode, EmbeddedForm>;

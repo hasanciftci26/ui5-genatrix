@@ -30,6 +30,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         properties: {
             entitySet: { type: "string" },
             oDataModelName: { type: "string" },
+            updateGroupId: { type: "string", defaultValue: "ui5Genatrix" },
             formMode: { type: "ui5.genatrix.form.enum.FormMode", defaultValue: FormMode.Create },
             layout: { type: "sap.ui.layout.form.SimpleFormLayout", defaultValue: formLayoutUI5.SimpleFormLayout.ResponsiveGridLayout },
             columnsXL: { type: "int", defaultValue: 1 },
@@ -93,6 +94,14 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
 
         this.setProperty("entitySet", entitySet);
+    }
+
+    public setUpdateGroupId(value?: string) {
+        if (this.isInitialized()) {
+            this.throwRuntimeError("updateGroupId property cannot be changed after the form initialization");
+        }
+
+        this.setProperty("updateGroupId", value);
     }
 
     public isInitialized() {
@@ -229,6 +238,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     private createContextManagerV2(model: ODataModelV2) {
         const contextManager = new ContextManagerV2(model, {
             entitySet: this.getEntitySetOrThrow(),
+            updateGroupId: this.getUpdateGroupId(),
             formMode: this.getFormMode(),
             initialData: this.getInitialData(),
             contextProvider: this.getContextProvider(),
@@ -241,6 +251,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     private createContextManagerV4(model: ODataModelV4) {
         const contextManager = new ContextManagerV4(model, {
             entitySet: this.getEntitySetOrThrow(),
+            updateGroupId: this.getUpdateGroupId(),
             formMode: this.getFormMode(),
             initialData: this.getInitialData(),
             contextProvider: this.getContextProvider(),

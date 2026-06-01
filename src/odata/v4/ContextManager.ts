@@ -1,4 +1,5 @@
 import Context from "sap/ui/model/odata/v4/Context";
+import { ODataContextBinding$DataReceivedEvent } from "sap/ui/model/odata/v4/ODataContextBinding";
 import ODataModel from "sap/ui/model/odata/v4/ODataModel";
 import FormMode from "ui5/genatrix/form/enum/FormMode";
 import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
@@ -34,17 +35,15 @@ export default class ContextManager extends ContextManagerBase {
     }
 
     public reset() {
-        this.model.resetChanges()
+        this.model.resetChanges(this.getUpdateGroupId());
     }
 
     private createModelEntry() {
-        const context = this.model.createEntry(this.getEntitySetPath(), {
-            properties: this.getInitialData()
+        const listBinding = this.model.bindList(this.getEntitySetPath(), undefined, [], [], {
+            $$updateGroupId: this.getUpdateGroupId()
         });
 
-        if (!context) {
-            throw new Error("Context (sap.ui.model.odata.v2) could not be created for the entity set: " + this.getEntitySet());
-        }
+        const context = listBinding.create(this.getInitialData(), false, true, false);
 
         this.setContext(context);
         return context;
@@ -61,19 +60,24 @@ export default class ContextManager extends ContextManagerBase {
             this.setContext(contextRef);
             return contextRef;
         } else {
-            const path = this.model.createKey(this.getEntitySetPath(), contextRef);
+            const path = this.getEntitySetPath(); // TODO;
             return this.createBindingContext(path);
         }
     }
 
     private createBindingContext(path: string): Promise<Context> {
         return new Promise((resolve, reject) => {
-            this.model.createBindingContext(path, undefined, undefined, (context: Context | null) => {
-                if (context) {
+            const contextBinding = this.model.bindContext(path, undefined, {
+                $$updateGroupId: this.getUpdateGroupId()
+            });
+
+            contextBinding.attachEventOnce("dataReceived", (event: ODataContextBinding$DataReceivedEvent) => {
+                if (event.getParameter("error")) {
+                    reject(new Error(`Binding context not found: "${path}" (invalid path or data not loaded)`));
+                } else {
+                    const context = contextBinding.getBoundContext();
                     this.setContext(context);
                     resolve(context);
-                } else {
-                    reject(new Error(`Binding context not found: "${path}" (invalid path or data not loaded)`));
                 }
             });
         });

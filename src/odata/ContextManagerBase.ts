@@ -33,6 +33,10 @@ export default abstract class ContextManagerBase extends BaseObject {
         return "/" + this.settings.entitySet;
     }
 
+    protected getUpdateGroupId() {
+        return this.settings.updateGroupId;
+    }
+
     protected getFormMode() {
         return this.settings.formMode;
     }
