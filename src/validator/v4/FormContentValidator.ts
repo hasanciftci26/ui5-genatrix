@@ -1,9 +1,9 @@
-import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import ODataModel from "sap/ui/model/odata/v4/ODataModel";
 import { FormContentValidatorBaseSettings } from "ui5/genatrix/types/validator/FormContentValidatorBase.types";
 import FormContentValidatorBase from "ui5/genatrix/validator/FormContentValidatorBase";
 
 /**
- * @namespace ui5.genatrix.validator.v2
+ * @namespace ui5.genatrix.validator.v4
  */
 export default class FormContentValidator extends FormContentValidatorBase {
     private readonly model: ODataModel;

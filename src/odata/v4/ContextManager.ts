@@ -1,11 +1,11 @@
-import Context from "sap/ui/model/odata/v2/Context";
-import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import Context from "sap/ui/model/odata/v4/Context";
+import ODataModel from "sap/ui/model/odata/v4/ODataModel";
 import FormMode from "ui5/genatrix/form/enum/FormMode";
 import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
 import { ContextManagerBaseSettings } from "ui5/genatrix/types/odata/ContextManagerBase.types";
 
 /**
- * @namespace ui5.genatrix.odata.v2
+ * @namespace ui5.genatrix.odata.v4
  */
 export default class ContextManager extends ContextManagerBase {
     private readonly model: ODataModel;
@@ -19,10 +19,10 @@ export default class ContextManager extends ContextManagerBase {
         const context = await this.callContextProvider();
 
         if (context) {
-            if (context.isA<Context>("sap.ui.model.odata.v2.Context")) {
+            if (context.isA<Context>("sap.ui.model.odata.v4.Context")) {
                 return context;
             } else {
-                throw new Error("sap.ui.model.odata.v2.Context instance must be provided by the contextProvider function");
+                throw new Error("sap.ui.model.odata.v4.Context instance must be provided by the contextProvider function");
             }
         }
 
@@ -34,7 +34,7 @@ export default class ContextManager extends ContextManagerBase {
     }
 
     public reset() {
-        void this.model.resetChanges([this.getContext().getPath()], true, true);
+        this.model.resetChanges()
     }
 
     private createModelEntry() {

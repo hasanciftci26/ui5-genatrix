@@ -2,9 +2,9 @@ import Event from "sap/ui/base/Event";
 import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
 import { $ControlSettings } from "sap/ui/core/Control";
 import { form } from "sap/ui/layout/library";
-import Context from "sap/ui/model/odata/v2/Context";
+import Context from "sap/ui/model/Context";
+import EmbeddedForm from "ui5/genatrix/form/EmbeddedForm";
 import FormMode from "ui5/genatrix/form/enum/FormMode";
-import EmbeddedForm from "ui5/genatrix/form/v2/EmbeddedForm";
 import { OptionalPropertyGetter, OptionalPropertySetter, PropertyGetter, PropertySetter } from "ui5/genatrix/types/global/CustomClass.types";
 
 export type EmbeddedForm$InitializedEventParameters = {
@@ -35,7 +35,7 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
 };
 
-declare module "ui5/genatrix/form/v2/EmbeddedForm" {
+declare module "ui5/genatrix/form/EmbeddedForm" {
     export default interface EmbeddedForm<T extends Record<string, any> = Record<string, any>> {
         getEntitySet: OptionalPropertyGetter<string>;
 

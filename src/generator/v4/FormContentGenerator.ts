@@ -1,9 +1,9 @@
-import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import ODataModel from "sap/ui/model/odata/v4/ODataModel";
 import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGeneratorBase";
 import { FormContentGeneratorBaseSettings } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
 
 /**
- * @namespace ui5.genatrix.generator.v2
+ * @namespace ui5.genatrix.generator.v4
  */
 export default class FormContentGenerator extends FormContentGeneratorBase {
     private readonly model: ODataModel;

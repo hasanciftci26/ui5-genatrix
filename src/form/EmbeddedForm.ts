@@ -1,21 +1,28 @@
 import Control from "sap/ui/core/Control";
 import { MetadataOptions } from "sap/ui/core/Element";
-import View from "sap/ui/core/mvc/View";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
 import { form as formLayoutUI5 } from "sap/ui/layout/library";
 import BindingMode from "sap/ui/model/BindingMode";
-import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import Model from "sap/ui/model/Model";
+import ODataModelV2 from "sap/ui/model/odata/v2/ODataModel";
+import ODataModelV4 from "sap/ui/model/odata/v4/ODataModel";
+import EmbeddedFormRenderer from "ui5/genatrix/form/EmbeddedFormRenderer";
 import FormMode from "ui5/genatrix/form/enum/FormMode";
-import EmbeddedFormRenderer from "ui5/genatrix/form/v2/EmbeddedFormRenderer";
-import FormContentGenerator from "ui5/genatrix/generator/v2/FormContentGenerator";
-import ContextManager from "ui5/genatrix/odata/v2/ContextManager";
-import { EmbeddedFormSettings } from "ui5/genatrix/types/form/v2/EmbeddedForm.types";
+import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGeneratorBase";
+import FormContentGeneratorV2 from "ui5/genatrix/generator/v2/FormContentGenerator";
+import FormContentGeneratorV4 from "ui5/genatrix/generator/v4/FormContentGenerator";
+import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
+import ContextManagerV2 from "ui5/genatrix/odata/v2/ContextManager";
+import ContextManagerV4 from "ui5/genatrix/odata/v4/ContextManager";
+import { EmbeddedFormSettings } from "ui5/genatrix/types/form/EmbeddedForm.types";
 import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
-import FormContentValidator from "ui5/genatrix/validator/v2/FormContentValidator";
+import FormContentValidatorBase from "ui5/genatrix/validator/FormContentValidatorBase";
+import FormContentValidatorV2 from "ui5/genatrix/validator/v2/FormContentValidator";
+import FormContentValidatorV4 from "ui5/genatrix/validator/v4/FormContentValidator";
 
 /**
- * @namespace ui5.genatrix.form.v2
+ * @namespace ui5.genatrix.form
  */
 export default class EmbeddedForm<T extends Record<string, any> = Record<string, any>> extends Control {
     public static readonly metadata: MetadataOptions = {
@@ -45,16 +52,16 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         events: {
             initalized: {
                 parameters: {
-                    context: { type: "sap.ui.model.odata.v2.Context" }
+                    context: { type: "sap.ui.model.Context" }
                 }
             }
         }
     };
     public static renderer = EmbeddedFormRenderer;
     private innerForm: SimpleForm;
-    private generator: FormContentGenerator;
-    private validator: FormContentValidator;
-    private contextManager: ContextManager;
+    private generator: FormContentGeneratorBase;
+    private validator: FormContentValidatorBase;
+    private contextManager: ContextManagerBase;
 
     constructor(settings?: EmbeddedFormSettings<T>);
     constructor(id?: string, settings?: EmbeddedFormSettings<T>);
@@ -107,9 +114,9 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     private async onModelContextChange() {
         const model = this.getModel();
 
-        if (!this.isInitialized() && model instanceof ODataModel) {
-            this.generator = this.createGenerator();
-            this.validator = this.createValidator(this.generator);
+        if (!this.isInitialized() && model && this.isODataModel(model)) {
+            this.generator = this.createGenerator(model);
+            this.validator = this.createValidator(this.generator, model);
             this.contextManager = this.createContextManager(model);
 
             try {
@@ -163,29 +170,78 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         });
     }
 
-    private createGenerator() {
-        const generator = new FormContentGenerator({
+    private createGenerator(model: ODataModelV2 | ODataModelV4) {
+        if (model.isA<ODataModelV2>("sap.ui.model.odata.v2.ODataModel")) {
+            return this.createGeneratorV2(model);
+        } else {
+            return this.createGeneratorV4(model);
+        }
+    }
+
+    private createGeneratorV2(model: ODataModelV2) {
+        const generator = new FormContentGeneratorV2(model, {
             entitySet: this.getEntitySetOrThrow()
         });
 
         return generator;
     }
 
-    private createValidator(generator: FormContentGenerator) {
-        const validator = new FormContentValidator({
+    private createGeneratorV4(model: ODataModelV4) {
+        const generator = new FormContentGeneratorV4(model, {
+            entitySet: this.getEntitySetOrThrow()
+        });
+
+        return generator;
+    }
+
+    private createValidator(generator: FormContentGeneratorBase, model: ODataModelV2 | ODataModelV4) {
+        if (model.isA<ODataModelV2>("sap.ui.model.odata.v2.ODataModel")) {
+            return this.createValidatorV2(generator, model);
+        } else {
+            return this.createValidatorV4(generator, model);
+        }
+    }
+
+    private createValidatorV2(generator: FormContentGeneratorBase, model: ODataModelV2) {
+        const validator = new FormContentValidatorV2(model, {
             generator: generator
         });
 
         return validator;
     }
 
-    private createContextManager(model: ODataModel) {
-        const contextManager = new ContextManager({
-            oDataModel: model,
-            oDataModelName: this.getODataModelName(),
+    private createValidatorV4(generator: FormContentGeneratorBase, model: ODataModelV4) {
+        const validator = new FormContentValidatorV4(model, {
+            generator: generator
+        });
+
+        return validator;
+    }
+
+    private createContextManager(model: ODataModelV2 | ODataModelV4) {
+        if (model.isA<ODataModelV2>("sap.ui.model.odata.v2.ODataModel")) {
+            return this.createContextManagerV2(model);
+        } else {
+            return this.createContextManagerV4(model);
+        }
+    }
+
+    private createContextManagerV2(model: ODataModelV2) {
+        const contextManager = new ContextManagerV2(model, {
             entitySet: this.getEntitySetOrThrow(),
             formMode: this.getFormMode(),
-            view: this.getView(),
+            initialData: this.getInitialData(),
+            contextProvider: this.getContextProvider(),
+            contextRef: this.getContextRef()
+        });
+
+        return contextManager;
+    }
+
+    private createContextManagerV4(model: ODataModelV4) {
+        const contextManager = new ContextManagerV4(model, {
+            entitySet: this.getEntitySetOrThrow(),
+            formMode: this.getFormMode(),
             initialData: this.getInitialData(),
             contextProvider: this.getContextProvider(),
             contextRef: this.getContextRef()
@@ -204,16 +260,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         return entitySet;
     }
 
-    private getView() {
-        let parent = this.getParent();
-
-        while (parent) {
-            if (parent.isA<View>("sap.ui.core.mvc.View")) {
-                return parent;
-            }
-
-            parent = parent.getParent();
-        }
+    private isODataModel(model: Model): model is ODataModelV2 | ODataModelV4 {
+        return model.isA<ODataModelV2>("sap.ui.model.odata.v2.ODataModel") || model.isA<ODataModelV4>("sap.ui.model.odata.v4.ODataModel");
     }
 
     private hasMessage(obj: any): obj is { message: string; } {
