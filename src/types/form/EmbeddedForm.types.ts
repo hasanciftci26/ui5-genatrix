@@ -20,11 +20,14 @@ import {
     PropertySetter
 } from "ui5/genatrix/types/global/CustomClass.types";
 
-export type EmbeddedForm$InitializedEventParameters = {
+export type EmbeddedForm$InitializedEventParameters = {};
+export type EmbeddedForm$InitializedEvent = Event<EmbeddedForm$InitializedEventParameters, EmbeddedForm>;
+
+export type EmbeddedForm$ContextCreatedEventParameters = {
     context: Context;
 };
 
-export type EmbeddedForm$InitializedEvent = Event<EmbeddedForm$InitializedEventParameters, EmbeddedForm>;
+export type EmbeddedForm$ContextCreatedEvent = Event<EmbeddedForm$ContextCreatedEventParameters, EmbeddedForm>;
 
 export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettings & {
     entitySet?: string | PropertyBindingInfo | `{${string}}`;
@@ -52,11 +55,16 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     groupingSize?: number | PropertyBindingInfo | `{${string}}`;
     decimalSeparator?: string | PropertyBindingInfo | `{${string}}`;
     parseEmptyValueToZero?: boolean | PropertyBindingInfo | `{${string}}`;
+    requiredProperties?: string | PropertyBindingInfo | `{${string}}`;
+    readonlyProperties?: string | PropertyBindingInfo | `{${string}}`;
+    excludedProperties?: string | PropertyBindingInfo | `{${string}}`;
     initialData?: T;
     contextProvider?: () => Promise<Context> | Context;
     contextRef?: T | Context;
+    bindContextToForm?: boolean | PropertyBindingInfo | `{${string}}`;
     propertyConfigurations?: PropertyConfiguration[];
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
+    contextCreated?: (event: EmbeddedForm$ContextCreatedEvent) => void;
 };
 
 declare module "ui5/genatrix/form/EmbeddedForm" {
@@ -134,6 +142,15 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         getParseEmptyValueToZero: PropertyGetter<boolean>;
         setParseEmptyValueToZero: PropertySetter<boolean, EmbeddedForm>;
 
+        getRequiredProperties: OptionalPropertyGetter<string>;
+        setRequiredProperties: OptionalPropertySetter<string, EmbeddedForm>;
+
+        getReadonlyProperties: OptionalPropertyGetter<string>;
+        setReadonlyProperties: OptionalPropertySetter<string, EmbeddedForm>;
+
+        getExcludedProperties: OptionalPropertyGetter<string>;
+        setExcludedProperties: OptionalPropertySetter<string, EmbeddedForm>;
+
         getInitialData: OptionalPropertyGetter<T>;
         setInitialData: OptionalPropertySetter<T, EmbeddedForm>;
 
@@ -142,6 +159,9 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
 
         getContextRef: OptionalPropertyGetter<T | Context>;
         setContextRef: OptionalPropertySetter<T | Context, EmbeddedForm>;
+
+        getBindContextToForm: PropertyGetter<boolean>;
+        setBindContextToForm: PropertySetter<boolean, EmbeddedForm>;
 
         getPropertyConfigurations: AggregationGetterMulti<PropertyConfiguration>;
         addPropertyConfiguration: AggregationSetterOrAdder<PropertyConfiguration, EmbeddedForm>;
@@ -154,5 +174,9 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         attachInitialized(handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
         attachInitialized(data: object, handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
         fireInitialized: (parameters?: EmbeddedForm$InitializedEventParameters) => EmbeddedForm;
+
+        attachContextCreated(handler: (event: EmbeddedForm$ContextCreatedEvent) => void, listener?: object): EmbeddedForm;
+        attachContextCreated(data: object, handler: (event: EmbeddedForm$ContextCreatedEvent) => void, listener?: object): EmbeddedForm;
+        fireContextCreated: (parameters?: EmbeddedForm$ContextCreatedEventParameters) => EmbeddedForm;
     }
 }

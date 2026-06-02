@@ -9,7 +9,7 @@
     xmlns:smarttable="sap.ui.comp.smarttable"
     xmlns:table="sap.ui.table"
     xmlns:rowmodes="sap.ui.table.rowmodes"
-    xmlns:form="ui5.genatrix.form.v2"
+    xmlns:form="ui5.genatrix.form"
 >
     <Page
         id="Homepage"

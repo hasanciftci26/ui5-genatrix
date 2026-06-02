@@ -1,10 +1,11 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
+import PropertyConfigurationBase from "ui5/genatrix/interface/PropertyConfigurationBase";
 import { PropertyConfigurationSettings } from "ui5/genatrix/types/form/PropertyConfiguration.types";
 
 /**
  * @namespace ui5.genatrix.form
  */
-export default class PropertyConfiguration extends ManagedObject {
+export default class PropertyConfiguration extends ManagedObject implements PropertyConfigurationBase {
     public static readonly metadata: MetadataOptions = {
         library: "ui5.genatrix",
         final: true,

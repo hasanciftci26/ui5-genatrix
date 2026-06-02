@@ -52,9 +52,13 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             groupingSize: { type: "int", defaultValue: 3 },
             decimalSeparator: { type: "string" },
             parseEmptyValueToZero: { type: "boolean", defaultValue: false },
+            requiredProperties: { type: "string" },
+            readonlyProperties: { type: "string" },
+            excludedProperties: { type: "string" },
             initialData: { type: "object", bindable: false },
             contextProvider: { type: "function" },
             contextRef: { type: "any" },
+            bindContextToForm: { type: "boolean", defaultValue: true },
             formInitialized: { type: "boolean", visibility: "hidden", defaultValue: false }
         },
         defaultAggregation: "propertyConfigurations",
@@ -62,7 +66,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             propertyConfigurations: { type: "ui5.genatrix.form.PropertyConfiguration", multiple: true, singularName: "propertyConfiguration" }
         },
         events: {
-            initalized: {
+            initialized: {},
+            contextCreated: {
                 parameters: {
                     context: { type: "sap.ui.model.Context" }
                 }
@@ -148,12 +153,17 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                 }
 
                 this.innerForm.setModel(model);
-                this.innerForm.setBindingContext(context);
+
+                if (this.getBindContextToForm()) {
+                    this.innerForm.setBindingContext(context);
+                }
+
                 this.innerForm.setBusy(false);
 
                 model.setDefaultBindingMode(BindingMode.TwoWay);
                 this.setProperty("formInitialized", true);
-                this.fireInitialized({ context: context });
+                this.fireInitialized();
+                this.fireContextCreated({ context: context });
                 this.detachModelContextChange(this.onModelContextChange, this);
             } catch (error) {
                 let errorMessage = "Unexpected error has occured";
@@ -202,6 +212,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         const generator = new FormContentGeneratorV2({
             entitySet: this.getEntitySetOrThrow(),
             model: model,
+            formMode: this.getFormMode(),
+            requiredProperties: this.getAllRequiredProperties(),
+            readonlyProperties: this.getAllReadonlyProperties(),
+            excludedProperties: this.getAllExcludedProperties(),
             propertyConfigurations: this.getPropertyConfigurations()
         });
 
@@ -212,6 +226,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         const generator = new FormContentGeneratorV4({
             entitySet: this.getEntitySetOrThrow(),
             model: model,
+            formMode: this.getFormMode(),
+            requiredProperties: this.getAllRequiredProperties(),
+            readonlyProperties: this.getAllReadonlyProperties(),
+            excludedProperties: this.getAllExcludedProperties(),
             propertyConfigurations: this.getPropertyConfigurations()
         });
 
@@ -288,6 +306,30 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
 
         return entitySet;
+    }
+
+    private getAllRequiredProperties() {
+        const formLevelProperties = this.getRequiredProperties()?.split(",") || [];
+        const configLevelProperties = this.getPropertyConfigurations().filter(config => config.getName() && config.getRequired())
+            .map(config => config.getName() as string);
+
+        return Array.from(new Set([...formLevelProperties, ...configLevelProperties]));
+    }
+
+    private getAllReadonlyProperties() {
+        const formLevelProperties = this.getReadonlyProperties()?.split(",") || [];
+        const configLevelProperties = this.getPropertyConfigurations().filter(config => config.getName() && config.getReadonly())
+            .map(config => config.getName() as string);
+
+        return Array.from(new Set([...formLevelProperties, ...configLevelProperties]));
+    }
+
+    private getAllExcludedProperties() {
+        const formLevelProperties = this.getExcludedProperties()?.split(",") || [];
+        const configLevelProperties = this.getPropertyConfigurations().filter(config => config.getName() && config.getExcluded())
+            .map(config => config.getName() as string);
+
+        return Array.from(new Set([...formLevelProperties, ...configLevelProperties]));
     }
 
     private isODataModel(model: Model): model is ODataModelV2 | ODataModelV4 {

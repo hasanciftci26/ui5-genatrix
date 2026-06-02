@@ -12,15 +12,20 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
     private readonly metadataParser: MetadataParserBase<T>;
     private readonly content: Control[] = [];
 
-    constructor(settings: FormContentGeneratorBaseSettings<T>) {
+    constructor(settings: FormContentGeneratorBaseSettings<T>, metadataParser: MetadataParserBase<T>) {
         super();
         this.settings = settings;
+        this.metadataParser = metadataParser;
     }
 
     public abstract generate(): Promise<Control[]>;
 
     public getContent() {
         return this.content;
+    }
+
+    protected async parseMetadata() {
+        return this.metadataParser.parse();
     }
 
     protected getEntitySet() {
