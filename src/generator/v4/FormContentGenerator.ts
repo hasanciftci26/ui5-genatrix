@@ -5,12 +5,9 @@ import { FormContentGeneratorBaseSettings } from "ui5/genatrix/types/generator/F
 /**
  * @namespace ui5.genatrix.generator.v4
  */
-export default class FormContentGenerator extends FormContentGeneratorBase {
-    private readonly model: ODataModel;
-
-    constructor(model: ODataModel, settings: FormContentGeneratorBaseSettings) {
+export default class FormContentGenerator extends FormContentGeneratorBase<ODataModel> {
+    constructor(settings: FormContentGeneratorBaseSettings<ODataModel>) {
         super(settings);
-        this.model = model;
     }
 
     public async generate() {

@@ -8,12 +8,9 @@ import { ContextManagerBaseSettings } from "ui5/genatrix/types/odata/ContextMana
 /**
  * @namespace ui5.genatrix.odata.v4
  */
-export default class ContextManager extends ContextManagerBase {
-    private readonly model: ODataModel;
-
-    constructor(model: ODataModel, settings: ContextManagerBaseSettings) {
+export default class ContextManager extends ContextManagerBase<ODataModel> {
+    constructor(settings: ContextManagerBaseSettings<ODataModel>) {
         super(settings);
-        this.model = model;
     }
 
     public async create() {
@@ -35,11 +32,11 @@ export default class ContextManager extends ContextManagerBase {
     }
 
     public reset() {
-        this.model.resetChanges(this.getUpdateGroupId());
+        this.getModel().resetChanges(this.getUpdateGroupId());
     }
 
     private createModelEntry() {
-        const listBinding = this.model.bindList(this.getEntitySetPath(), undefined, [], [], {
+        const listBinding = this.getModel().bindList(this.getEntitySetPath(), undefined, [], [], {
             $$updateGroupId: this.getUpdateGroupId()
         });
 
@@ -67,7 +64,7 @@ export default class ContextManager extends ContextManagerBase {
 
     private createBindingContext(path: string): Promise<Context> {
         return new Promise((resolve, reject) => {
-            const contextBinding = this.model.bindContext(path, undefined, {
+            const contextBinding = this.getModel().bindContext(path, undefined, {
                 $$updateGroupId: this.getUpdateGroupId()
             });
 

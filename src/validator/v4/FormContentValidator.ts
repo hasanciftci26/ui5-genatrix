@@ -5,12 +5,9 @@ import FormContentValidatorBase from "ui5/genatrix/validator/FormContentValidato
 /**
  * @namespace ui5.genatrix.validator.v4
  */
-export default class FormContentValidator extends FormContentValidatorBase {
-    private readonly model: ODataModel;
-
-    constructor(model: ODataModel, settings: FormContentValidatorBaseSettings) {
+export default class FormContentValidator extends FormContentValidatorBase<ODataModel> {
+    constructor(settings: FormContentValidatorBaseSettings<ODataModel>) {
         super(settings);
-        this.model = model;
     }
 
     public async validate() {

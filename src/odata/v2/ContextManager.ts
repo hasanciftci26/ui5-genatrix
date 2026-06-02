@@ -7,12 +7,9 @@ import { ContextManagerBaseSettings } from "ui5/genatrix/types/odata/ContextMana
 /**
  * @namespace ui5.genatrix.odata.v2
  */
-export default class ContextManager extends ContextManagerBase {
-    private readonly model: ODataModel;
-
-    constructor(model: ODataModel, settings: ContextManagerBaseSettings) {
+export default class ContextManager extends ContextManagerBase<ODataModel> {
+    constructor(settings: ContextManagerBaseSettings<ODataModel>) {
         super(settings);
-        this.model = model;
     }
 
     public async create() {
@@ -34,11 +31,11 @@ export default class ContextManager extends ContextManagerBase {
     }
 
     public reset() {
-        void this.model.resetChanges([this.getContext().getPath()], true, true);
+        void this.getModel().resetChanges([this.getContext().getPath()], true, true);
     }
 
     private createModelEntry() {
-        const context = this.model.createEntry(this.getEntitySetPath(), {
+        const context = this.getModel().createEntry(this.getEntitySetPath(), {
             properties: this.getInitialData()
         });
 
@@ -61,14 +58,14 @@ export default class ContextManager extends ContextManagerBase {
             this.setContext(contextRef);
             return contextRef;
         } else {
-            const path = this.model.createKey(this.getEntitySetPath(), contextRef);
+            const path = this.getModel().createKey(this.getEntitySetPath(), contextRef);
             return this.createBindingContext(path);
         }
     }
 
     private createBindingContext(path: string): Promise<Context> {
         return new Promise((resolve, reject) => {
-            this.model.createBindingContext(path, undefined, undefined, (context: Context | null) => {
+            this.getModel().createBindingContext(path, undefined, undefined, (context: Context | null) => {
                 if (context) {
                     this.setContext(context);
                     resolve(context);

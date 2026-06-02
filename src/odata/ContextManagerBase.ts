@@ -1,15 +1,16 @@
 import BaseObject from "sap/ui/base/Object";
 import Context from "sap/ui/model/Context";
+import Model from "sap/ui/model/Model";
 import { ContextManagerBaseSettings } from "ui5/genatrix/types/odata/ContextManagerBase.types";
 
 /**
  * @namespace ui5.genatrix.odata
  */
-export default abstract class ContextManagerBase extends BaseObject {
-    private readonly settings: ContextManagerBaseSettings;
+export default abstract class ContextManagerBase<T extends Model = Model> extends BaseObject {
+    private readonly settings: ContextManagerBaseSettings<T>;
     private context: Context;
 
-    constructor(settings: ContextManagerBaseSettings) {
+    constructor(settings: ContextManagerBaseSettings<T>) {
         super();
         this.settings = settings;
     }
@@ -27,6 +28,10 @@ export default abstract class ContextManagerBase extends BaseObject {
 
     protected getEntitySet() {
         return this.settings.entitySet;
+    }
+
+    protected getModel() {
+        return this.settings.model;
     }
 
     protected getEntitySetPath() {

@@ -199,8 +199,9 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private createGeneratorV2(model: ODataModelV2) {
-        const generator = new FormContentGeneratorV2(model, {
+        const generator = new FormContentGeneratorV2({
             entitySet: this.getEntitySetOrThrow(),
+            model: model,
             propertyConfigurations: this.getPropertyConfigurations()
         });
 
@@ -208,8 +209,9 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private createGeneratorV4(model: ODataModelV4) {
-        const generator = new FormContentGeneratorV4(model, {
+        const generator = new FormContentGeneratorV4({
             entitySet: this.getEntitySetOrThrow(),
+            model: model,
             propertyConfigurations: this.getPropertyConfigurations()
         });
 
@@ -225,16 +227,18 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private createValidatorV2(generator: FormContentGeneratorBase, model: ODataModelV2) {
-        const validator = new FormContentValidatorV2(model, {
-            generator: generator
+        const validator = new FormContentValidatorV2({
+            generator: generator,
+            model: model
         });
 
         return validator;
     }
 
     private createValidatorV4(generator: FormContentGeneratorBase, model: ODataModelV4) {
-        const validator = new FormContentValidatorV4(model, {
-            generator: generator
+        const validator = new FormContentValidatorV4({
+            generator: generator,
+            model: model
         });
 
         return validator;
@@ -249,8 +253,9 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private createContextManagerV2(model: ODataModelV2) {
-        const contextManager = new ContextManagerV2(model, {
+        const contextManager = new ContextManagerV2({
             entitySet: this.getEntitySetOrThrow(),
+            model: model,
             updateGroupId: this.getUpdateGroupId(),
             formMode: this.getFormMode(),
             initialData: this.getInitialData(),
@@ -262,8 +267,9 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private createContextManagerV4(model: ODataModelV4) {
-        const contextManager = new ContextManagerV4(model, {
+        const contextManager = new ContextManagerV4({
             entitySet: this.getEntitySetOrThrow(),
+            model: model,
             updateGroupId: this.getUpdateGroupId(),
             formMode: this.getFormMode(),
             initialData: this.getInitialData(),
