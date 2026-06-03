@@ -5,6 +5,7 @@ export type PropertyConfigurationSettings = $ManagedObjectSettings & {
     name?: string | PropertyBindingInfo | `{${string}}`;
     label?: string | PropertyBindingInfo | `{${string}}`;
     required?: boolean | PropertyBindingInfo | `{${string}}`;
+    requiredMessage?: string | PropertyBindingInfo | `{${string}}`;
     readonly?: boolean | PropertyBindingInfo | `{${string}}`;
     excluded?: boolean | PropertyBindingInfo | `{${string}}`;
     datePattern?: string | PropertyBindingInfo | `{${string}}`;
@@ -31,11 +32,14 @@ declare module "ui5/genatrix/form/PropertyConfiguration" {
         getRequired: PropertyGetter<string>;
         setRequired: PropertySetter<string, PropertyConfiguration>;
 
-        getReadonly: OptionalPropertyGetter<string>;
-        setReadonly: OptionalPropertySetter<string, PropertyConfiguration>;
+        getRequiredMessage: OptionalPropertyGetter<string>;
+        setRequiredMessage: OptionalPropertySetter<string, PropertyConfiguration>;
 
-        getExcluded: OptionalPropertyGetter<string>;
-        setExcluded: OptionalPropertySetter<string, PropertyConfiguration>;
+        getReadonly: PropertyGetter<string>;
+        setReadonly: PropertySetter<string, PropertyConfiguration>;
+
+        getExcluded: PropertyGetter<string>;
+        setExcluded: PropertySetter<string, PropertyConfiguration>;
 
         getDatePattern: OptionalPropertyGetter<string>;
         setDatePattern: OptionalPropertySetter<string, PropertyConfiguration>;

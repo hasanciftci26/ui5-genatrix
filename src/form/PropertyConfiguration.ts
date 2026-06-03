@@ -13,6 +13,7 @@ export default class PropertyConfiguration extends ManagedObject implements Prop
             name: { type: "string" },
             label: { type: "string" },
             required: { type: "boolean", defaultValue: false },
+            requiredMessage: { type: "string" },
             readonly: { type: "boolean", defaultValue: false },
             excluded: { type: "boolean", defaultValue: false },
             datePattern: { type: "string" },

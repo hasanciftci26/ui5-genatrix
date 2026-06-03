@@ -56,14 +56,15 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             readonlyProperties: { type: "string" },
             excludedProperties: { type: "string" },
             initialData: { type: "object", bindable: false },
-            contextProvider: { type: "function" },
+            contextProvider: { type: "function", bindable: false },
             contextRef: { type: "any" },
             bindContextToForm: { type: "boolean", defaultValue: true },
             formInitialized: { type: "boolean", visibility: "hidden", defaultValue: false }
         },
         defaultAggregation: "propertyConfigurations",
         aggregations: {
-            propertyConfigurations: { type: "ui5.genatrix.form.PropertyConfiguration", multiple: true, singularName: "propertyConfiguration" }
+            propertyConfigurations: { type: "ui5.genatrix.form.PropertyConfiguration", multiple: true, singularName: "propertyConfiguration" },
+            propertyValidations: { type: "ui5.genatrix.form.PropertyValidation", multiple: true, singularName: "propertyValidation" }
         },
         events: {
             initialized: {},
@@ -213,10 +214,20 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             entitySet: this.getEntitySetOrThrow(),
             model: model,
             formMode: this.getFormMode(),
+            datePattern: this.getDatePattern(),
+            timePattern: this.getTimePattern(),
+            dateTimeSeparator: this.getDateTimeSeparator(),
+            dateFirst: this.getDateFirst(),
+            groupingEnabled: this.getGroupingEnabled(),
+            groupingSeparator: this.getGroupingSeparator(),
+            groupingSize: this.getGroupingSize(),
+            decimalSeparator: this.getDecimalSeparator(),
+            parseEmptyValueToZero: this.getParseEmptyValueToZero(),
             requiredProperties: this.getAllRequiredProperties(),
             readonlyProperties: this.getAllReadonlyProperties(),
             excludedProperties: this.getAllExcludedProperties(),
-            propertyConfigurations: this.getPropertyConfigurations()
+            propertyConfigurations: this.getPropertyConfigurations(),
+            propertyValidations: this.getPropertyValidations()
         });
 
         return generator;
@@ -227,10 +238,20 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             entitySet: this.getEntitySetOrThrow(),
             model: model,
             formMode: this.getFormMode(),
+            datePattern: this.getDatePattern(),
+            timePattern: this.getTimePattern(),
+            dateTimeSeparator: this.getDateTimeSeparator(),
+            dateFirst: this.getDateFirst(),
+            groupingEnabled: this.getGroupingEnabled(),
+            groupingSeparator: this.getGroupingSeparator(),
+            groupingSize: this.getGroupingSize(),
+            decimalSeparator: this.getDecimalSeparator(),
+            parseEmptyValueToZero: this.getParseEmptyValueToZero(),
             requiredProperties: this.getAllRequiredProperties(),
             readonlyProperties: this.getAllReadonlyProperties(),
             excludedProperties: this.getAllExcludedProperties(),
-            propertyConfigurations: this.getPropertyConfigurations()
+            propertyConfigurations: this.getPropertyConfigurations(),
+            propertyValidations: this.getPropertyValidations()
         });
 
         return generator;

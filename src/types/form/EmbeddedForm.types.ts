@@ -6,6 +6,7 @@ import Context from "sap/ui/model/Context";
 import EmbeddedForm from "ui5/genatrix/form/EmbeddedForm";
 import FormMode from "ui5/genatrix/form/enum/FormMode";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
+import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
 import {
     AggregationBinder,
     AggregationDestroyer,
@@ -63,6 +64,7 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     contextRef?: T | Context;
     bindContextToForm?: boolean | PropertyBindingInfo | `{${string}}`;
     propertyConfigurations?: PropertyConfiguration[];
+    propertyValidations?: PropertyValidation[];
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
     contextCreated?: (event: EmbeddedForm$ContextCreatedEvent) => void;
 };
@@ -170,6 +172,14 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         removePropertyConfiguration: AggregationRemoverSingle<PropertyConfiguration>;
         removeAllPropertyConfigurations: AggregationRemoverAll<PropertyConfiguration>;
         destroyPropertyConfigurations: AggregationDestroyer<EmbeddedForm>;
+
+        getPropertyValidations: AggregationGetterMulti<PropertyValidation>;
+        addPropertyValidation: AggregationSetterOrAdder<PropertyValidation, EmbeddedForm>;
+        insertPropertyValidation: AggregationInserter<PropertyValidation, EmbeddedForm>;
+        bindPropertyValidations: AggregationBinder<EmbeddedForm>;
+        removePropertyValidation: AggregationRemoverSingle<PropertyValidation>;
+        removeAllPropertyValidations: AggregationRemoverAll<PropertyValidation>;
+        destroyPropertyValidations: AggregationDestroyer<EmbeddedForm>;
 
         attachInitialized(handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
         attachInitialized(data: object, handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;

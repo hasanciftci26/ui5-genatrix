@@ -1,12 +1,7 @@
-import Model from "sap/ui/model/Model";
-import FormMode from "ui5/genatrix/form/enum/FormMode";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
 
-export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
-    entitySet: string;
-    model: T;
-    formMode: FormMode | keyof typeof FormMode;
+export type FormTypeGeneratorSettings = {
     datePattern?: string;
     timePattern?: string;
     dateTimeSeparator: string;
@@ -16,9 +11,6 @@ export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
     groupingSize: number;
     decimalSeparator?: string;
     parseEmptyValueToZero: boolean;
-    requiredProperties: string[];
-    readonlyProperties: string[];
-    excludedProperties: string[];
     propertyConfigurations: PropertyConfiguration[];
-    propertyValidations: PropertyValidation[];
+    propertyValidations: PropertyValidation[];    
 };
