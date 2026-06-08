@@ -112,6 +112,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     public setEntitySet(value?: string) {
+        if (this.isInitialized()) {
+            this.throwRuntimeError("entitySet property cannot be modified after the form initialization");
+        }
+
         let entitySet = value;
 
         if (entitySet?.startsWith("/")) {
@@ -124,7 +128,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
 
     public setFormMode(value: FormMode | keyof typeof FormMode) {
         if (this.isInitialized()) {
-            this.throwRuntimeError("formMode cannot be changed after the form initialization");
+            this.throwRuntimeError("formMode property cannot be modified after the form initialization");
         }
 
         this.setProperty("formMode", value);
@@ -133,7 +137,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
 
     public setUpdateGroupId(value?: string) {
         if (this.isInitialized()) {
-            this.throwRuntimeError("updateGroupId property cannot be changed after the form initialization");
+            this.throwRuntimeError("updateGroupId property cannot be modified after the form initialization");
         }
 
         this.setProperty("updateGroupId", value);
