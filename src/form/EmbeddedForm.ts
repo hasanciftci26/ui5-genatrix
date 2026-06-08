@@ -1,3 +1,6 @@
+import Button from "sap/m/Button";
+import Toolbar from "sap/m/Toolbar";
+import ToolbarSpacer from "sap/m/ToolbarSpacer";
 import Control from "sap/ui/core/Control";
 import { MetadataOptions } from "sap/ui/core/Element";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
@@ -31,6 +34,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             oDataModelName: { type: "string" },
             updateGroupId: { type: "string", defaultValue: "ui5Genatrix" },
             formMode: { type: "ui5.genatrix.form.enum.FormMode", defaultValue: FormMode.Create },
+            editable: { type: "boolean", defaultValue: true },
+            editTogglable: { type: "boolean", defaultValue: true },
             layout: { type: "sap.ui.layout.form.SimpleFormLayout", defaultValue: formLayoutUI5.SimpleFormLayout.ResponsiveGridLayout },
             columnsXL: { type: "int", defaultValue: 1 },
             columnsL: { type: "int", defaultValue: 1 },
@@ -80,6 +85,9 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     private generator: FormContentGeneratorBase;
     private validator: FormContentValidatorBase;
     private contextManager: ContextManagerBase;
+    private toolbar?: Toolbar;
+    private editButton?: Button;
+    private displayButton?: Button;
 
     constructor(settings?: EmbeddedFormSettings<T>);
     constructor(id?: string, settings?: EmbeddedFormSettings<T>);
@@ -119,6 +127,27 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
 
         this.setProperty("updateGroupId", value);
+    }
+
+    public setEditable(value: boolean) {
+        this.setProperty("editable", value);
+
+        if (this.toolbar) {
+            this.editButton?.setVisible(value === false);
+            this.displayButton?.setVisible(value === true);
+
+            if (this.isInitialized()) {
+                this.generator.switchMode(value);
+            }
+        }
+    }
+
+    public setEditTogglable(value: boolean) {
+        this.setProperty("editTogglable", value);
+
+        if (this.isInitialized() && this.toolbar) {
+            this.toolbar.setVisible(value);
+        }
     }
 
     public isInitialized() {
@@ -199,6 +228,48 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             emptySpanS: settings?.emptySpanS ?? 0,
             layoutData: settings?.layoutData
         });
+
+        if (settings?.formMode === FormMode.Create || settings?.formMode === FormMode.Update) {
+            const toolbar = this.createToolbar(settings);
+            this.innerForm.setToolbar(toolbar);
+        }
+    }
+
+    private createToolbar(settings?: EmbeddedFormSettings<T>) {
+        this.toolbar = new Toolbar({
+            visible: settings?.editTogglable === true,
+            content: [
+                new ToolbarSpacer(),
+                this.getEditButton(settings),
+                this.getDisplayButton(settings)
+            ]
+        });
+
+        return this.toolbar;
+    }
+
+    private getEditButton(settings?: EmbeddedFormSettings<T>) {
+        this.editButton = new Button({
+            visible: settings?.editable !== true,
+            icon: "sap-icon://edit",
+            press: () => {
+                this.setEditable(true);
+            }
+        });
+
+        return this.editButton;
+    }
+
+    private getDisplayButton(settings?: EmbeddedFormSettings<T>) {
+        this.displayButton = new Button({
+            visible: settings?.editable === true,
+            icon: "sap-icon://display",
+            press: () => {
+                this.setEditable(false);
+            }
+        });
+
+        return this.displayButton;
     }
 
     private createGenerator(model: ODataModelV2 | ODataModelV4) {

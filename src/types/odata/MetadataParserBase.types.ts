@@ -40,6 +40,7 @@ export type EdmType =
     "Edm.Binary" |
     "Edm.Boolean" |
     "Edm.Byte" |
+    "Edm.Date" |
     "Edm.DateTime" |
     "Edm.DateTimeOffset" |
     "Edm.Decimal" |

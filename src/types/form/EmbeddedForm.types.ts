@@ -35,6 +35,8 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     oDataModelName?: string | PropertyBindingInfo | `{${string}}`;
     updateGroupId?: string | PropertyBindingInfo | `{${string}}`;
     formMode?: FormMode | keyof typeof FormMode | PropertyBindingInfo | `{${string}}`;
+    editable?: boolean | PropertyBindingInfo | `{${string}}`;
+    editTogglable?: boolean | PropertyBindingInfo | `{${string}}`;
     layout?: form.SimpleFormLayout | keyof typeof form.SimpleFormLayout | PropertyBindingInfo | `{${string}}`;
     columnsXL?: number | PropertyBindingInfo | `{${string}}`;
     columnsL?: number | PropertyBindingInfo | `{${string}}`;
@@ -80,6 +82,10 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
 
         getFormMode: PropertyGetter<FormMode | keyof typeof FormMode>;
         setFormMode: PropertySetter<FormMode | keyof typeof FormMode, EmbeddedForm>;
+
+        getEditable: PropertyGetter<boolean>;
+        
+        getEditTogglable: PropertyGetter<boolean>;       
 
         getLayout: PropertyGetter<form.SimpleFormLayout | keyof typeof form.SimpleFormLayout>;
         setLayout: PropertySetter<form.SimpleFormLayout | keyof typeof form.SimpleFormLayout, EmbeddedForm>;

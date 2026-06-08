@@ -1,9 +1,11 @@
 import Label from "sap/m/Label";
+import Text from "sap/m/Text";
 import BaseObject from "sap/ui/base/Object";
 import Control from "sap/ui/core/Control";
 import Model from "sap/ui/model/Model";
 import FormInput from "ui5/genatrix/extension/control/FormInput";
 import FormTypeGenerator from "ui5/genatrix/generator/FormTypeGenerator";
+import TypeGeneratorBase from "ui5/genatrix/generator/TypeGeneratorBase";
 import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
 import { FormContentGeneratorBaseSettings } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
@@ -14,7 +16,7 @@ import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.
 export default abstract class FormContentGeneratorBase<T extends Model = Model> extends BaseObject {
     private readonly settings: FormContentGeneratorBaseSettings<T>;
     private readonly metadataParser: MetadataParserBase<T>;
-    private readonly typeGenerator: FormTypeGenerator;
+    private readonly typeGenerator: TypeGeneratorBase;
     private readonly content: Control[] = [];
 
     constructor(settings: FormContentGeneratorBaseSettings<T>, metadataParser: MetadataParserBase<T>) {
@@ -32,8 +34,7 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
             groupingSize: settings.groupingSize,
             decimalSeparator: settings.decimalSeparator,
             parseEmptyValueToZero: settings.parseEmptyValueToZero,
-            propertyConfigurations: settings.propertyConfigurations,
-            propertyValidations: settings.propertyValidations
+            propertyConfigurations: settings.propertyConfigurations
         });
     }
 
@@ -41,6 +42,10 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
 
     public getContent() {
         return this.content;
+    }
+
+    public switchMode(editable: boolean) {
+        
     }
 
     protected async parseMetadata() {
@@ -69,6 +74,23 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
 
     protected createLabel(label: string) {
         return new Label({ text: label });
+    }
+
+    protected createText(property: EntityTypeProperty, visible = true) {
+        return new Text({
+            visible: visible,
+            text: {
+                path: property.name,
+                type: this.typeGenerator.generate(property),
+                formatter: (value: any) => {
+                    if (value == null || value == "") {
+                        return "—";
+                    } else {
+                        return value;
+                    }
+                }
+            }
+        });
     }
 
     protected createInput(property: EntityTypeProperty) {
