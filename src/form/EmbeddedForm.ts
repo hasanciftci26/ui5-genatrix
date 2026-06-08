@@ -119,6 +119,16 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
 
         this.setProperty("entitySet", entitySet);
+        return this;
+    }
+
+    public setFormMode(value: FormMode | keyof typeof FormMode) {
+        if (this.isInitialized()) {
+            this.throwRuntimeError("formMode cannot be changed after the form initialization");
+        }
+
+        this.setProperty("formMode", value);
+        return this;
     }
 
     public setUpdateGroupId(value?: string) {
@@ -127,6 +137,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
 
         this.setProperty("updateGroupId", value);
+        return this;
     }
 
     public setEditable(value: boolean) {
@@ -140,6 +151,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                 this.generator.switchMode(value);
             }
         }
+
+        return this;
     }
 
     public setEditTogglable(value: boolean) {
@@ -148,6 +161,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         if (this.isInitialized() && this.toolbar) {
             this.toolbar.setVisible(value);
         }
+
+        return this;
     }
 
     public isInitialized() {
