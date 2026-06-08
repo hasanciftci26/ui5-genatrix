@@ -77,6 +77,11 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                 parameters: {
                     context: { type: "sap.ui.model.Context" }
                 }
+            },
+            modeChanged: {
+                parameters: {
+                    editable: { type: "boolean" }
+                }
             }
         }
     };
@@ -146,8 +151,9 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
 
     public setEditable(value: boolean) {
         this.setProperty("editable", value);
+        this.fireModeChanged({ editable: value });
 
-        if (this.toolbar) {
+        if (this.getFormMode() === FormMode.Create || this.getFormMode() === FormMode.Update) {
             this.editButton?.setVisible(value === false);
             this.displayButton?.setVisible(value === true);
 

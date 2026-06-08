@@ -30,6 +30,12 @@ export type EmbeddedForm$ContextCreatedEventParameters = {
 
 export type EmbeddedForm$ContextCreatedEvent = Event<EmbeddedForm$ContextCreatedEventParameters, EmbeddedForm>;
 
+export type EmbeddedForm$ModeChangedEventParameters = {
+    editable: boolean;
+};
+
+export type EmbeddedForm$ModeChangedEvent = Event<EmbeddedForm$ModeChangedEventParameters, EmbeddedForm>;
+
 export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettings & {
     entitySet?: string | PropertyBindingInfo | `{${string}}`;
     oDataModelName?: string | PropertyBindingInfo | `{${string}}`;
@@ -69,6 +75,7 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     propertyValidations?: PropertyValidation[];
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
     contextCreated?: (event: EmbeddedForm$ContextCreatedEvent) => void;
+    modeChanged?: (event: EmbeddedForm$ModeChangedEvent) => void;
 };
 
 declare module "ui5/genatrix/form/EmbeddedForm" {
@@ -83,8 +90,8 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         getFormMode: PropertyGetter<FormMode | keyof typeof FormMode>;
 
         getEditable: PropertyGetter<boolean>;
-        
-        getEditTogglable: PropertyGetter<boolean>;       
+
+        getEditTogglable: PropertyGetter<boolean>;
 
         getLayout: PropertyGetter<form.SimpleFormLayout | keyof typeof form.SimpleFormLayout>;
         setLayout: PropertySetter<form.SimpleFormLayout | keyof typeof form.SimpleFormLayout, EmbeddedForm>;
@@ -193,5 +200,9 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         attachContextCreated(handler: (event: EmbeddedForm$ContextCreatedEvent) => void, listener?: object): EmbeddedForm;
         attachContextCreated(data: object, handler: (event: EmbeddedForm$ContextCreatedEvent) => void, listener?: object): EmbeddedForm;
         fireContextCreated: (parameters?: EmbeddedForm$ContextCreatedEventParameters) => EmbeddedForm;
+
+        attachModeChanged(handler: (event: EmbeddedForm$ModeChangedEvent) => void, listener?: object): EmbeddedForm;
+        attachModeChanged(data: object, handler: (event: EmbeddedForm$ModeChangedEvent) => void, listener?: object): EmbeddedForm;
+        fireModeChanged: (parameters?: EmbeddedForm$ModeChangedEventParameters) => EmbeddedForm;
     }
 }
