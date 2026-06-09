@@ -1,5 +1,5 @@
 import BaseObject from "sap/ui/base/Object";
-import Type from "sap/ui/model/Type";
+import SimpleType from "sap/ui/model/SimpleType";
 import { ODataDateTimeConstraints, ODataNumberConstraints, ODataNumberFormatOptions } from "ui5/genatrix/types/extension/type/GlobalOData.types";
 import { TypeGeneratorBaseSettings } from "ui5/genatrix/types/generator/TypeGeneratorBase.types";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
@@ -15,7 +15,7 @@ export default abstract class TypeGeneratorBase extends BaseObject {
         this.settings = settings;
     }
 
-    public abstract generate(property: EntityTypeProperty): Type;
+    public abstract generate(property: EntityTypeProperty): SimpleType;
 
     protected getDateTimeConstraints(property: EntityTypeProperty) {
         if (property.displayFormat === "Date") {

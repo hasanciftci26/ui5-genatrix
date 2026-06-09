@@ -33,7 +33,7 @@ export default class PropertyValidation extends ManagedObject {
         }
     }
 
-    public async evaluate(settings: EvaluateSettings) {
+    public async evaluate(settings: EvaluateSettings): Promise<undefined> {
 
     }
 }

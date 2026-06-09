@@ -7,7 +7,7 @@ import FormInput from "ui5/genatrix/extension/control/FormInput";
 import FormTypeGenerator from "ui5/genatrix/generator/FormTypeGenerator";
 import TypeGeneratorBase from "ui5/genatrix/generator/TypeGeneratorBase";
 import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
-import { FormContentGeneratorBaseSettings } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
+import { FormContent, FormContentGeneratorBaseSettings } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 
 /**
@@ -17,7 +17,7 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
     private readonly settings: FormContentGeneratorBaseSettings<T>;
     private readonly metadataParser: MetadataParserBase<T>;
     private readonly typeGenerator: TypeGeneratorBase;
-    private readonly content: Control[] = [];
+    private readonly content: FormContent[] = [];
 
     constructor(settings: FormContentGeneratorBaseSettings<T>, metadataParser: MetadataParserBase<T>) {
         super();
@@ -44,8 +44,31 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         return this.content;
     }
 
+    public getControls() {
+        const controls: Control[] = [];
+
+        for (const content of this.content) {
+            controls.push(content.labelControl);
+            controls.push(content.readonlyControl);
+
+            if (content.editableControl) {
+                controls.push(content.editableControl);
+            }
+        }
+
+        return controls;
+    }
+
     public switchMode(editable: boolean) {
-        
+        const modifiableContent = this.content.filter(cont => cont.property.readonly === false);
+
+        for (const content of modifiableContent) {
+            content.readonlyControl.setVisible(editable === false);
+
+            if (content.editableControl) {
+                content.editableControl.setVisible(editable === true);
+            }
+        }
     }
 
     protected async parseMetadata() {
@@ -60,8 +83,8 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         return this.settings.model;
     }
 
-    protected addContent(control: Control) {
-        this.content.push(control);
+    protected addContent(content: FormContent) {
+        this.content.push(content);
     }
 
     protected getPropertyConfiguration(propertyName: string) {
@@ -76,7 +99,7 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         return new Label({ text: label });
     }
 
-    protected createText(property: EntityTypeProperty, visible = true) {
+    protected createText(property: EntityTypeProperty, visible: boolean) {
         return new Text({
             visible: visible,
             text: {
@@ -95,7 +118,6 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
 
     protected createInput(property: EntityTypeProperty) {
         return new FormInput({
-            // propertyName: property.name,
             busyIndicatorDelay: 0,
             required: property.required,
             value: {

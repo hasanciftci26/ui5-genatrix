@@ -1,7 +1,7 @@
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGeneratorBase";
 import MetadataParser from "ui5/genatrix/odata/v2/MetadataParser";
-import { FormContentGeneratorBaseSettings } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
+import { FormContent, FormContentGeneratorBaseSettings } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
 
 /**
  * @namespace ui5.genatrix.generator.v2
@@ -24,14 +24,38 @@ export default class FormContentGenerator extends FormContentGeneratorBase<OData
         const properties = await this.parseMetadata();
 
         for (const property of properties) {
-            this.addContent(this.createLabel(property.label));
-            this.addContent(this.createText(property, property.readonly));
+            const content: FormContent = {
+                property: property,
+                labelControl: this.createLabel(property.label),
+                readonlyControl: this.createText(property, property.readonly)
+            };
 
             if (!property.readonly) {
-                this.addContent(this.createInput(property));
+                switch (property.type) {
+                    case "Edm.Boolean":
+                        // TODO CheckBox
+                        break;
+                    case "Edm.Date":
+                        // TODO DatePicker
+                        break;
+                    case "Edm.DateTime":
+                        // TODO DatePicker or DateTimePicker
+                        break;
+                    case "Edm.DateTimeOffset":
+                        // TODO DateTimePicker
+                        break;
+                    case "Edm.Time":
+                        // TODO TimePicker
+                        break;
+                    default:
+                        // TODO Input
+                        break;
+                }
             }
+
+            this.addContent(content);
         }
 
-        return this.getContent();
+        return this.getControls();
     }
 }

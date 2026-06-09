@@ -22,6 +22,6 @@ export default class FormContentGenerator extends FormContentGeneratorBase<OData
     // TODO
     public async generate() {
         const properties = await this.parseMetadata();
-        return this.getContent();
+        return this.getControls();
     }
 }
