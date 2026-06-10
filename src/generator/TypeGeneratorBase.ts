@@ -1,6 +1,12 @@
 import BaseObject from "sap/ui/base/Object";
-import SimpleType from "sap/ui/model/SimpleType";
-import { ODataDateTimeConstraints, ODataNumberConstraints, ODataNumberFormatOptions } from "ui5/genatrix/types/extension/type/GlobalOData.types";
+import Type from "sap/ui/model/Type";
+import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
+import {
+    ODataDateTimeConstraints,
+    ODataNumberConstraints,
+    ODataNumberFormatOptions,
+    ODataStringConstraints
+} from "ui5/genatrix/types/extension/type/GlobalOData.types";
 import { TypeGeneratorBaseSettings } from "ui5/genatrix/types/generator/TypeGeneratorBase.types";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 
@@ -15,7 +21,47 @@ export default abstract class TypeGeneratorBase extends BaseObject {
         this.settings = settings;
     }
 
-    public abstract generate(property: EntityTypeProperty): SimpleType;
+    public abstract generate(property: EntityTypeProperty, propertyValidation?: PropertyValidation): Type;
+
+    public getMaximumDateTimeValue(property: EntityTypeProperty) {
+        const propertyConfiguration = this.settings.propertyConfigurations.find(opt => opt.getName() === property.name);
+        const maximumValue = propertyConfiguration?.getMaximumValue();
+
+        if (maximumValue) {
+            const date = new Date(maximumValue);
+
+            if (!isNaN(date.getTime())) {
+                return date;
+            }
+        }
+    }
+
+    public getMinimumDateTimeValue(property: EntityTypeProperty) {
+        const propertyConfiguration = this.settings.propertyConfigurations.find(opt => opt.getName() === property.name);
+        const minimumValue = propertyConfiguration?.getMinimumValue();
+
+        if (minimumValue) {
+            const date = new Date(minimumValue);
+
+            if (!isNaN(date.getTime())) {
+                return date;
+            }
+        }
+    }
+
+    protected getRequiredMessage(property: EntityTypeProperty) {
+        return this.settings.propertyConfigurations.find(opt => opt.getName() === property.name)?.getRequiredMessage();
+    }
+
+    protected getStringConstraints(property: EntityTypeProperty) {
+        if (property.maxLength) {
+            const constraints: ODataStringConstraints = {
+                maxLength: property.maxLength
+            };
+
+            return constraints;
+        }
+    }
 
     protected getDateTimeConstraints(property: EntityTypeProperty) {
         if (property.displayFormat === "Date") {
@@ -75,32 +121,6 @@ export default abstract class TypeGeneratorBase extends BaseObject {
                 }
 
                 break;
-        }
-    }
-
-    protected getMaximumDateTimeValue(property: EntityTypeProperty) {
-        const propertyConfiguration = this.settings.propertyConfigurations.find(opt => opt.getName() === property.name);
-        const maximumValue = propertyConfiguration?.getMaximumValue();
-
-        if (maximumValue) {
-            const date = new Date(maximumValue);
-
-            if (!isNaN(date.getTime())) {
-                return date;
-            }
-        }
-    }
-
-    protected getMinimumDateTimeValue(property: EntityTypeProperty) {
-        const propertyConfiguration = this.settings.propertyConfigurations.find(opt => opt.getName() === property.name);
-        const minimumValue = propertyConfiguration?.getMinimumValue();
-
-        if (minimumValue) {
-            const date = new Date(minimumValue);
-
-            if (!isNaN(date.getTime())) {
-                return date;
-            }
         }
     }
 

@@ -1,9 +1,14 @@
+import CheckBox from "sap/m/CheckBox";
 import Label from "sap/m/Label";
 import Text from "sap/m/Text";
 import BaseObject from "sap/ui/base/Object";
 import Control from "sap/ui/core/Control";
+import Messaging from "sap/ui/core/Messaging";
 import Model from "sap/ui/model/Model";
+import FormDatePicker from "ui5/genatrix/extension/control/FormDatePicker";
+import FormDateTimePicker from "ui5/genatrix/extension/control/FormDateTimePicker";
 import FormInput from "ui5/genatrix/extension/control/FormInput";
+import FormTimePicker from "ui5/genatrix/extension/control/FormTimePicker";
 import FormTypeGenerator from "ui5/genatrix/generator/FormTypeGenerator";
 import TypeGeneratorBase from "ui5/genatrix/generator/TypeGeneratorBase";
 import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
@@ -96,11 +101,13 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
     }
 
     protected createLabel(label: string) {
-        return new Label({ text: label });
+        const control = new Label({ text: label });
+        Messaging.registerObject(control, true);
+        return control;
     }
 
     protected createText(property: EntityTypeProperty, visible: boolean) {
-        return new Text({
+        const control = new Text({
             visible: visible,
             text: {
                 path: property.name,
@@ -114,16 +121,98 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
                 }
             }
         });
+
+        Messaging.registerObject(control, true);
+        return control;
     }
 
-    protected createInput(property: EntityTypeProperty) {
-        return new FormInput({
-            busyIndicatorDelay: 0,
-            required: property.required,
-            value: {
+    protected createCheckBox(property: EntityTypeProperty) {
+        const control = new CheckBox({
+            selected: {
                 path: property.name,
                 type: this.typeGenerator.generate(property)
             }
         });
+
+        Messaging.registerObject(control, true);
+        return control;
+    }
+
+    protected createDatePicker(property: EntityTypeProperty) {
+        const maximumDate = this.typeGenerator.getMaximumDateTimeValue(property);
+        const minimumDate = this.typeGenerator.getMinimumDateTimeValue(property);
+
+        const control = new FormDatePicker({
+            busyIndicatorDelay: 0,
+            required: property.required,
+            value: {
+                path: property.name,
+                type: this.typeGenerator.generate(property, this.getPropertyValidation(property.name))
+            }
+        });
+
+        if (maximumDate) {
+            control.setMaxDate(maximumDate);
+        }
+
+        if (minimumDate) {
+            control.setMinDate(minimumDate);
+        }
+
+        Messaging.registerObject(control, true);
+        return control;
+    }
+
+    protected createDateTimePicker(property: EntityTypeProperty) {
+        const maximumDate = this.typeGenerator.getMaximumDateTimeValue(property);
+        const minimumDate = this.typeGenerator.getMinimumDateTimeValue(property);
+        
+        const control = new FormDateTimePicker({
+            busyIndicatorDelay: 0,
+            required: property.required,
+            value: {
+                path: property.name,
+                type: this.typeGenerator.generate(property, this.getPropertyValidation(property.name))
+            }
+        });
+
+        if (maximumDate) {
+            control.setMaxDate(maximumDate);
+        }
+
+        if (minimumDate) {
+            control.setMinDate(minimumDate);
+        }
+
+        Messaging.registerObject(control, true);
+        return control;
+    }
+
+    protected createTimePicker(property: EntityTypeProperty) {
+        const control = new FormTimePicker({
+            busyIndicatorDelay: 0,
+            required: property.required,
+            value: {
+                path: property.name,
+                type: this.typeGenerator.generate(property, this.getPropertyValidation(property.name))
+            }
+        });
+
+        Messaging.registerObject(control, true);
+        return control;
+    }
+
+    protected createInput(property: EntityTypeProperty) {
+        const control = new FormInput({
+            busyIndicatorDelay: 0,
+            required: property.required,
+            value: {
+                path: property.name,
+                type: this.typeGenerator.generate(property, this.getPropertyValidation(property.name))
+            }
+        });
+
+        Messaging.registerObject(control, true);
+        return control;
     }
 }

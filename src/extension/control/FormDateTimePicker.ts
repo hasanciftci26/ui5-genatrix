@@ -1,0 +1,16 @@
+import DateTimePicker from "sap/m/DateTimePicker";
+import PropertyBinding from "sap/ui/model/PropertyBinding";
+import SimpleType from "sap/ui/model/SimpleType";
+
+/**
+ * @namespace ui5.genatrix.extension.control
+ */
+export default class FormDateTimePicker extends DateTimePicker {
+    public async validateContent() {
+        const binding = this.getBinding("value") as PropertyBinding;
+        const value = this.getProperty("value");
+        const type = binding.getType() as SimpleType;
+
+        await type.validateValue(type.parseValue(value, "string"));
+    }
+}

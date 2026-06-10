@@ -1,6 +1,7 @@
 export default interface PropertyConfigurationBase {
     getName: () => string | undefined;
     getLabel: () => string | undefined;
+    getRequiredMessage: () => string | undefined;
     getDatePattern: () => string | undefined;
     getTimePattern: () => string | undefined;
     getDateTimeSeparator: () => string;

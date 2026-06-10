@@ -19,7 +19,6 @@ export default class FormContentGenerator extends FormContentGeneratorBase<OData
         }));
     }
 
-    // TODO
     public async generate() {
         const properties = await this.parseMetadata();
 
@@ -33,22 +32,27 @@ export default class FormContentGenerator extends FormContentGeneratorBase<OData
             if (!property.readonly) {
                 switch (property.type) {
                     case "Edm.Boolean":
-                        // TODO CheckBox
+                        content.editableControl = this.createCheckBox(property);
                         break;
                     case "Edm.Date":
-                        // TODO DatePicker
+                        content.editableControl = this.createDatePicker(property);
                         break;
                     case "Edm.DateTime":
-                        // TODO DatePicker or DateTimePicker
+                        if (property.displayFormat === "Date") {
+                            content.editableControl = this.createDatePicker(property);
+                        } else {
+                            content.editableControl = this.createDateTimePicker(property);
+                        }
+
                         break;
                     case "Edm.DateTimeOffset":
-                        // TODO DateTimePicker
+                        content.editableControl = this.createDateTimePicker(property);
                         break;
                     case "Edm.Time":
-                        // TODO TimePicker
+                        content.editableControl = this.createTimePicker(property);
                         break;
                     default:
-                        // TODO Input
+                        content.editableControl = this.createInput(property);
                         break;
                 }
             }
