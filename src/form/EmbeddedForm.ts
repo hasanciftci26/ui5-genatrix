@@ -150,10 +150,12 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     public setEditable(value: boolean) {
+        const formMode = this.getFormMode() || FormMode.Create;
+
         this.setProperty("editable", value);
         this.fireModeChanged({ editable: value });
 
-        if (this.getFormMode() === FormMode.Create || this.getFormMode() === FormMode.Update) {
+        if (formMode === FormMode.Create || formMode === FormMode.Update) {
             this.editButton?.setVisible(value === false);
             this.displayButton?.setVisible(value === true);
 
@@ -234,6 +236,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private createForm(settings?: EmbeddedFormSettings<T>) {
+        const formMode = settings?.formMode || FormMode.Create;
+
         this.innerForm = new SimpleForm(`${this.getId()}--Form`, {
             busyIndicatorDelay: 0,
             busy: true,
@@ -254,15 +258,17 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             layoutData: settings?.layoutData
         });
 
-        if (settings?.formMode === FormMode.Create || settings?.formMode === FormMode.Update) {
+        if (formMode === FormMode.Create || formMode === FormMode.Update) {
             const toolbar = this.createToolbar(settings);
             this.innerForm.setToolbar(toolbar);
         }
     }
 
     private createToolbar(settings?: EmbeddedFormSettings<T>) {
+        const editTogglable = settings?.editTogglable ?? true;
+
         this.toolbar = new Toolbar({
-            visible: settings?.editTogglable === true,
+            visible: editTogglable === true,
             content: [
                 new ToolbarSpacer(),
                 this.getEditButton(settings),
@@ -274,8 +280,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private getEditButton(settings?: EmbeddedFormSettings<T>) {
+        const editable = settings?.editable ?? true;
+
         this.editButton = new Button({
-            visible: settings?.editable !== true,
+            visible: editable !== true,
             icon: "sap-icon://edit",
             press: () => {
                 this.setEditable(true);
@@ -286,8 +294,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private getDisplayButton(settings?: EmbeddedFormSettings<T>) {
+        const editable = settings?.editable ?? true;
+        
         this.displayButton = new Button({
-            visible: settings?.editable === true,
+            visible: editable === true,
             icon: "sap-icon://display",
             press: () => {
                 this.setEditable(false);
