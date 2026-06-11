@@ -1,15 +1,15 @@
-import ODataString from "sap/ui/model/odata/type/String";
+import Decimal from "sap/ui/model/odata/type/Decimal";
 import ValidateException from "sap/ui/model/ValidateException";
-import { FormStringSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
+import { FormNumberSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormString extends ODataString {
-    private readonly settings: FormStringSettings;
+export default class FormDecimal extends Decimal {
+    private readonly settings: FormNumberSettings;
 
-    constructor(settings: FormStringSettings) {
+    constructor(settings: FormNumberSettings) {
         super(settings.formatOptions, settings.constraints);
         this.settings = settings;
     }
@@ -23,16 +23,18 @@ export default class FormString extends ODataString {
             this.checkRequired(value);
         }
 
-        if (this.settings.validation && value) {
+        if (this.settings.validation && value != null && value !== "") {
+            const parsedValue = parseFloat(value);
+
             return this.settings.validation.evaluate({
                 property: this.settings.property,
-                value: value
+                value: parsedValue
             });
         }
     }
 
     private checkRequired(value: string | null) {
-        if (!value) {
+        if (value == null || value === "") {
             const errorMessage = this.settings.requiredMessage || LibraryBundle.getText("genatrix.error.requiredField", [this.settings.property.label]);
             throw new ValidateException(errorMessage);
         }

@@ -1,16 +1,16 @@
-import ODataString from "sap/ui/model/odata/type/String";
+import ODataDate from "sap/ui/model/odata/type/Date";
 import ValidateException from "sap/ui/model/ValidateException";
-import { FormStringSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
+import { FormDateTimeSettingsNoConstraints } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormString extends ODataString {
-    private readonly settings: FormStringSettings;
+export default class FormDate extends ODataDate {
+    private readonly settings: FormDateTimeSettingsNoConstraints;
 
-    constructor(settings: FormStringSettings) {
-        super(settings.formatOptions, settings.constraints);
+    constructor(settings: FormDateTimeSettingsNoConstraints) {
+        super(settings.formatOptions);
         this.settings = settings;
     }
 
@@ -24,9 +24,11 @@ export default class FormString extends ODataString {
         }
 
         if (this.settings.validation && value) {
+            const parsedValue = new Date(value);
+
             return this.settings.validation.evaluate({
                 property: this.settings.property,
-                value: value
+                value: parsedValue
             });
         }
     }

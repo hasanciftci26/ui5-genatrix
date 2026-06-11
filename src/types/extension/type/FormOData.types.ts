@@ -25,7 +25,11 @@ export type FormNumberSettings = FormODataTypeBaseSettings & {
     constraints?: ODataNumberConstraints;
 };
 
-export type FormDateTimeSettings = FormODataTypeBaseSettings & {
+export type FormDateTimeSettingsNoConstraints = FormODataTypeBaseSettings & {
+    formatOptions?: ODataDateTimeFormatOptions;
+};
+
+export type FormDateTimeSettingsWithConstraints = FormODataTypeBaseSettings & {
     formatOptions?: ODataDateTimeFormatOptions;
     constraints?: ODataDateTimeConstraints;
 };

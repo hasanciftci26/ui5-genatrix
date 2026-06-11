@@ -12,8 +12,8 @@ export default class FormBoolean extends ODataBoolean {
         this.settings = settings;
     }
 
-    public override async validateValue(value: boolean) {
-        if (value) {
+    public override async validateValue(value: boolean | null) {
+        if (value != null) {
             super.validateValue(value);
         }
 

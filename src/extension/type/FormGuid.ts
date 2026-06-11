@@ -1,16 +1,16 @@
-import ODataString from "sap/ui/model/odata/type/String";
+import Guid from "sap/ui/model/odata/type/Guid";
 import ValidateException from "sap/ui/model/ValidateException";
-import { FormStringSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
+import { FormODataTypeBaseSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormString extends ODataString {
-    private readonly settings: FormStringSettings;
+export default class FormGuid extends Guid {
+    private readonly settings: FormODataTypeBaseSettings;
 
-    constructor(settings: FormStringSettings) {
-        super(settings.formatOptions, settings.constraints);
+    constructor(settings: FormODataTypeBaseSettings) {
+        super();
         this.settings = settings;
     }
 

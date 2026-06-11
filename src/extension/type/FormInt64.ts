@@ -1,16 +1,16 @@
-import ODataString from "sap/ui/model/odata/type/String";
+import Int64 from "sap/ui/model/odata/type/Int64";
 import ValidateException from "sap/ui/model/ValidateException";
-import { FormStringSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
+import { FormNumberSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormString extends ODataString {
-    private readonly settings: FormStringSettings;
+export default class FormInt64 extends Int64 {
+    private readonly settings: FormNumberSettings;
 
-    constructor(settings: FormStringSettings) {
-        super(settings.formatOptions, settings.constraints);
+    constructor(settings: FormNumberSettings) {
+        super(settings.formatOptions || { parseEmptyValueToZero: false }, settings.constraints || { nullable: true });
         this.settings = settings;
     }
 
@@ -23,16 +23,18 @@ export default class FormString extends ODataString {
             this.checkRequired(value);
         }
 
-        if (this.settings.validation && value) {
+        if (this.settings.validation && value != null && value !== "") {
+            const parsedValue = BigInt(value);
+
             return this.settings.validation.evaluate({
                 property: this.settings.property,
-                value: value
+                value: parsedValue
             });
         }
     }
 
     private checkRequired(value: string | null) {
-        if (!value) {
+        if (value == null || value === "") {
             const errorMessage = this.settings.requiredMessage || LibraryBundle.getText("genatrix.error.requiredField", [this.settings.property.label]);
             throw new ValidateException(errorMessage);
         }

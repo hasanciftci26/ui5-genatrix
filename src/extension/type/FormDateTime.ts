@@ -1,20 +1,20 @@
-import ODataString from "sap/ui/model/odata/type/String";
+import DateTime from "sap/ui/model/odata/type/DateTime";
 import ValidateException from "sap/ui/model/ValidateException";
-import { FormStringSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
+import { FormDateTimeSettingsWithConstraints } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormString extends ODataString {
-    private readonly settings: FormStringSettings;
+export default class FormDateTime extends DateTime {
+    private readonly settings: FormDateTimeSettingsWithConstraints;
 
-    constructor(settings: FormStringSettings) {
+    constructor(settings: FormDateTimeSettingsWithConstraints) {
         super(settings.formatOptions, settings.constraints);
         this.settings = settings;
     }
 
-    public override async validateValue(value: string | null) {
+    public override async validateValue(value: Date | null) {
         if (value != null) {
             super.validateValue(value);
         }
@@ -31,7 +31,7 @@ export default class FormString extends ODataString {
         }
     }
 
-    private checkRequired(value: string | null) {
+    private checkRequired(value: Date | null) {
         if (!value) {
             const errorMessage = this.settings.requiredMessage || LibraryBundle.getText("genatrix.error.requiredField", [this.settings.property.label]);
             throw new ValidateException(errorMessage);
