@@ -1,4 +1,4 @@
-<mvc:View xmlns:form2="sap.ui.layout.form"
+<mvc:View
     controllerName="ui5.genatrix.test.ui.v2.controller.Homepage"
     displayBlock="true"
     xmlns="sap.m"
@@ -28,10 +28,10 @@
             </f:ShellBar>
             <FlexBox justifyContent="Center">
                 <VBox width="95%">
-                    <form2:SimpleForm columnsXL="1" columnsL="1" columnsM="1" emptySpanXL="0" emptySpanL="0" emptySpanM="0" emptySpanS="0" labelSpanXL="12" labelSpanL="12" labelSpanM="12" labelSpanS="12" layout="ResponsiveGridLayout">
-                    <Label text="Test"></Label>
-                    <Input ></Input>
-                    </form2:SimpleForm>
+                    <form:EmbeddedForm
+                        id="frmTest"
+                        entitySet="Employees"
+                    />
                     <smartfilterbar:SmartFilterBar
                         id="sfbEmployees"
                         entitySet="Employees"

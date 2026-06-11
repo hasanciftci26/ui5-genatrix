@@ -69,7 +69,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         defaultAggregation: "propertyConfigurations",
         aggregations: {
             propertyConfigurations: { type: "ui5.genatrix.form.PropertyConfiguration", multiple: true, singularName: "propertyConfiguration" },
-            propertyValidations: { type: "ui5.genatrix.form.PropertyValidation", multiple: true, singularName: "propertyValidation" }
+            propertyValidations: { type: "ui5.genatrix.form.PropertyValidation", multiple: true, singularName: "propertyValidation" },
+            innerForm: { type: "sap.ui.layout.form.SimpleForm", multiple: false, visibility: "hidden" }
         },
         events: {
             initialized: {},
@@ -86,7 +87,6 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
     };
     public static renderer = EmbeddedFormRenderer;
-    private innerForm: SimpleForm;
     private generator: FormContentGeneratorBase;
     private validator: FormContentValidatorBase;
     private contextManager: ContextManagerBase;
@@ -104,12 +104,12 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             super(idOrSettings);
         }
 
-        this.createForm(typeof idOrSettings === "string" ? settings : idOrSettings);
+        this.setAggregation("innerForm", this.createForm(typeof idOrSettings === "string" ? settings : idOrSettings));
         this.attachModelContextChange(this.onModelContextChange, this);
     }
 
     public getInnerForm() {
-        return this.innerForm;
+        return this.getAggregation("innerForm") as SimpleForm;
     }
 
     public getContext() {
@@ -206,16 +206,16 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                 const context = await this.contextManager.create();
 
                 for (const control of content) {
-                    this.innerForm.addContent(control);
+                    this.getInnerForm().addContent(control);
                 }
 
-                this.innerForm.setModel(model);
+                this.getInnerForm().setModel(model);
 
                 if (this.getBindContextToForm()) {
-                    this.innerForm.setBindingContext(context);
+                    this.getInnerForm().setBindingContext(context);
                 }
 
-                this.innerForm.setBusy(false);
+                this.getInnerForm().setBusy(false);
 
                 model.setDefaultBindingMode(BindingMode.TwoWay);
                 this.setProperty("formInitialized", true);
@@ -237,8 +237,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
 
     private createForm(settings?: EmbeddedFormSettings<T>) {
         const formMode = settings?.formMode || FormMode.Create;
-
-        this.innerForm = new SimpleForm(`${this.getId()}--Form`, {
+        const form = new SimpleForm(`${this.getId()}--Form`, {
             busyIndicatorDelay: 0,
             busy: true,
             editable: true,
@@ -259,30 +258,34 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         });
 
         if (formMode === FormMode.Create || formMode === FormMode.Update) {
-            const toolbar = this.createToolbar(settings);
-            this.innerForm.setToolbar(toolbar);
+            this.toolbar = this.createToolbar(settings);
+            form.setToolbar(this.toolbar);
         }
+
+        return form;
     }
 
     private createToolbar(settings?: EmbeddedFormSettings<T>) {
         const editTogglable = settings?.editTogglable ?? true;
 
-        this.toolbar = new Toolbar({
+        this.editButton = this.createEditButton(settings);
+        this.displayButton = this.createDisplayButton(settings);
+
+        const toolbar = new Toolbar({
             visible: editTogglable === true,
             content: [
                 new ToolbarSpacer(),
-                this.getEditButton(settings),
-                this.getDisplayButton(settings)
+                this.editButton,
+                this.displayButton
             ]
         });
 
-        return this.toolbar;
+        return toolbar;
     }
 
-    private getEditButton(settings?: EmbeddedFormSettings<T>) {
+    private createEditButton(settings?: EmbeddedFormSettings<T>) {
         const editable = settings?.editable ?? true;
-
-        this.editButton = new Button({
+        const button = new Button({
             visible: editable !== true,
             icon: "sap-icon://edit",
             press: () => {
@@ -290,13 +293,12 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             }
         });
 
-        return this.editButton;
+        return button;
     }
 
-    private getDisplayButton(settings?: EmbeddedFormSettings<T>) {
+    private createDisplayButton(settings?: EmbeddedFormSettings<T>) {
         const editable = settings?.editable ?? true;
-        
-        this.displayButton = new Button({
+        const button = new Button({
             visible: editable === true,
             icon: "sap-icon://display",
             press: () => {
@@ -304,7 +306,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             }
         });
 
-        return this.displayButton;
+        return button;
     }
 
     private createGenerator(model: ODataModelV2 | ODataModelV4) {
