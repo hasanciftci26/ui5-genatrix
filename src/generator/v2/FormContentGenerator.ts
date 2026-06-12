@@ -15,6 +15,7 @@ export default class FormContentGenerator extends FormContentGeneratorBase<OData
             requiredProperties: settings.requiredProperties,
             readonlyProperties: settings.readonlyProperties,
             excludedProperties: settings.excludedProperties,
+            displayOrder: settings.displayOrder,
             propertyConfigurations: settings.propertyConfigurations
         }));
     }
@@ -23,6 +24,10 @@ export default class FormContentGenerator extends FormContentGeneratorBase<OData
         const properties = await this.parseMetadata();
 
         for (const property of properties) {
+            if (property.excluded) {
+                continue;
+            }
+
             const content: FormContent = {
                 property: property,
                 labelControl: this.createLabel(property.label),

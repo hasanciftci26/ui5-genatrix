@@ -10,6 +10,7 @@ export type MetadataParserBaseSettings<T extends Model = Model> = {
     requiredProperties: string[];
     readonlyProperties: string[];
     excludedProperties: string[];
+    displayOrder: string[];
     propertyConfigurations: PropertyConfigurationBase[];
 };
 

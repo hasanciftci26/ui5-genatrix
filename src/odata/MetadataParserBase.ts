@@ -48,7 +48,21 @@ export default abstract class MetadataParserBase<T extends Model = Model> extend
         return this.settings.excludedProperties;
     }
 
+    protected getDisplayOrder() {
+        return this.settings.displayOrder;
+    }
+
     protected labelize(propertyName: string) {
         return Labelizer.run(propertyName);
+    }
+
+    protected sortProperties(properties: EntityTypeProperty[]) {
+        const orderMap = new Map(this.settings.displayOrder.map((property, index) => [property, index]));
+
+        return properties.sort((a, b) => {
+            const aIndex = orderMap.has(a.name) ? orderMap.get(a.name) as number : Number.MAX_SAFE_INTEGER;
+            const bIndex = orderMap.has(b.name) ? orderMap.get(b.name) as number : Number.MAX_SAFE_INTEGER;
+            return aIndex - bIndex;
+        });
     }
 }

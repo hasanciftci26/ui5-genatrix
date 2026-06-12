@@ -5,6 +5,7 @@ import { form } from "sap/ui/layout/library";
 import Context from "sap/ui/model/Context";
 import EmbeddedForm from "ui5/genatrix/form/EmbeddedForm";
 import FormMode from "ui5/genatrix/form/enum/FormMode";
+import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
 import {
@@ -67,12 +68,14 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     requiredProperties?: string | PropertyBindingInfo | `{${string}}`;
     readonlyProperties?: string | PropertyBindingInfo | `{${string}}`;
     excludedProperties?: string | PropertyBindingInfo | `{${string}}`;
+    displayOrder?: string | PropertyBindingInfo | `{${string}}`;
     initialData?: T;
     contextProvider?: () => Promise<Context> | Context;
     contextRef?: T | Context;
     bindContextToForm?: boolean | PropertyBindingInfo | `{${string}}`;
     propertyConfigurations?: PropertyConfiguration[];
     propertyValidations?: PropertyValidation[];
+    formGroups?: FormGroup[];
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
     contextCreated?: (event: EmbeddedForm$ContextCreatedEvent) => void;
     modeChanged?: (event: EmbeddedForm$ModeChangedEvent) => void;
@@ -165,6 +168,9 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         getExcludedProperties: OptionalPropertyGetter<string>;
         setExcludedProperties: OptionalPropertySetter<string, EmbeddedForm>;
 
+        getDisplayOrder: OptionalPropertyGetter<string>;
+        setDisplayOrder: OptionalPropertySetter<string, EmbeddedForm>;
+
         getInitialData: OptionalPropertyGetter<T>;
         setInitialData: OptionalPropertySetter<T, EmbeddedForm>;
 
@@ -192,6 +198,14 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         removePropertyValidation: AggregationRemoverSingle<PropertyValidation>;
         removeAllPropertyValidations: AggregationRemoverAll<PropertyValidation>;
         destroyPropertyValidations: AggregationDestroyer<EmbeddedForm>;
+
+        getFormGroups: AggregationGetterMulti<FormGroup>;
+        addFormGroup: AggregationSetterOrAdder<FormGroup, EmbeddedForm>;
+        insertFormGroup: AggregationInserter<FormGroup, EmbeddedForm>;
+        bindFormGroups: AggregationBinder<EmbeddedForm>;
+        removeFormGroup: AggregationRemoverSingle<FormGroup>;
+        removeAllFormGroups: AggregationRemoverAll<FormGroup>;
+        destroyFormGroups: AggregationDestroyer<EmbeddedForm>;
 
         attachInitialized(handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
         attachInitialized(data: object, handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;

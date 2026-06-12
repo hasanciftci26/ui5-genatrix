@@ -37,7 +37,7 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
             });
         }
 
-        return properties;
+        return this.sortProperties(properties);
     }
 
     private isKeyProperty(entityType: EntityType, property: MetaModelProperty) {

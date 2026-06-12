@@ -60,6 +60,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             requiredProperties: { type: "string" },
             readonlyProperties: { type: "string" },
             excludedProperties: { type: "string" },
+            displayOrder: { type: "string" },
             initialData: { type: "object", bindable: false },
             contextProvider: { type: "function", bindable: false },
             contextRef: { type: "any" },
@@ -70,6 +71,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         aggregations: {
             propertyConfigurations: { type: "ui5.genatrix.form.PropertyConfiguration", multiple: true, singularName: "propertyConfiguration" },
             propertyValidations: { type: "ui5.genatrix.form.PropertyValidation", multiple: true, singularName: "propertyValidation" },
+            formGroups: { type: "ui5.genatrix.form.FormGroup", multiple: true, singularName: "formGroup" },
             innerForm: { type: "sap.ui.layout.form.SimpleForm", multiple: false, visibility: "hidden" }
         },
         events: {
@@ -341,8 +343,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             requiredProperties: this.getAllRequiredProperties(),
             readonlyProperties: this.getAllReadonlyProperties(),
             excludedProperties: this.getAllExcludedProperties(),
+            displayOrder: this.getAllDisplayOrder(),
             propertyConfigurations: this.getPropertyConfigurations(),
-            propertyValidations: this.getPropertyValidations()
+            propertyValidations: this.getPropertyValidations(),
+            formGroups: this.getFormGroups()
         });
 
         return generator;
@@ -366,8 +370,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             requiredProperties: this.getAllRequiredProperties(),
             readonlyProperties: this.getAllReadonlyProperties(),
             excludedProperties: this.getAllExcludedProperties(),
+            displayOrder: this.getAllDisplayOrder(),
             propertyConfigurations: this.getPropertyConfigurations(),
-            propertyValidations: this.getPropertyValidations()
+            propertyValidations: this.getPropertyValidations(),
+            formGroups: this.getFormGroups()
         });
 
         return generator;
@@ -467,6 +473,11 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             .map(config => config.getName() as string);
 
         return Array.from(new Set([...formLevelProperties, ...configLevelProperties]));
+    }
+
+    private getAllDisplayOrder() {
+        const displayOrder = this.getDisplayOrder()?.split(",") || [];
+        return Array.from(new Set(displayOrder));
     }
 
     private isODataModel(model: Model): model is ODataModelV2 | ODataModelV4 {

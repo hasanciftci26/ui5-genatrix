@@ -32,6 +32,7 @@
                         id="frmTest"
                         entitySet="Employees"
                         readonlyProperties="countryCode"
+                        displayOrder="lastName,countryCode,firstName"
                     />
                     <smartfilterbar:SmartFilterBar
                         id="sfbEmployees"
