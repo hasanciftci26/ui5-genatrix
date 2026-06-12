@@ -26,7 +26,7 @@ export default class FormContentGenerator extends FormContentGeneratorBase<OData
             const content: FormContent = {
                 property: property,
                 labelControl: this.createLabel(property.label),
-                readonlyControl: this.createText(property, property.readonly)
+                readonlyControl: this.createText(property)
             };
 
             if (!property.readonly) {
@@ -60,6 +60,6 @@ export default class FormContentGenerator extends FormContentGeneratorBase<OData
             this.addContent(content);
         }
 
-        return this.getControls();
+        return this.getContent();
     }
 }

@@ -27,6 +27,10 @@ export default class PropertyConfiguration extends ManagedObject implements Prop
             parseEmptyValueToZero: { type: "boolean", defaultValue: false },
             maximumValue: { type: "string" },
             minimumValue: { type: "string" }
+        },
+        defaultAggregation: "layoutData",
+        aggregations: {
+            layoutData: { type: "sap.ui.core.LayoutData", multiple: false }
         }
     };
 

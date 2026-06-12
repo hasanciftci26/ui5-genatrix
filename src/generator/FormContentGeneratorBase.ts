@@ -46,34 +46,25 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
     public abstract generate(): Promise<Control[]>;
 
     public getContent() {
-        return this.content;
-    }
-
-    public getControls() {
         const controls: Control[] = [];
 
         for (const content of this.content) {
             controls.push(content.labelControl);
-            controls.push(content.readonlyControl);
 
-            if (content.editableControl) {
-                controls.push(content.editableControl);
+            if (content.property.readonly || !this.settings.editable) {
+                controls.push(content.readonlyControl);
+            } else {
+                if (content.editableControl) {
+                    controls.push(content.editableControl);
+                }
             }
         }
 
         return controls;
     }
 
-    public switchMode(editable: boolean) {
-        const modifiableContent = this.content.filter(cont => cont.property.readonly === false);
-
-        for (const content of modifiableContent) {
-            content.readonlyControl.setVisible(editable === false);
-
-            if (content.editableControl) {
-                content.editableControl.setVisible(editable === true);
-            }
-        }
+    public setEditable(editable: boolean) {
+        this.settings.editable = editable;
     }
 
     protected async parseMetadata() {
@@ -106,9 +97,9 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         return control;
     }
 
-    protected createText(property: EntityTypeProperty, visible: boolean) {
+    protected createText(property: EntityTypeProperty) {
+        const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
         const control = new Text({
-            visible: visible,
             text: {
                 path: property.name,
                 type: this.typeGenerator.generate(property),
@@ -122,17 +113,26 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
             }
         });
 
+        if (layoutData) {
+            control.setLayoutData(layoutData);
+        }
+
         Messaging.registerObject(control, true);
         return control;
     }
 
     protected createCheckBox(property: EntityTypeProperty) {
+        const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
         const control = new CheckBox({
             selected: {
                 path: property.name,
                 type: this.typeGenerator.generate(property)
             }
         });
+
+        if (layoutData) {
+            control.setLayoutData(layoutData);
+        }
 
         Messaging.registerObject(control, true);
         return control;
@@ -141,6 +141,7 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
     protected createDatePicker(property: EntityTypeProperty) {
         const maximumDate = this.typeGenerator.getMaximumDateTimeValue(property);
         const minimumDate = this.typeGenerator.getMinimumDateTimeValue(property);
+        const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
 
         const control = new FormDatePicker({
             busyIndicatorDelay: 0,
@@ -159,6 +160,10 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
             control.setMinDate(minimumDate);
         }
 
+        if (layoutData) {
+            control.setLayoutData(layoutData);
+        }
+
         Messaging.registerObject(control, true);
         return control;
     }
@@ -166,7 +171,8 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
     protected createDateTimePicker(property: EntityTypeProperty) {
         const maximumDate = this.typeGenerator.getMaximumDateTimeValue(property);
         const minimumDate = this.typeGenerator.getMinimumDateTimeValue(property);
-        
+        const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
+
         const control = new FormDateTimePicker({
             busyIndicatorDelay: 0,
             required: property.required,
@@ -184,11 +190,16 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
             control.setMinDate(minimumDate);
         }
 
+        if (layoutData) {
+            control.setLayoutData(layoutData);
+        }
+
         Messaging.registerObject(control, true);
         return control;
     }
 
     protected createTimePicker(property: EntityTypeProperty) {
+        const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
         const control = new FormTimePicker({
             busyIndicatorDelay: 0,
             required: property.required,
@@ -198,11 +209,16 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
             }
         });
 
+        if (layoutData) {
+            control.setLayoutData(layoutData);
+        }
+
         Messaging.registerObject(control, true);
         return control;
     }
 
     protected createInput(property: EntityTypeProperty) {
+        const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
         const control = new FormInput({
             busyIndicatorDelay: 0,
             required: property.required,
@@ -211,6 +227,10 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
                 type: this.typeGenerator.generate(property, this.getPropertyValidation(property.name))
             }
         });
+
+        if (layoutData) {
+            control.setLayoutData(layoutData);
+        }
 
         Messaging.registerObject(control, true);
         return control;

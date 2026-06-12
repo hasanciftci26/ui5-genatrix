@@ -11,6 +11,7 @@ export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
     entitySet: string;
     model: T;
     formMode: FormMode | keyof typeof FormMode;
+    editable: boolean;
     datePattern?: string;
     timePattern?: string;
     dateTimeSeparator: string;

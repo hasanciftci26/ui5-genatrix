@@ -1,5 +1,13 @@
 import { $ManagedObjectSettings, PropertyBindingInfo } from "sap/ui/base/ManagedObject";
-import { OptionalPropertyGetter, OptionalPropertySetter, PropertyGetter, PropertySetter } from "ui5/genatrix/types/global/CustomClass.types";
+import LayoutData from "sap/ui/core/LayoutData";
+import {
+    AggregationSetterOrAdder,
+    OptionalAggregationGetterSingle,
+    OptionalPropertyGetter,
+    OptionalPropertySetter,
+    PropertyGetter,
+    PropertySetter
+} from "ui5/genatrix/types/global/CustomClass.types";
 
 export type PropertyConfigurationSettings = $ManagedObjectSettings & {
     name?: string | PropertyBindingInfo | `{${string}}`;
@@ -19,6 +27,7 @@ export type PropertyConfigurationSettings = $ManagedObjectSettings & {
     parseEmptyValueToZero?: boolean | PropertyBindingInfo | `{${string}}`;
     maximumValue?: string | PropertyBindingInfo | `{${string}}`;
     minimumValue?: string | PropertyBindingInfo | `{${string}}`;
+    layoutData?: LayoutData;
 };
 
 declare module "ui5/genatrix/form/PropertyConfiguration" {
@@ -73,5 +82,8 @@ declare module "ui5/genatrix/form/PropertyConfiguration" {
 
         getMinimumValue: OptionalPropertyGetter<string>;
         setMinimumValue: OptionalPropertySetter<string, PropertyConfiguration>;
+
+        getLayoutData: OptionalAggregationGetterSingle<LayoutData>;
+        setLayoutData: AggregationSetterOrAdder<LayoutData, PropertyConfiguration>;
     }
 }

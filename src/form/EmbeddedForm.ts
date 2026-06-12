@@ -153,6 +153,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         const formMode = this.getFormMode() || FormMode.Create;
 
         this.setProperty("editable", value);
+        this.generator.setEditable(value);
         this.fireModeChanged({ editable: value });
 
         if (formMode === FormMode.Create || formMode === FormMode.Update) {
@@ -160,7 +161,12 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             this.displayButton?.setVisible(value === true);
 
             if (this.isInitialized()) {
-                this.generator.switchMode(value);
+                const content = this.generator.getContent();
+                this.getInnerForm().removeAllContent();
+
+                for (const item of content) {
+                    this.getInnerForm().addContent(item);
+                }
             }
         }
 
@@ -322,6 +328,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             entitySet: this.getEntitySetOrThrow(),
             model: model,
             formMode: this.getFormMode(),
+            editable: this.getEditable(),
             datePattern: this.getDatePattern(),
             timePattern: this.getTimePattern(),
             dateTimeSeparator: this.getDateTimeSeparator(),
@@ -346,6 +353,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             entitySet: this.getEntitySetOrThrow(),
             model: model,
             formMode: this.getFormMode(),
+            editable: this.getEditable(),
             datePattern: this.getDatePattern(),
             timePattern: this.getTimePattern(),
             dateTimeSeparator: this.getDateTimeSeparator(),
