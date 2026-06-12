@@ -94,7 +94,6 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         getFormMode: PropertyGetter<FormMode | keyof typeof FormMode>;
 
         getTitle: OptionalPropertyGetter<string>;
-        setTitle: OptionalPropertySetter<string, EmbeddedForm>;
 
         getEditable: PropertyGetter<boolean>;
 

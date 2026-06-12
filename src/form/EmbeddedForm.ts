@@ -1,6 +1,8 @@
 import Button from "sap/m/Button";
+import Title from "sap/m/Title";
 import Toolbar from "sap/m/Toolbar";
 import ToolbarSpacer from "sap/m/ToolbarSpacer";
+import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
 import Control from "sap/ui/core/Control";
 import { MetadataOptions } from "sap/ui/core/Element";
 import SimpleForm from "sap/ui/layout/form/SimpleForm";
@@ -93,9 +95,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     private generator: FormContentGeneratorBase;
     private validator: FormContentValidatorBase;
     private contextManager: ContextManagerBase;
-    private toolbar?: Toolbar;
-    private editButton?: Button;
-    private displayButton?: Button;
+    private toolbar: Toolbar;
+    private title?: Title;
+    private editButton: Button;
+    private displayButton: Button;
 
     constructor(settings?: EmbeddedFormSettings<T>);
     constructor(id?: string, settings?: EmbeddedFormSettings<T>);
@@ -143,6 +146,11 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         return this;
     }
 
+    public setTitle(value?: string) {
+        this.setProperty("title", value);
+        this.title?.setText(value);
+    }
+
     public setUpdateGroupId(value?: string) {
         if (this.isInitialized()) {
             this.throwRuntimeError("updateGroupId property cannot be modified after the form initialization");
@@ -160,8 +168,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         this.fireModeChanged({ editable: value });
 
         if (formMode === FormMode.Create || formMode === FormMode.Update) {
-            this.editButton?.setVisible(value === false);
-            this.displayButton?.setVisible(value === true);
+            this.editButton.setVisible(value === false);
+            this.displayButton.setVisible(value === true);
 
             if (this.isInitialized()) {
                 const content = this.generator.getContent();
@@ -179,7 +187,19 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     public setEditTogglable(value: boolean) {
         this.setProperty("editTogglable", value);
 
-        if (this.isInitialized() && this.toolbar) {
+        if (!this.isInitialized() || this.getFormMode() === FormMode.Delete || this.getFormMode() === FormMode.Display) {
+            return;
+        }
+
+        if (value) {
+            this.editButton.setVisible(this.getEditable() === false);
+            this.displayButton.setVisible(this.getEditable() === true);
+        } else {
+            this.editButton.setVisible(false);
+            this.displayButton.setVisible(false);
+        }
+
+        if (!this.title) {
             this.toolbar.setVisible(value);
         }
 
@@ -245,7 +265,6 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private createForm(settings?: EmbeddedFormSettings<T>) {
-        const formMode = settings?.formMode || FormMode.Create;
         const form = new SimpleForm(`${this.getId()}--Form`, {
             busyIndicatorDelay: 0,
             busy: true,
@@ -266,36 +285,47 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             layoutData: settings?.layoutData
         });
 
-        if (formMode === FormMode.Create || formMode === FormMode.Update) {
-            this.toolbar = this.createToolbar(settings);
-            form.setToolbar(this.toolbar);
-        }
+        this.toolbar = this.createToolbar(settings);
+        form.setToolbar(this.toolbar);
 
         return form;
     }
 
     private createToolbar(settings?: EmbeddedFormSettings<T>) {
+        const toolbar = new Toolbar({ visible: false });
+        const formMode = settings?.formMode || FormMode.Create;
         const editTogglable = settings?.editTogglable ?? true;
+        const editable = settings?.editable ?? true;
 
-        this.editButton = this.createEditButton(settings);
-        this.displayButton = this.createDisplayButton(settings);
+        if (settings?.title) {
+            this.title = this.createTitle(settings.title);
+            toolbar.addContent(this.title);
+            toolbar.setVisible(true);
+        }
 
-        const toolbar = new Toolbar({
-            visible: editTogglable === true,
-            content: [
-                new ToolbarSpacer(),
-                this.editButton,
-                this.displayButton
-            ]
-        });
+        this.editButton = this.createEditButton();
+        this.displayButton = this.createDisplayButton();
+
+        toolbar.addContent(new ToolbarSpacer());
+        toolbar.addContent(this.editButton);
+        toolbar.addContent(this.displayButton);
+
+        if ((formMode === FormMode.Create || formMode === FormMode.Update) && editTogglable) {
+            toolbar.setVisible(true);
+            this.editButton.setVisible(editable === false);
+            this.displayButton.setVisible(editable === true);
+        }
 
         return toolbar;
     }
 
-    private createEditButton(settings?: EmbeddedFormSettings<T>) {
-        const editable = settings?.editable ?? true;
+    private createTitle(title: string | PropertyBindingInfo) {
+        return new Title({ text: title });
+    }
+
+    private createEditButton() {
         const button = new Button({
-            visible: editable !== true,
+            visible: false,
             icon: "sap-icon://edit",
             press: () => {
                 this.setEditable(true);
@@ -305,10 +335,9 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         return button;
     }
 
-    private createDisplayButton(settings?: EmbeddedFormSettings<T>) {
-        const editable = settings?.editable ?? true;
+    private createDisplayButton() {
         const button = new Button({
-            visible: editable === true,
+            visible: false,
             icon: "sap-icon://display",
             press: () => {
                 this.setEditable(false);

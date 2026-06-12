@@ -33,6 +33,7 @@
                         entitySet="Employees"
                         readonlyProperties="countryCode"
                         displayOrder="lastName,countryCode,firstName"
+                        title="My Form"
                         columnsXL="2"
                         columnsL="2"
                         columnsM="2"
@@ -77,6 +78,10 @@
                         <smarttable:customToolbar>
                             <OverflowToolbar>
                                 <ToolbarSpacer />
+                                <OverflowToolbarButton
+                                    icon="sap-icon://add"
+                                    press="onCreateEmployee"
+                                />
                             </OverflowToolbar>
                         </smarttable:customToolbar>
                         <table:Table
