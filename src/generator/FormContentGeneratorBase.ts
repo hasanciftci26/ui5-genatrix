@@ -132,7 +132,7 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
                 type: this.typeGenerator.generate(property),
                 formatter: (value: any) => {
                     if (value == null || value == "") {
-                        return "—";
+                        return "–";
                     } else {
                         return value;
                     }
