@@ -33,7 +33,30 @@
                         entitySet="Employees"
                         readonlyProperties="countryCode"
                         displayOrder="lastName,countryCode,firstName"
-                    />
+                        columnsXL="2"
+                        columnsL="2"
+                        columnsM="2"
+                        labelSpanXL="3"
+                        labelSpanL="3"
+                        labelSpanM="3"
+                        labelSpanS="3"
+                        emptySpanXL="3"
+                        emptySpanL="3"
+                        emptySpanM="3"
+                        emptySpanS="3"
+                    >
+                        <form:formGroups>
+                            <form:FormGroup
+                                title="First Group"
+                                propertyList="countryCode,lastName"
+                            />
+                            <form:FormGroup
+                                title="Second Group"
+                                propertyList="firstName,lastName"
+                            />
+                            <form:FormGroup title="Other Properties" />
+                        </form:formGroups>
+                    </form:EmbeddedForm>
                     <smartfilterbar:SmartFilterBar
                         id="sfbEmployees"
                         entitySet="Employees"

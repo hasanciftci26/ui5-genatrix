@@ -2,8 +2,9 @@ import CheckBox from "sap/m/CheckBox";
 import Label from "sap/m/Label";
 import Text from "sap/m/Text";
 import BaseObject from "sap/ui/base/Object";
-import Control from "sap/ui/core/Control";
+import UI5Element from "sap/ui/core/Element";
 import Messaging from "sap/ui/core/Messaging";
+import Title from "sap/ui/core/Title";
 import Model from "sap/ui/model/Model";
 import FormDatePicker from "ui5/genatrix/extension/control/FormDatePicker";
 import FormDateTimePicker from "ui5/genatrix/extension/control/FormDateTimePicker";
@@ -43,12 +44,38 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         });
     }
 
-    public abstract generate(): Promise<Control[]>;
+    public abstract generate(): Promise<UI5Element[]>;
 
     public getContent() {
-        const controls: Control[] = [];
+        const controls: UI5Element[] = [];
+        const addedProperties: string[] = [];
 
-        for (const content of this.content) {
+        for (const group of this.settings.formGroups) {
+            const groupProperties = group.getPropertyList()?.split(",") || [];
+            controls.push(new Title({ text: group.getTitle() }));
+
+            for (const property of groupProperties) {
+                const content = this.content.find(cont => cont.property.name === property);
+
+                if (content && addedProperties.includes(content.property.name) === false) {
+                    controls.push(content.labelControl);
+
+                    if (content.property.readonly || !this.settings.editable) {
+                        controls.push(content.readonlyControl);
+                    } else {
+                        if (content.editableControl) {
+                            controls.push(content.editableControl);
+                        }
+                    }
+
+                    addedProperties.push(property);
+                }
+            }
+        }
+
+        const remainingContent = this.content.filter(cont => addedProperties.includes(cont.property.name) === false);
+
+        for (const content of remainingContent) {
             controls.push(content.labelControl);
 
             if (content.property.readonly || !this.settings.editable) {
