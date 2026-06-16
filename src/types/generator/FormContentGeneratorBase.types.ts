@@ -2,7 +2,7 @@ import Label from "sap/m/Label";
 import Text from "sap/m/Text";
 import Control from "sap/ui/core/Control";
 import Model from "sap/ui/model/Model";
-import FormMode from "ui5/genatrix/form/enum/FormMode";
+import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";

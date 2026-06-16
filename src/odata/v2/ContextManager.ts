@@ -1,6 +1,6 @@
 import Context from "sap/ui/model/odata/v2/Context";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
-import FormMode from "ui5/genatrix/form/enum/FormMode";
+import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
 import { ContextManagerBaseSettings } from "ui5/genatrix/types/odata/ContextManagerBase.types";
 

@@ -1,6 +1,6 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
-import ComparisonOperator from "ui5/genatrix/form/enum/ComparisonOperator";
-import LogicalOperator from "ui5/genatrix/form/enum/LogicalOperator";
+import { ComparisonOperator } from "ui5/genatrix/form/enum/ComparisonOperator";
+import { LogicalOperator } from "ui5/genatrix/form/enum/LogicalOperator";
 import { EvaluateSettings, PropertyValidationSettings } from "ui5/genatrix/types/form/PropertyValidation.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 

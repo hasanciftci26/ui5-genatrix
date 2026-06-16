@@ -12,7 +12,7 @@ import Model from "sap/ui/model/Model";
 import ODataModelV2 from "sap/ui/model/odata/v2/ODataModel";
 import ODataModelV4 from "sap/ui/model/odata/v4/ODataModel";
 import EmbeddedFormRenderer from "ui5/genatrix/form/EmbeddedFormRenderer";
-import FormMode from "ui5/genatrix/form/enum/FormMode";
+import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGeneratorBase";
 import FormContentGeneratorV2 from "ui5/genatrix/generator/v2/FormContentGenerator";
 import FormContentGeneratorV4 from "ui5/genatrix/generator/v4/FormContentGenerator";

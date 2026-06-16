@@ -1,7 +1,6 @@
 import DataType from "sap/ui/base/DataType";
 
-// TODO
-enum FormMode {
+export enum FormMode {
     Create = "Create",
     Update = "Update",
     Delete = "Delete",
@@ -9,5 +8,3 @@ enum FormMode {
 };
 
 DataType.registerEnum("ui5.genatrix.form.enum.FormMode", FormMode);
-
-export default FormMode;

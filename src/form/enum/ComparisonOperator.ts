@@ -1,7 +1,6 @@
 import DataType from "sap/ui/base/DataType";
 
-// TODO
-enum ComparisonOperator {
+export enum ComparisonOperator {
     EQ = "EQ",
     NE = "NE",
     In = "In",
@@ -23,5 +22,3 @@ enum ComparisonOperator {
 };
 
 DataType.registerEnum("ui5.genatrix.form.enum.ComparisonOperator", ComparisonOperator);
-
-export default ComparisonOperator;

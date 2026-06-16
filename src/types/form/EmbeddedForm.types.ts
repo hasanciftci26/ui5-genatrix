@@ -4,7 +4,7 @@ import { $ControlSettings } from "sap/ui/core/Control";
 import { form } from "sap/ui/layout/library";
 import Context from "sap/ui/model/Context";
 import EmbeddedForm from "ui5/genatrix/form/EmbeddedForm";
-import FormMode from "ui5/genatrix/form/enum/FormMode";
+import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";

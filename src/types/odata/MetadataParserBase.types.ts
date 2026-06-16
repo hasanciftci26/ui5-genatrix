@@ -1,6 +1,6 @@
 import Model from "sap/ui/model/Model";
 import { Property } from "sap/ui/model/odata/ODataMetaModel";
-import FormMode from "ui5/genatrix/form/enum/FormMode";
+import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import PropertyConfigurationBase from "ui5/genatrix/interface/PropertyConfigurationBase";
 
 export type MetadataParserBaseSettings<T extends Model = Model> = {

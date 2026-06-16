@@ -1,6 +1,6 @@
 import { $ManagedObjectSettings, PropertyBindingInfo } from "sap/ui/base/ManagedObject";
-import ComparisonOperator from "ui5/genatrix/form/enum/ComparisonOperator";
-import LogicalOperator from "ui5/genatrix/form/enum/LogicalOperator";
+import { ComparisonOperator } from "ui5/genatrix/form/enum/ComparisonOperator";
+import { LogicalOperator } from "ui5/genatrix/form/enum/LogicalOperator";
 import { OptionalPropertyGetter, OptionalPropertySetter, PropertyGetter, PropertySetter } from "ui5/genatrix/types/global/CustomClass.types";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 

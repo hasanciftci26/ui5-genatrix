@@ -1,6 +1,6 @@
 import ODataMetaModel, { EntitySet, EntityType } from "sap/ui/model/odata/ODataMetaModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
-import FormMode from "ui5/genatrix/form/enum/FormMode";
+import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
 import { EntityTypeProperty, MetadataParserBaseSettings, MetaModelProperty, PropertyDisplayFormat } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 
