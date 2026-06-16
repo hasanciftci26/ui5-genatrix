@@ -3,7 +3,7 @@ import BaseController from "ui5/genatrix/test/ui/v2/controller/BaseController";
 /**
  * @namespace ui5.genatrix.test.ui.v2.controller
  */
-export default class Homepage extends BaseController {
+export default class NewEmployee extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     // Properties
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -13,7 +13,7 @@ export default class Homepage extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     public override onInit() {
-        this.attachPatternMatched("RouteHomepage", this.onRoutePatternMatched.bind(this));
+        this.attachPatternMatched("RouteNewEmployee", this.onRoutePatternMatched.bind(this));
     }
 
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -21,7 +21,7 @@ export default class Homepage extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     public onCreateEmployee() {
-        this.navTo("RouteNewEmployee");
+        
     }
 
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────

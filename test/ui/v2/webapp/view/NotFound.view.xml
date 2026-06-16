@@ -1,0 +1,32 @@
+<mvc:View
+    controllerName="ui5.genatrix.test.ui.v2.controller.NotFound"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+>
+    <Page
+        id="NotFound"
+        showHeader="false"
+    >
+        <FlexBox
+            justifyContent="Center"
+            alignItems="Center"
+            height="100%"
+        >
+            <IllustratedMessage
+                title="{i18n>global.title.notFound}"
+                description="{i18n>global.error.notFound}"
+                illustrationSize="Large"
+                illustrationType="sapIllus-PageNotFound"
+            >
+                <additionalContent>
+                    <Button
+                        text="{i18n>global.label.returnHomepage}"
+                        press="navTo('RouteHomepage')"
+                    />
+                </additionalContent>
+            </IllustratedMessage>
+        </FlexBox>
+    </Page>
+</mvc:View>

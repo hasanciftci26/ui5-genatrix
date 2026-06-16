@@ -98,7 +98,10 @@
                 "path": "ui5.genatrix.test.ui.v2.view",
                 "controlAggregation": "pages",
                 "controlId": "app",
-                "clearControlAggregation": false
+                "clearControlAggregation": false,
+                "bypassed": {
+                    "target": "TargetNotFound"
+                }
             },
             "routes": [
                 {
@@ -107,12 +110,35 @@
                     "target": [
                         "TargetHomepage"
                     ]
+                },
+                {
+                    "name": "RouteNewEmployee",
+                    "pattern": "new-employee",
+                    "target": [
+                        "TargetNewEmployee"
+                    ]
                 }
             ],
             "targets": {
                 "TargetHomepage": {
                     "id": "Homepage",
                     "name": "Homepage",
+                    "type": "View",
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false
+                },
+                "TargetNewEmployee": {
+                    "id": "NewEmployee",
+                    "name": "NewEmployee",
+                    "type": "View",
+                    "viewType": "XML",
+                    "transition": "slide",
+                    "clearControlAggregation": false
+                },
+                "TargetNotFound": {
+                    "id": "NotFound",
+                    "name": "NotFound",
                     "type": "View",
                     "viewType": "XML",
                     "transition": "slide",

@@ -1,0 +1,48 @@
+<mvc:View
+    controllerName="ui5.genatrix.test.ui.v2.controller.NewEmployee"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:core="sap.ui.core"
+    xmlns:form="ui5.genatrix.form"
+>
+    <Page
+        id="NewEmployee"
+        showHeader="false"
+    >
+        <FlexBox justifyContent="Center">
+            <VBox width="95%">
+                <form:EmbeddedForm
+                    id="frmTest"
+                    entitySet="Employees"
+                    readonlyProperties="countryCode"
+                    displayOrder="lastName,countryCode,firstName"
+                    title="My Form"
+                    columnsXL="2"
+                    columnsL="2"
+                    columnsM="2"
+                    labelSpanXL="3"
+                    labelSpanL="3"
+                    labelSpanM="3"
+                    labelSpanS="3"
+                    emptySpanXL="3"
+                    emptySpanL="3"
+                    emptySpanM="3"
+                    emptySpanS="3"
+                >
+                    <form:formGroups>
+                        <form:FormGroup
+                            title="First Group"
+                            propertyList="countryCode,lastName"
+                        />
+                        <form:FormGroup
+                            title="Second Group"
+                            propertyList="firstName,lastName"
+                        />
+                        <form:FormGroup title="Other Properties" />
+                    </form:formGroups>
+                </form:EmbeddedForm>
+            </VBox>
+        </FlexBox>
+    </Page>
+</mvc:View>

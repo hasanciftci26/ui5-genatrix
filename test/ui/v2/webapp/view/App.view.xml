@@ -3,6 +3,27 @@
     displayBlock="true"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
 >
-    <App id="app" />
+    <App>
+        <Page>
+            <customHeader>
+                <f:ShellBar
+                    id="sbHeader"
+                    title="UI5 Genatrix"
+                    homeIcon="img/app_logo.png"
+                    busyIndicatorDelay="0"
+                    homeIconPressed="onNavToHomepage"
+                >
+                    <f:profile>
+                        <Avatar initials="GX" />
+                    </f:profile>
+                </f:ShellBar>
+            </customHeader>
+            <NavContainer
+                id="app"
+                autoFocus="false"
+            />
+        </Page>
+    </App>
 </mvc:View>

@@ -4,97 +4,53 @@
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"
     xmlns:core="sap.ui.core"
-    xmlns:f="sap.f"
     xmlns:smartfilterbar="sap.ui.comp.smartfilterbar"
     xmlns:smarttable="sap.ui.comp.smarttable"
     xmlns:table="sap.ui.table"
     xmlns:rowmodes="sap.ui.table.rowmodes"
-    xmlns:form="ui5.genatrix.form"
 >
     <Page
         id="Homepage"
         showHeader="false"
     >
-        <content>
-            <f:ShellBar
-                id="sbHeader"
-                title="UI5 Genatrix"
-                homeIcon="img/app_logo.png"
-                busyIndicatorDelay="0"
-            >
-                <f:profile>
-                    <Avatar initials="GX" />
-                </f:profile>
-            </f:ShellBar>
-            <FlexBox justifyContent="Center">
-                <VBox width="95%">
-                    <form:EmbeddedForm
-                        id="frmTest"
-                        entitySet="Employees"
-                        readonlyProperties="countryCode"
-                        displayOrder="lastName,countryCode,firstName"
-                        title="My Form"
-                        columnsXL="2"
-                        columnsL="2"
-                        columnsM="2"
-                        labelSpanXL="3"
-                        labelSpanL="3"
-                        labelSpanM="3"
-                        labelSpanS="3"
-                        emptySpanXL="3"
-                        emptySpanL="3"
-                        emptySpanM="3"
-                        emptySpanS="3"
-                    >
-                        <form:formGroups>
-                            <form:FormGroup
-                                title="First Group"
-                                propertyList="countryCode,lastName"
+        <FlexBox justifyContent="Center">
+            <VBox width="95%">
+                <smartfilterbar:SmartFilterBar
+                    id="sfbEmployees"
+                    entitySet="Employees"
+                    enableBasicSearch="true"
+                    useProvidedNavigationProperties="true"
+                />
+                <smarttable:SmartTable
+                    id="stEmployees"
+                    entitySet="Employees"
+                    smartFilterId="sfbEmployees"
+                    tableType="Table"
+                    header="Employees"
+                    enableAutoBinding="true"
+                    enableAutoColumnWidth="true"
+                    enablePaste="false"
+                    enableCopy="false"
+                >
+                    <smarttable:customToolbar>
+                        <OverflowToolbar>
+                            <ToolbarSpacer />
+                            <OverflowToolbarButton
+                                icon="sap-icon://add"
+                                press="onCreateEmployee"
                             />
-                            <form:FormGroup
-                                title="Second Group"
-                                propertyList="firstName,lastName"
-                            />
-                            <form:FormGroup title="Other Properties" />
-                        </form:formGroups>
-                    </form:EmbeddedForm>
-                    <smartfilterbar:SmartFilterBar
-                        id="sfbEmployees"
-                        entitySet="Employees"
-                        enableBasicSearch="true"
-                        useProvidedNavigationProperties="true"
-                    />
-                    <smarttable:SmartTable
-                        id="stEmployees"
-                        entitySet="Employees"
-                        smartFilterId="sfbEmployees"
-                        tableType="Table"
-                        header="Employees"
-                        enableAutoBinding="true"
-                        enableAutoColumnWidth="true"
-                        enablePaste="false"
-                        enableCopy="false"
+                        </OverflowToolbar>
+                    </smarttable:customToolbar>
+                    <table:Table
+                        selectionMode="Single"
+                        selectionBehavior="Row"
                     >
-                        <smarttable:customToolbar>
-                            <OverflowToolbar>
-                                <ToolbarSpacer />
-                                <OverflowToolbarButton
-                                    icon="sap-icon://add"
-                                    press="onCreateEmployee"
-                                />
-                            </OverflowToolbar>
-                        </smarttable:customToolbar>
-                        <table:Table
-                            selectionMode="Single"
-                            selectionBehavior="Row"
-                        >
-                            <table:rowMode>
-                                <rowmodes:Interactive rowCount="15" />
-                            </table:rowMode>
-                        </table:Table>
-                    </smarttable:SmartTable>
-                </VBox>
-            </FlexBox>
-        </content>
+                        <table:rowMode>
+                            <rowmodes:Interactive rowCount="15" />
+                        </table:rowMode>
+                    </table:Table>
+                </smarttable:SmartTable>
+            </VBox>
+        </FlexBox>
     </Page>
 </mvc:View>
