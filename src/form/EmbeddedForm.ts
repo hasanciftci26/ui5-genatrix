@@ -74,6 +74,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         aggregations: {
             propertyConfigurations: { type: "ui5.genatrix.form.PropertyConfiguration", multiple: true, singularName: "propertyConfiguration" },
             propertyValidations: { type: "ui5.genatrix.form.PropertyValidation", multiple: true, singularName: "propertyValidation" },
+            propertyConstraints: { type: "ui5.genatrix.form.PropertyConstraint", multiple: true, singularName: "propertyConstraint" },
             formGroups: { type: "ui5.genatrix.form.FormGroup", multiple: true, singularName: "formGroup" },
             innerForm: { type: "sap.ui.layout.form.SimpleForm", multiple: false, visibility: "hidden" }
         },

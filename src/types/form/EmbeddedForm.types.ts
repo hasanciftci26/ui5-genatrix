@@ -7,6 +7,7 @@ import EmbeddedForm from "ui5/genatrix/form/EmbeddedForm";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
+import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
 import {
     AggregationBinder,
@@ -76,6 +77,7 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     bindContextToForm?: boolean | PropertyBindingInfo | `{${string}}`;
     propertyConfigurations?: PropertyConfiguration[];
     propertyValidations?: PropertyValidation[];
+    propertyConstraints?: PropertyConstraint[];
     formGroups?: FormGroup[];
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
     contextCreated?: (event: EmbeddedForm$ContextCreatedEvent) => void;
@@ -201,6 +203,14 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         removePropertyValidation: AggregationRemoverSingle<PropertyValidation>;
         removeAllPropertyValidations: AggregationRemoverAll<PropertyValidation>;
         destroyPropertyValidations: AggregationDestroyer<EmbeddedForm>;
+
+        getPropertyConstraints: AggregationGetterMulti<PropertyConstraint>;
+        addPropertyConstraint: AggregationSetterOrAdder<PropertyConstraint, EmbeddedForm>;
+        insertPropertyConstraint: AggregationInserter<PropertyConstraint, EmbeddedForm>;
+        bindPropertyConstraints: AggregationBinder<EmbeddedForm>;
+        removePropertyConstraint: AggregationRemoverSingle<PropertyConstraint>;
+        removeAllPropertyConstraints: AggregationRemoverAll<PropertyConstraint>;
+        destroyPropertyConstraints: AggregationDestroyer<EmbeddedForm>;
 
         getFormGroups: AggregationGetterMulti<FormGroup>;
         addFormGroup: AggregationSetterOrAdder<FormGroup, EmbeddedForm>;
