@@ -1,12 +1,13 @@
 import DateTime from "sap/ui/model/odata/type/DateTime";
 import ValidateException from "sap/ui/model/ValidateException";
+import FormType from "ui5/genatrix/interface/FormType";
 import { FormDateTimeSettingsWithConstraints } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormDateTime extends DateTime {
+export default class FormDateTime extends DateTime implements FormType {
     private readonly settings: FormDateTimeSettingsWithConstraints;
 
     constructor(settings: FormDateTimeSettingsWithConstraints) {
@@ -30,6 +31,10 @@ export default class FormDateTime extends DateTime {
             });
         }
     }
+
+    public setRequired(required: boolean) {
+        this.settings.property.required = required;
+    }    
 
     private checkRequired(value: Date | null) {
         if (!value) {

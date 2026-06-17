@@ -1,10 +1,11 @@
 import ODataBoolean from "sap/ui/model/odata/type/Boolean";
+import FormType from "ui5/genatrix/interface/FormType";
 import { FormODataTypeBaseSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormBoolean extends ODataBoolean {
+export default class FormBoolean extends ODataBoolean implements FormType {
     private readonly settings: FormODataTypeBaseSettings;
 
     constructor(settings: FormODataTypeBaseSettings) {
@@ -23,5 +24,9 @@ export default class FormBoolean extends ODataBoolean {
                 value: value
             });
         }
+    }
+
+    public setRequired(required: boolean) {
+        this.settings.property.required = required;
     }
 }

@@ -1,12 +1,13 @@
 import ODataDate from "sap/ui/model/odata/type/Date";
 import ValidateException from "sap/ui/model/ValidateException";
+import FormType from "ui5/genatrix/interface/FormType";
 import { FormDateTimeSettingsNoConstraints } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormDate extends ODataDate {
+export default class FormDate extends ODataDate implements FormType {
     private readonly settings: FormDateTimeSettingsNoConstraints;
 
     constructor(settings: FormDateTimeSettingsNoConstraints) {
@@ -32,6 +33,10 @@ export default class FormDate extends ODataDate {
             });
         }
     }
+
+    public setRequired(required: boolean) {
+        this.settings.property.required = required;
+    }    
 
     private checkRequired(value: string | null) {
         if (!value) {

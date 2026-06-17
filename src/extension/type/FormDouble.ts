@@ -1,12 +1,13 @@
 import Double from "sap/ui/model/odata/type/Double";
 import ValidateException from "sap/ui/model/ValidateException";
+import FormType from "ui5/genatrix/interface/FormType";
 import { FormNumberSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormDouble extends Double {
+export default class FormDouble extends Double implements FormType {
     private readonly settings: FormNumberSettings;
 
     constructor(settings: FormNumberSettings) {
@@ -30,6 +31,10 @@ export default class FormDouble extends Double {
             });
         }
     }
+
+    public setRequired(required: boolean) {
+        this.settings.property.required = required;
+    }    
 
     private checkRequired(value: number | null) {
         if (value == null) {

@@ -1,12 +1,13 @@
 import SByte from "sap/ui/model/odata/type/SByte";
 import ValidateException from "sap/ui/model/ValidateException";
+import FormType from "ui5/genatrix/interface/FormType";
 import { FormNumberSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormSByte extends SByte {
+export default class FormSByte extends SByte implements FormType {
     private readonly settings: FormNumberSettings;
 
     constructor(settings: FormNumberSettings) {
@@ -30,6 +31,10 @@ export default class FormSByte extends SByte {
             });
         }
     }
+
+    public setRequired(required: boolean) {
+        this.settings.property.required = required;
+    }    
 
     private checkRequired(value: number | null) {
         if (value == null) {

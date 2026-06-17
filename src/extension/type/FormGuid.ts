@@ -1,12 +1,13 @@
 import Guid from "sap/ui/model/odata/type/Guid";
 import ValidateException from "sap/ui/model/ValidateException";
+import FormType from "ui5/genatrix/interface/FormType";
 import { FormODataTypeBaseSettings } from "ui5/genatrix/types/extension/type/FormOData.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
 /**
  * @namespace ui5.genatrix.extension.type
  */
-export default class FormGuid extends Guid {
+export default class FormGuid extends Guid implements FormType {
     private readonly settings: FormODataTypeBaseSettings;
 
     constructor(settings: FormODataTypeBaseSettings) {
@@ -30,6 +31,10 @@ export default class FormGuid extends Guid {
             });
         }
     }
+
+    public setRequired(required: boolean) {
+        this.settings.property.required = required;
+    }    
 
     private checkRequired(value: string | null) {
         if (!value) {
