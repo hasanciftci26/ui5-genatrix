@@ -20,8 +20,8 @@ export type EntityTypeProperty = {
     key: boolean;
     label: string;
     required: boolean;
+    strictRequired: boolean;
     readonly: boolean;
-    excluded: boolean;
     filterable: boolean;
     displayFormat?: PropertyDisplayFormat;
     precision?: number;

@@ -21,14 +21,20 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
         }
 
         for (const property of entityType.property as MetaModelProperty[]) {
+            if (this.isPropertyExcluded(property)) {
+                continue;
+            }
+
+            const required = this.isPropertyRequired(property);
+
             properties.push({
                 name: property.name,
                 type: property.type,
                 key: this.isKeyProperty(entityType, property),
                 label: this.getLabel(property),
-                required: this.isPropertyRequired(property),
+                required: required,
+                strictRequired: required,
                 readonly: this.isPropertyReadonly(entityType, property),
-                excluded: this.isPropertyExcluded(property),
                 filterable: true, // TODO
                 displayFormat: this.getPropertyDisplayFormat(property),
                 precision: this.getPropertyPrecision(property),

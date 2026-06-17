@@ -48,10 +48,6 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         const properties = await this.parseMetadata();
 
         for (const property of properties) {
-            if (property.excluded) {
-                continue;
-            }
-
             const content: FormContent = {
                 property: property,
                 labelControl: this.createLabel(property.label),
