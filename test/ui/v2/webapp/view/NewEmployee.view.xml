@@ -52,7 +52,7 @@
                             <form:PropertyConstraintRule
                                 dependsOn="countryCode"
                                 comparisonOperator="EQ"
-                                value1="TR"
+                                value1="DE"
                             />
                         </form:PropertyConstraint>
                     </form:propertyConstraints>

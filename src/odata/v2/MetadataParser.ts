@@ -1,4 +1,3 @@
-import Context from "sap/ui/model/Context";
 import ODataMetaModel, { EntitySet, EntityType } from "sap/ui/model/odata/ODataMetaModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
@@ -13,7 +12,7 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
         super(settings);
     }
 
-    public async parse(context: Context) {
+    public async parse() {
         const entityType = await this.getMetaModelEntityType();
         const properties: EntityTypeProperty[] = [];
 
@@ -31,11 +30,11 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
                 type: property.type,
                 key: this.isKeyProperty(entityType, property),
                 label: this.getLabel(property),
-                required: this.isPropertyRequired(property, context),
+                required: this.isPropertyRequired(property),
                 strictRequired: this.isPropertyStrictlyRequired(property),
                 readonly: this.isPropertyReadonly(entityType, property),
                 filterable: true, // TODO
-                visible: this.isPropertyVisible(property.name, context),
+                visible: this.isPropertyVisible(property.name),
                 displayFormat: this.getPropertyDisplayFormat(property),
                 precision: this.getPropertyPrecision(property),
                 scale: this.getPropertyScale(property),
@@ -70,12 +69,12 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
      *
      * Constraint-based requiredness is evaluated dynamically and may change at runtime when the values in the binding context change.
      */
-    private isPropertyRequired(property: MetaModelProperty, context: Context) {
+    private isPropertyRequired(property: MetaModelProperty) {
         if (property.nullable === "false" || this.getRequiredProperties().includes(property.name)) {
             return true;
         }
 
-        return this.isPropertyRequiredByConstraint(property.name, context);
+        return this.isPropertyRequiredByConstraint(property.name);
     }
 
     /**

@@ -20,7 +20,7 @@ import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
 import ContextManagerV2 from "ui5/genatrix/odata/v2/ContextManager";
 import ContextManagerV4 from "ui5/genatrix/odata/v4/ContextManager";
 import { EmbeddedFormSettings } from "ui5/genatrix/types/form/EmbeddedForm.types";
-import CustomMessageBox from "ui5/genatrix/util/CustomMessageBox";
+import ContextManagerError from "ui5/genatrix/util/ContextManagerError";
 import FormContentValidatorBase from "ui5/genatrix/validator/FormContentValidatorBase";
 import FormContentValidatorV2 from "ui5/genatrix/validator/v2/FormContentValidator";
 import FormContentValidatorV4 from "ui5/genatrix/validator/v4/FormContentValidator";
@@ -233,7 +233,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
 
             try {
                 const context = await this.contextManager.create();
-                const content = await this.generator.generate(context);
+                const content = await this.generator.generate();
 
                 for (const control of content) {
                     this.getInnerForm().addContent(control);
@@ -259,8 +259,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                     errorMessage = error.message;
                 }
 
-                this.contextManager.reset();
-                CustomMessageBox.error(errorMessage);
+                if (error instanceof ContextManagerError === false) {
+                    this.contextManager.reset();
+                }
+
                 this.throwRuntimeError(errorMessage);
             }
         }

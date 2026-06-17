@@ -4,6 +4,7 @@ import ODataModel from "sap/ui/model/odata/v4/ODataModel";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
 import { ContextManagerBaseSettings } from "ui5/genatrix/types/odata/ContextManagerBase.types";
+import ContextManagerError from "ui5/genatrix/util/ContextManagerError";
 
 /**
  * @namespace ui5.genatrix.odata.v4
@@ -20,7 +21,7 @@ export default class ContextManager extends ContextManagerBase<ODataModel> {
             if (context.isA<Context>("sap.ui.model.odata.v4.Context")) {
                 return context;
             } else {
-                throw new Error("sap.ui.model.odata.v4.Context instance must be provided by the contextProvider function");
+                throw new ContextManagerError("sap.ui.model.odata.v4.Context instance must be provided by the contextProvider function");
             }
         }
 
@@ -50,7 +51,7 @@ export default class ContextManager extends ContextManagerBase<ODataModel> {
         const contextRef = this.getContextRef();
 
         if (!contextRef) {
-            throw new Error("contextRef is required when formMode is not Create and no contextProvider is specified");
+            throw new ContextManagerError("contextRef is required when formMode is not Create and no contextProvider is specified");
         }
 
         if (contextRef instanceof Context) {

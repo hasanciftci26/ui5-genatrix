@@ -5,7 +5,6 @@ import BaseObject from "sap/ui/base/Object";
 import UI5Element from "sap/ui/core/Element";
 import Messaging from "sap/ui/core/Messaging";
 import Title from "sap/ui/core/Title";
-import Context from "sap/ui/model/Context";
 import Model from "sap/ui/model/Model";
 import FormDatePicker from "ui5/genatrix/extension/control/FormDatePicker";
 import FormDateTimePicker from "ui5/genatrix/extension/control/FormDateTimePicker";
@@ -45,8 +44,8 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         });
     }
 
-    public async generate(context: Context) {
-        const properties = await this.parseMetadata(context);
+    public async generate() {
+        const properties = await this.parseMetadata();
 
         for (const property of properties) {
             const content: FormContent = {
@@ -137,8 +136,8 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         this.settings.editable = editable;
     }
 
-    private async parseMetadata(context: Context) {
-        return this.metadataParser.parse(context);
+    private async parseMetadata() {
+        return this.metadataParser.parse();
     }
 
     private addContent(content: FormContent) {

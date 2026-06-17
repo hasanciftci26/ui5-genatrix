@@ -1,5 +1,4 @@
 import BaseObject from "sap/ui/base/Object";
-import Context from "sap/ui/model/Context";
 import Model from "sap/ui/model/Model";
 import { PropertyConstraintType } from "ui5/genatrix/form/enum/PropertyConstraintType";
 import { EntityTypeProperty, MetadataParserBaseSettings } from "ui5/genatrix/types/odata/MetadataParserBase.types";
@@ -16,7 +15,7 @@ export default abstract class MetadataParserBase<T extends Model = Model> extend
         this.settings = settings;
     }
 
-    public abstract parse(context: Context): Promise<EntityTypeProperty[]>;
+    public abstract parse(): Promise<EntityTypeProperty[]>;
 
     protected getEntitySet() {
         return this.settings.entitySet;
@@ -68,7 +67,7 @@ export default abstract class MetadataParserBase<T extends Model = Model> extend
         });
     }
 
-    protected isPropertyVisible(propertyName: string, context: Context) {
+    protected isPropertyVisible(propertyName: string) {
         const constraint = this.settings.propertyConstraints.find(
             constraint => constraint.getName() === propertyName && constraint.getType() === PropertyConstraintType.Visible
         );
@@ -77,10 +76,10 @@ export default abstract class MetadataParserBase<T extends Model = Model> extend
             return true;
         }
 
-        return constraint.evaluate(context);
+        return constraint.evaluate();
     }
 
-    protected isPropertyRequiredByConstraint(propertyName: string, context: Context) {
+    protected isPropertyRequiredByConstraint(propertyName: string) {
         const constraint = this.settings.propertyConstraints.find(
             constraint => constraint.getName() === propertyName && constraint.getType() === PropertyConstraintType.Required
         );
@@ -89,6 +88,6 @@ export default abstract class MetadataParserBase<T extends Model = Model> extend
             return false;
         }
 
-        return constraint.evaluate(context);        
+        return constraint.evaluate();        
     }
 }
