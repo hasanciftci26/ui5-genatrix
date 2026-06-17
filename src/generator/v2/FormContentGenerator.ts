@@ -16,7 +16,8 @@ export default class FormContentGenerator extends FormContentGeneratorBase<OData
             readonlyProperties: settings.readonlyProperties,
             excludedProperties: settings.excludedProperties,
             displayOrder: settings.displayOrder,
-            propertyConfigurations: settings.propertyConfigurations
+            propertyConfigurations: settings.propertyConfigurations,
+            propertyConstraints: settings.propertyConstraints
         }));
     }
 }

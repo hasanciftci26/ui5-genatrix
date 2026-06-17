@@ -5,6 +5,7 @@ import BaseObject from "sap/ui/base/Object";
 import UI5Element from "sap/ui/core/Element";
 import Messaging from "sap/ui/core/Messaging";
 import Title from "sap/ui/core/Title";
+import Context from "sap/ui/model/Context";
 import Model from "sap/ui/model/Model";
 import FormDatePicker from "ui5/genatrix/extension/control/FormDatePicker";
 import FormDateTimePicker from "ui5/genatrix/extension/control/FormDateTimePicker";
@@ -44,8 +45,8 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         });
     }
 
-    public async generate() {
-        const properties = await this.parseMetadata();
+    public async generate(context: Context) {
+        const properties = await this.parseMetadata(context);
 
         for (const property of properties) {
             const content: FormContent = {
@@ -99,7 +100,7 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
             for (const property of groupProperties) {
                 const content = this.content.find(cont => cont.property.name === property);
 
-                if (content && addedProperties.includes(content.property.name) === false) {
+                if (content && content.property.visible && addedProperties.includes(content.property.name) === false) {
                     controls.push(content.labelControl);
 
                     if (content.property.readonly || !this.settings.editable) {
@@ -115,7 +116,7 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
             }
         }
 
-        const remainingContent = this.content.filter(cont => addedProperties.includes(cont.property.name) === false);
+        const remainingContent = this.content.filter(cont => cont.property.visible && addedProperties.includes(cont.property.name) === false);
 
         for (const content of remainingContent) {
             controls.push(content.labelControl);
@@ -136,14 +137,14 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         this.settings.editable = editable;
     }
 
-    private async parseMetadata() {
-        return this.metadataParser.parse();
+    private async parseMetadata(context: Context) {
+        return this.metadataParser.parse(context);
     }
 
     private addContent(content: FormContent) {
         this.content.push(content);
     }
-    
+
     private getPropertyValidation(propertyName: string) {
         return this.settings.propertyValidations.find(validation => validation.getName() === propertyName);
     }

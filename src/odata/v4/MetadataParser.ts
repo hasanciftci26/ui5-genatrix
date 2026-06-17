@@ -1,3 +1,4 @@
+import Context from "sap/ui/model/Context";
 import ODataModel from "sap/ui/model/odata/v4/ODataModel";
 import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
 import { EntityTypeProperty, MetadataParserBaseSettings } from "ui5/genatrix/types/odata/MetadataParserBase.types";
@@ -11,7 +12,7 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
     }
 
     // TODO
-    public async parse() {
+    public async parse(context: Context) {
         const properties: EntityTypeProperty[] = [];
         return properties;
     }

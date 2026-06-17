@@ -1,6 +1,7 @@
 import Model from "sap/ui/model/Model";
 import { Property } from "sap/ui/model/odata/ODataMetaModel";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
+import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
 import PropertyConfigurationBase from "ui5/genatrix/interface/PropertyConfigurationBase";
 
 export type MetadataParserBaseSettings<T extends Model = Model> = {
@@ -12,6 +13,7 @@ export type MetadataParserBaseSettings<T extends Model = Model> = {
     excludedProperties: string[];
     displayOrder: string[];
     propertyConfigurations: PropertyConfigurationBase[];
+    propertyConstraints: PropertyConstraint[];
 };
 
 export type EntityTypeProperty = {
@@ -23,6 +25,7 @@ export type EntityTypeProperty = {
     strictRequired: boolean;
     readonly: boolean;
     filterable: boolean;
+    visible: boolean;
     displayFormat?: PropertyDisplayFormat;
     precision?: number;
     scale?: number;

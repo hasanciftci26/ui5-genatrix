@@ -5,6 +5,7 @@ import Model from "sap/ui/model/Model";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
+import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 
@@ -28,6 +29,7 @@ export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
     displayOrder: string[];
     propertyConfigurations: PropertyConfiguration[];
     propertyValidations: PropertyValidation[];
+    propertyConstraints: PropertyConstraint[];
     formGroups: FormGroup[];
 };
 

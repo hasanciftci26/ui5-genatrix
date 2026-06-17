@@ -232,8 +232,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             this.contextManager = this.createContextManager(model);
 
             try {
-                const content = await this.generator.generate();
                 const context = await this.contextManager.create();
+                const content = await this.generator.generate(context);
 
                 for (const control of content) {
                     this.getInnerForm().addContent(control);
@@ -259,6 +259,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                     errorMessage = error.message;
                 }
 
+                this.contextManager.reset();
                 CustomMessageBox.error(errorMessage);
                 this.throwRuntimeError(errorMessage);
             }
@@ -377,6 +378,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             displayOrder: this.getAllDisplayOrder(),
             propertyConfigurations: this.getPropertyConfigurations(),
             propertyValidations: this.getPropertyValidations(),
+            propertyConstraints: this.getPropertyConstraints(),
             formGroups: this.getFormGroups()
         });
 
@@ -404,6 +406,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             displayOrder: this.getAllDisplayOrder(),
             propertyConfigurations: this.getPropertyConfigurations(),
             propertyValidations: this.getPropertyValidations(),
+            propertyConstraints: this.getPropertyConstraints(),
             formGroups: this.getFormGroups()
         });
 

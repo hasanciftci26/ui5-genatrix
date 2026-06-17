@@ -1,4 +1,5 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
+import Context from "sap/ui/model/Context";
 import { LogicalOperator } from "ui5/genatrix/form/enum/LogicalOperator";
 import { PropertyConstraintType } from "ui5/genatrix/form/enum/PropertyConstraintType";
 import { PropertyConstraintSettings } from "ui5/genatrix/types/form/PropertyConstraint.types";
@@ -30,5 +31,17 @@ export default class PropertyConstraint extends ManagedObject {
         } else {
             super(idOrSettings);
         }
+    }
+
+    public evaluate(context: Context) {
+        const type = this.getType();
+        const logicalOperator = this.getLogicalOperator();
+        const rules = this.getRules();
+
+        if (!rules.length) {
+            return true;
+        }
+
+        return logicalOperator === LogicalOperator.And ? rules.every(rule => rule.check(context, type)) : rules.some(rule => rule.check(context, type));
     }
 }

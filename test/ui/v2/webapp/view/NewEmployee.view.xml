@@ -29,6 +29,9 @@
                     emptySpanL="3"
                     emptySpanM="3"
                     emptySpanS="3"
+                    initialData="{
+                        'countryCode': 'TR'
+                    }"
                 >
                     <form:formGroups>
                         <form:FormGroup
@@ -41,6 +44,18 @@
                         />
                         <form:FormGroup title="Other Properties" />
                     </form:formGroups>
+                    <form:propertyConstraints>
+                        <form:PropertyConstraint
+                            name="firstName"
+                            type="Visible"
+                        >
+                            <form:PropertyConstraintRule
+                                dependsOn="countryCode"
+                                comparisonOperator="EQ"
+                                value1="TR"
+                            />
+                        </form:PropertyConstraint>
+                    </form:propertyConstraints>
                 </form:EmbeddedForm>
             </VBox>
         </FlexBox>
