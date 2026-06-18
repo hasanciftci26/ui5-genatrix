@@ -20,6 +20,7 @@ import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
 import ContextManagerV2 from "ui5/genatrix/odata/v2/ContextManager";
 import ContextManagerV4 from "ui5/genatrix/odata/v4/ContextManager";
 import { EmbeddedFormSettings } from "ui5/genatrix/types/form/EmbeddedForm.types";
+import { FormContentGeneratorBase$RefreshContentEvent } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
 import ContextManagerError from "ui5/genatrix/util/ContextManagerError";
 import FormContentValidatorBase from "ui5/genatrix/validator/FormContentValidatorBase";
 import FormContentValidatorV2 from "ui5/genatrix/validator/v2/FormContentValidator";
@@ -227,9 +228,11 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         const model = this.getModel();
 
         if (!this.isInitialized() && model && this.isODataModel(model)) {
-            this.generator = this.createGenerator(model);
-            this.validator = this.createValidator(this.generator, model);
             this.contextManager = this.createContextManager(model);
+            this.generator = this.createGenerator(this.contextManager, model);
+            this.validator = this.createValidator(this.generator, model);
+            
+            this.generator.attachRefreshContent(this.onRefreshContent, this);
 
             try {
                 const context = await this.contextManager.create();
@@ -351,15 +354,15 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         return button;
     }
 
-    private createGenerator(model: ODataModelV2 | ODataModelV4) {
+    private createGenerator(contextManager: ContextManagerBase, model: ODataModelV2 | ODataModelV4) {
         if (model.isA<ODataModelV2>("sap.ui.model.odata.v2.ODataModel")) {
-            return this.createGeneratorV2(model);
+            return this.createGeneratorV2(contextManager, model);
         } else {
-            return this.createGeneratorV4(model);
+            return this.createGeneratorV4(contextManager, model);
         }
     }
 
-    private createGeneratorV2(model: ODataModelV2) {
+    private createGeneratorV2(contextManager: ContextManagerBase, model: ODataModelV2) {
         const generator = new FormContentGeneratorV2({
             entitySet: this.getEntitySetOrThrow(),
             model: model,
@@ -381,13 +384,14 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             propertyConfigurations: this.getPropertyConfigurations(),
             propertyValidations: this.getPropertyValidations(),
             propertyConstraints: this.getPropertyConstraints(),
-            formGroups: this.getFormGroups()
+            formGroups: this.getFormGroups(),
+            contextManager: contextManager
         });
 
         return generator;
     }
 
-    private createGeneratorV4(model: ODataModelV4) {
+    private createGeneratorV4(contextManager: ContextManagerBase, model: ODataModelV4) {
         const generator = new FormContentGeneratorV4({
             entitySet: this.getEntitySetOrThrow(),
             model: model,
@@ -409,7 +413,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             propertyConfigurations: this.getPropertyConfigurations(),
             propertyValidations: this.getPropertyValidations(),
             propertyConstraints: this.getPropertyConstraints(),
-            formGroups: this.getFormGroups()
+            formGroups: this.getFormGroups(),
+            contextManager: contextManager
         });
 
         return generator;
@@ -475,6 +480,17 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         });
 
         return contextManager;
+    }
+
+    private onRefreshContent(event: FormContentGeneratorBase$RefreshContentEvent) {
+        const generator = event.getSource();
+        const content = generator.getContent();
+
+        this.getInnerForm().removeAllContent();
+
+        for (const item of content) {
+            this.getInnerForm().addContent(item);
+        }
     }
 
     private getEntitySetOrThrow() {

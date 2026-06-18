@@ -1,7 +1,7 @@
 import CheckBox from "sap/m/CheckBox";
 import Label from "sap/m/Label";
 import Text from "sap/m/Text";
-import BaseObject from "sap/ui/base/Object";
+import EventProvider from "sap/ui/base/EventProvider";
 import UI5Element from "sap/ui/core/Element";
 import Messaging from "sap/ui/core/Messaging";
 import Title from "sap/ui/core/Title";
@@ -10,19 +10,27 @@ import FormDatePicker from "ui5/genatrix/extension/control/FormDatePicker";
 import FormDateTimePicker from "ui5/genatrix/extension/control/FormDateTimePicker";
 import FormInput from "ui5/genatrix/extension/control/FormInput";
 import FormTimePicker from "ui5/genatrix/extension/control/FormTimePicker";
+import { PropertyConstraintType } from "ui5/genatrix/form/enum/PropertyConstraintType";
 import FormTypeGenerator from "ui5/genatrix/generator/FormTypeGenerator";
 import TypeGeneratorBase from "ui5/genatrix/generator/TypeGeneratorBase";
+import ChangeManager from "ui5/genatrix/odata/ChangeManager";
 import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
-import { FormContent, FormContentGeneratorBaseSettings } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
+import {
+    FormContent,
+    FormContentGeneratorBase$RefreshContentEventHandler,
+    FormContentGeneratorBaseSettings
+} from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
+import { ChangeManager$ApplyConstraintEvent } from "ui5/genatrix/types/odata/ChangeManager.types";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 
 /**
  * @namespace ui5.genatrix.generator
  */
-export default abstract class FormContentGeneratorBase<T extends Model = Model> extends BaseObject {
+export default abstract class FormContentGeneratorBase<T extends Model = Model> extends EventProvider {
     private readonly settings: FormContentGeneratorBaseSettings<T>;
     private readonly metadataParser: MetadataParserBase<T>;
     private readonly typeGenerator: TypeGeneratorBase;
+    private readonly changeManager: ChangeManager;
     private readonly content: FormContent[] = [];
 
     constructor(settings: FormContentGeneratorBaseSettings<T>, metadataParser: MetadataParserBase<T>) {
@@ -42,6 +50,14 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
             parseEmptyValueToZero: settings.parseEmptyValueToZero,
             propertyConfigurations: settings.propertyConfigurations
         });
+
+        this.changeManager = new ChangeManager({
+            model: settings.model,
+            contextManager: settings.contextManager,
+            propertyConstraints: settings.propertyConstraints
+        });
+
+        this.changeManager.attachApplyConstraint(this.onApplyConstraint, this);
     }
 
     public async generate() {
@@ -134,6 +150,14 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
 
     public setEditable(editable: boolean) {
         this.settings.editable = editable;
+    }
+
+    public attachRefreshContent(handler: FormContentGeneratorBase$RefreshContentEventHandler, listener?: object) {
+        this.attachEvent("refreshContent", handler, listener);
+    }
+
+    public fireRefreshContent() {
+        this.fireEvent("refreshContent");
     }
 
     private async parseMetadata() {
@@ -291,5 +315,35 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
 
         Messaging.registerObject(control, true);
         return control;
+    }
+
+    private onApplyConstraint(event: ChangeManager$ApplyConstraintEvent) {
+        const parameters = event.getParameters();
+        const content = this.content.find(cont => cont.property.name === parameters.property);
+
+        if (!content) {
+            return;
+        }
+
+        if (parameters.type === PropertyConstraintType.Required) {
+            if (!content.property.strictRequired && content.property.required !== parameters.value && content.editableControl) {
+                content.property.required = parameters.value;
+
+                switch (true) {
+                    case content.editableControl instanceof FormDatePicker:
+                    case content.editableControl instanceof FormDateTimePicker:
+                    case content.editableControl instanceof FormTimePicker:
+                    case content.editableControl instanceof FormInput:
+                        content.editableControl.setRequired(parameters.value);
+                        content.editableControl.setBindingTypeRequired(parameters.value);
+                        break;
+                }
+            }
+        } else {
+            if (content.property.visible !== parameters.value) {
+                content.property.visible = parameters.value;
+                this.fireRefreshContent();
+            }
+        }
     }
 }

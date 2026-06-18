@@ -1,5 +1,6 @@
 import Label from "sap/m/Label";
 import Text from "sap/m/Text";
+import Event from "sap/ui/base/Event";
 import Control from "sap/ui/core/Control";
 import Model from "sap/ui/model/Model";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
@@ -7,6 +8,8 @@ import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
 import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
+import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGeneratorBase";
+import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 
 export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
@@ -31,6 +34,7 @@ export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
     propertyValidations: PropertyValidation[];
     propertyConstraints: PropertyConstraint[];
     formGroups: FormGroup[];
+    contextManager: ContextManagerBase;
 };
 
 export type FormContent = {
@@ -39,3 +43,10 @@ export type FormContent = {
     readonlyControl: Text;
     editableControl?: Control;
 };
+
+export type FormContentGeneratorBase$RefreshContentEventParameters = {
+
+};
+
+export type FormContentGeneratorBase$RefreshContentEvent = Event<FormContentGeneratorBase$RefreshContentEventParameters, FormContentGeneratorBase>;
+export type FormContentGeneratorBase$RefreshContentEventHandler = (event: FormContentGeneratorBase$RefreshContentEvent) => void;

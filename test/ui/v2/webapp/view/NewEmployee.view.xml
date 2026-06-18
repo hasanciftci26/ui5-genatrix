@@ -15,12 +15,10 @@
                 <form:EmbeddedForm
                     id="frmTest"
                     entitySet="Employees"
-                    readonlyProperties="countryCode"
-                    displayOrder="lastName,countryCode,firstName"
                     title="My Form"
-                    columnsXL="2"
-                    columnsL="2"
-                    columnsM="2"
+                    columnsXL="1"
+                    columnsL="1"
+                    columnsM="1"
                     labelSpanXL="3"
                     labelSpanL="3"
                     labelSpanM="3"
@@ -29,32 +27,29 @@
                     emptySpanL="3"
                     emptySpanM="3"
                     emptySpanS="3"
-                    initialData="{
-                        'countryCode': 'TR'
-                    }"
                 >
-                    <form:formGroups>
-                        <form:FormGroup
-                            title="First Group"
-                            propertyList="countryCode,lastName"
-                        />
-                        <form:FormGroup
-                            title="Second Group"
-                            propertyList="firstName,lastName"
-                        />
-                        <form:FormGroup title="Other Properties" />
-                    </form:formGroups>
                     <form:propertyConstraints>
                         <form:PropertyConstraint
-                            name="firstName"
+                            name="lastName"
                             type="Visible"
                         >
                             <form:PropertyConstraintRule
-                                dependsOn="countryCode"
+                                dependsOn="firstName"
                                 comparisonOperator="EQ"
-                                value1="DE"
+                                value1="Hasan"
                             />
                         </form:PropertyConstraint>
+
+                        <form:PropertyConstraint
+                            name="lastName"
+                            type="Required"
+                        >
+                            <form:PropertyConstraintRule
+                                dependsOn="firstName"
+                                comparisonOperator="EQ"
+                                value1="Hasan"
+                            />
+                        </form:PropertyConstraint>                        
                     </form:propertyConstraints>
                 </form:EmbeddedForm>
             </VBox>

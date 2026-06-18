@@ -1,6 +1,7 @@
 import Input from "sap/m/Input";
 import PropertyBinding from "sap/ui/model/PropertyBinding";
 import SimpleType from "sap/ui/model/SimpleType";
+import FormType from "ui5/genatrix/interface/FormType";
 
 /**
  * @namespace ui5.genatrix.extension.control
@@ -15,4 +16,8 @@ export default class FormInput extends Input {
 
         await type.validateValue(type.parseValue(value, "string"));
     }
+
+    public setBindingTypeRequired(required: boolean) {
+        ((this.getBinding("value") as PropertyBinding).getType() as FormType).setRequired(required);
+    }    
 }
