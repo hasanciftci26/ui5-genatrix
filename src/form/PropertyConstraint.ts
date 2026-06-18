@@ -14,7 +14,8 @@ export default class PropertyConstraint extends ManagedObject {
         properties: {
             name: { type: "string" },
             type: { type: "ui5.genatrix.form.enum.PropertyConstraintType", defaultValue: PropertyConstraintType.Required },
-            logicalOperator: { type: "ui5.genatrix.form.enum.LogicalOperator", defaultValue: LogicalOperator.And }
+            logicalOperator: { type: "ui5.genatrix.form.enum.LogicalOperator", defaultValue: LogicalOperator.And },
+            clearValueOnHide: { type: "boolean", defaultValue: true }
         },
         defaultAggregation: "rules",
         aggregations: {

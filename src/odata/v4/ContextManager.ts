@@ -36,6 +36,10 @@ export default class ContextManager extends ContextManagerBase<ODataModel> {
         this.getModel().resetChanges(this.getUpdateGroupId());
     }
 
+    public clearValue(propertyName: string) {
+        (this.getContext() as Context).setProperty(propertyName, null);
+    }
+
     private createModelEntry() {
         const listBinding = this.getModel().bindList(this.getEntitySetPath(), undefined, [], [], {
             $$updateGroupId: this.getUpdateGroupId()

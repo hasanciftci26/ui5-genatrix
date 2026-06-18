@@ -17,6 +17,7 @@ export default abstract class ContextManagerBase<T extends Model = Model> extend
 
     public abstract create(): Promise<Context>;
     public abstract reset(): void;
+    public abstract clearValue(propertyName: string): void;
 
     public getContext() {
         return this.context;

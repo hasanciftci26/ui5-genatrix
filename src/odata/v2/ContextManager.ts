@@ -35,6 +35,10 @@ export default class ContextManager extends ContextManagerBase<ODataModel> {
         void this.getModel().resetChanges([this.getContext().getPath()], true, true);
     }
 
+    public clearValue(propertyName: string) {
+        this.getModel().setProperty(this.getContext().getPath() + "/" + propertyName, null);
+    }
+
     private createModelEntry() {
         const context = this.getModel().createEntry(this.getEntitySetPath(), {
             properties: this.getInitialData()

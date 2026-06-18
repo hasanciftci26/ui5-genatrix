@@ -41,7 +41,8 @@ export default class ChangeManager extends EventProvider {
                 this.fireApplyConstraint({
                     property: constraint.getName() as string,
                     type: constraint.getType(),
-                    value: constraint.evaluate()
+                    value: constraint.evaluate(),
+                    clearValueOnHide: constraint.getClearValueOnHide()
                 });
             }
         }

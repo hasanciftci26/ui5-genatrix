@@ -20,6 +20,7 @@ export type PropertyConstraintSettings = $ManagedObjectSettings & {
     name?: string | PropertyBindingInfo | `{${string}}`;
     type?: PropertyConstraintType | keyof typeof PropertyConstraintType | PropertyBindingInfo | `{${string}}`;
     logicalOperator?: LogicalOperator | keyof typeof LogicalOperator | PropertyBindingInfo | `{${string}}`;
+    clearValueOnHide?: boolean | PropertyBindingInfo | `{${string}}`;
     rules?: PropertyConstraintRule[];
 };
 
@@ -33,6 +34,9 @@ declare module "ui5/genatrix/form/PropertyConstraint" {
 
         getLogicalOperator: PropertyGetter<LogicalOperator | keyof typeof LogicalOperator>;
         setLogicalOperator: PropertySetter<LogicalOperator | keyof typeof LogicalOperator, PropertyConstraint>;
+
+        getClearValueOnHide: PropertyGetter<boolean>;
+        setClearValueOnHide: PropertySetter<boolean, PropertyConstraint>;        
 
         getRules: AggregationGetterMulti<PropertyConstraintRule>;
         addRule: AggregationSetterOrAdder<PropertyConstraintRule, PropertyConstraint>;

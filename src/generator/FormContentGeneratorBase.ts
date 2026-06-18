@@ -342,6 +342,11 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         } else {
             if (content.property.visible !== parameters.value) {
                 content.property.visible = parameters.value;
+
+                if (!parameters.value && parameters.clearValueOnHide) {
+                    this.settings.contextManager.clearValue(parameters.property);
+                }
+
                 this.fireRefreshContent();
             }
         }

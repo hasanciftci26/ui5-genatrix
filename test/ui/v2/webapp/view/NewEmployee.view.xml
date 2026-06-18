@@ -38,18 +38,7 @@
                                 comparisonOperator="EQ"
                                 value1="Hasan"
                             />
-                        </form:PropertyConstraint>
-
-                        <form:PropertyConstraint
-                            name="lastName"
-                            type="Required"
-                        >
-                            <form:PropertyConstraintRule
-                                dependsOn="firstName"
-                                comparisonOperator="EQ"
-                                value1="Hasan"
-                            />
-                        </form:PropertyConstraint>                        
+                        </form:PropertyConstraint>                     
                     </form:propertyConstraints>
                 </form:EmbeddedForm>
             </VBox>

@@ -15,6 +15,7 @@ export type ChangeManager$ApplyConstraintEventParameters = {
     property: string;
     type: PropertyConstraintType | keyof typeof PropertyConstraintType;
     value: boolean;
+    clearValueOnHide: boolean;
 };
 
 export type ChangeManager$ApplyConstraintEvent = Event<ChangeManager$ApplyConstraintEventParameters, ChangeManager>;
