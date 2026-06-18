@@ -4,4 +4,5 @@ import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGenerato
 export type FormContentValidatorBaseSettings<T extends Model = Model> = {
     generator: FormContentGeneratorBase;
     model: T;
+    validateOnlyVisible: boolean;
 };

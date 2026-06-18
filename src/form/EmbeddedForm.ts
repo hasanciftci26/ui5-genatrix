@@ -69,6 +69,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             contextProvider: { type: "function", bindable: false },
             contextRef: { type: "any" },
             bindContextToForm: { type: "boolean", defaultValue: true },
+            validateOnlyVisible: { type: "boolean", defaultValue: true },
             formInitialized: { type: "boolean", visibility: "hidden", defaultValue: false }
         },
         defaultAggregation: "propertyConfigurations",
@@ -231,7 +232,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             this.contextManager = this.createContextManager(model);
             this.generator = this.createGenerator(this.contextManager, model);
             this.validator = this.createValidator(this.generator, model);
-            
+
             this.generator.attachRefreshContent(this.onRefreshContent, this);
 
             try {
@@ -431,7 +432,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     private createValidatorV2(generator: FormContentGeneratorBase, model: ODataModelV2) {
         const validator = new FormContentValidatorV2({
             generator: generator,
-            model: model
+            model: model,
+            validateOnlyVisible: this.getValidateOnlyVisible()
         });
 
         return validator;
@@ -440,7 +442,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     private createValidatorV4(generator: FormContentGeneratorBase, model: ODataModelV4) {
         const validator = new FormContentValidatorV4({
             generator: generator,
-            model: model
+            model: model,
+            validateOnlyVisible: this.getValidateOnlyVisible()
         });
 
         return validator;

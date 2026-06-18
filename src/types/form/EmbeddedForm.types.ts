@@ -75,6 +75,7 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     contextProvider?: () => Promise<Context> | Context;
     contextRef?: T | Context;
     bindContextToForm?: boolean | PropertyBindingInfo | `{${string}}`;
+    validateOnlyVisible?: boolean | PropertyBindingInfo | `{${string}}`;
     propertyConfigurations?: PropertyConfiguration[];
     propertyValidations?: PropertyValidation[];
     propertyConstraints?: PropertyConstraint[];
@@ -187,6 +188,9 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
 
         getBindContextToForm: PropertyGetter<boolean>;
         setBindContextToForm: PropertySetter<boolean, EmbeddedForm>;
+
+        getValidateOnlyVisible: PropertyGetter<boolean>;
+        setValidateOnlyVisible: PropertySetter<boolean, EmbeddedForm>;
 
         getPropertyConfigurations: AggregationGetterMulti<PropertyConfiguration>;
         addPropertyConfiguration: AggregationSetterOrAdder<PropertyConfiguration, EmbeddedForm>;
