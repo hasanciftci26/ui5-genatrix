@@ -230,18 +230,20 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                     this.getInnerForm().addContent(control);
                 }
 
+                model.setDefaultBindingMode(BindingMode.TwoWay);
+                
                 this.getInnerForm().setModel(model);
+                this.getInnerForm().setBusy(false);
 
                 if (this.getBindContextToForm()) {
                     this.getInnerForm().setBindingContext(context);
                 }
 
-                this.getInnerForm().setBusy(false);
-
-                model.setDefaultBindingMode(BindingMode.TwoWay);
                 this.setProperty("formInitialized", true);
+
                 this.fireInitialized();
                 this.fireContextCreated({ context: context });
+
                 this.detachModelContextChange(this.onModelContextChange, this);
             } catch (error) {
                 let errorMessage = "Unexpected error has occured";
