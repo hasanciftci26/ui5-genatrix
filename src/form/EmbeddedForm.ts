@@ -17,7 +17,10 @@ import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGenerato
 import FormContentGeneratorV2 from "ui5/genatrix/generator/v2/FormContentGenerator";
 import FormContentGeneratorV4 from "ui5/genatrix/generator/v4/FormContentGenerator";
 import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
+import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
 import ContextManagerV2 from "ui5/genatrix/odata/v2/ContextManager";
+import MetadataParserV2 from "ui5/genatrix/odata/v2/MetadataParser";
+import MetadataParserV4 from "ui5/genatrix/odata/v4/MetadataParser";
 import ContextManagerV4 from "ui5/genatrix/odata/v4/ContextManager";
 import { EmbeddedFormSettings } from "ui5/genatrix/types/form/EmbeddedForm.types";
 import { FormContentGeneratorBase$RefreshContentEvent } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
@@ -95,9 +98,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
     };
     public static renderer = EmbeddedFormRenderer;
+    private contextManager: ContextManagerBase;
+    private metadataParser: MetadataParserBase;
     private generator: FormContentGeneratorBase;
     private validator: FormContentValidatorBase;
-    private contextManager: ContextManagerBase;
     private toolbar: Toolbar;
     private title?: Title;
     private editButton: Button;
@@ -229,10 +233,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         const model = this.getModel();
 
         if (!this.isInitialized() && model && this.isODataModel(model)) {
-            this.contextManager = this.createContextManager(model);
-            this.generator = this.createGenerator(this.contextManager, model);
-            this.validator = this.createValidator(this.generator, model);
-
+            this.createHandlers(model);
             this.generator.attachRefreshContent(this.onRefreshContent, this);
 
             try {
@@ -355,105 +356,27 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         return button;
     }
 
-    private createGenerator(contextManager: ContextManagerBase, model: ODataModelV2 | ODataModelV4) {
+    private createHandlers(model: ODataModelV2 | ODataModelV4) {
         if (model.isA<ODataModelV2>("sap.ui.model.odata.v2.ODataModel")) {
-            return this.createGeneratorV2(contextManager, model);
+            const contextManager = this.createContextManagerV2(model);
+            const metadataParser = this.createMetadataParserV2(model);
+            const generator = this.createGeneratorV2(model, contextManager, metadataParser);
+            const validator = this.createValidatorV2(model, generator);
+
+            this.contextManager = contextManager;
+            this.metadataParser = metadataParser;
+            this.generator = generator;
+            this.validator = validator;
         } else {
-            return this.createGeneratorV4(contextManager, model);
-        }
-    }
+            const contextManager = this.createContextManagerV4(model);
+            const metadataParser = this.createMetadataParserV4(model);
+            const generator = this.createGeneratorV4(model, contextManager, metadataParser);
+            const validator = this.createValidatorV4(model, generator);
 
-    private createGeneratorV2(contextManager: ContextManagerBase, model: ODataModelV2) {
-        const generator = new FormContentGeneratorV2({
-            entitySet: this.getEntitySetOrThrow(),
-            model: model,
-            formMode: this.getFormMode(),
-            editable: this.getEditable(),
-            datePattern: this.getDatePattern(),
-            timePattern: this.getTimePattern(),
-            dateTimeSeparator: this.getDateTimeSeparator(),
-            dateFirst: this.getDateFirst(),
-            groupingEnabled: this.getGroupingEnabled(),
-            groupingSeparator: this.getGroupingSeparator(),
-            groupingSize: this.getGroupingSize(),
-            decimalSeparator: this.getDecimalSeparator(),
-            parseEmptyValueToZero: this.getParseEmptyValueToZero(),
-            requiredProperties: this.getAllRequiredProperties(),
-            readonlyProperties: this.getAllReadonlyProperties(),
-            excludedProperties: this.getAllExcludedProperties(),
-            displayOrder: this.getAllDisplayOrder(),
-            propertyConfigurations: this.getPropertyConfigurations(),
-            propertyValidations: this.getPropertyValidations(),
-            propertyConstraints: this.getPropertyConstraints(),
-            formGroups: this.getFormGroups(),
-            contextManager: contextManager
-        });
-
-        return generator;
-    }
-
-    private createGeneratorV4(contextManager: ContextManagerBase, model: ODataModelV4) {
-        const generator = new FormContentGeneratorV4({
-            entitySet: this.getEntitySetOrThrow(),
-            model: model,
-            formMode: this.getFormMode(),
-            editable: this.getEditable(),
-            datePattern: this.getDatePattern(),
-            timePattern: this.getTimePattern(),
-            dateTimeSeparator: this.getDateTimeSeparator(),
-            dateFirst: this.getDateFirst(),
-            groupingEnabled: this.getGroupingEnabled(),
-            groupingSeparator: this.getGroupingSeparator(),
-            groupingSize: this.getGroupingSize(),
-            decimalSeparator: this.getDecimalSeparator(),
-            parseEmptyValueToZero: this.getParseEmptyValueToZero(),
-            requiredProperties: this.getAllRequiredProperties(),
-            readonlyProperties: this.getAllReadonlyProperties(),
-            excludedProperties: this.getAllExcludedProperties(),
-            displayOrder: this.getAllDisplayOrder(),
-            propertyConfigurations: this.getPropertyConfigurations(),
-            propertyValidations: this.getPropertyValidations(),
-            propertyConstraints: this.getPropertyConstraints(),
-            formGroups: this.getFormGroups(),
-            contextManager: contextManager
-        });
-
-        return generator;
-    }
-
-    private createValidator(generator: FormContentGeneratorBase, model: ODataModelV2 | ODataModelV4) {
-        if (model.isA<ODataModelV2>("sap.ui.model.odata.v2.ODataModel")) {
-            return this.createValidatorV2(generator, model);
-        } else {
-            return this.createValidatorV4(generator, model);
-        }
-    }
-
-    private createValidatorV2(generator: FormContentGeneratorBase, model: ODataModelV2) {
-        const validator = new FormContentValidatorV2({
-            generator: generator,
-            model: model,
-            validateOnlyVisible: this.getValidateOnlyVisible()
-        });
-
-        return validator;
-    }
-
-    private createValidatorV4(generator: FormContentGeneratorBase, model: ODataModelV4) {
-        const validator = new FormContentValidatorV4({
-            generator: generator,
-            model: model,
-            validateOnlyVisible: this.getValidateOnlyVisible()
-        });
-
-        return validator;
-    }
-
-    private createContextManager(model: ODataModelV2 | ODataModelV4) {
-        if (model.isA<ODataModelV2>("sap.ui.model.odata.v2.ODataModel")) {
-            return this.createContextManagerV2(model);
-        } else {
-            return this.createContextManagerV4(model);
+            this.contextManager = contextManager;
+            this.metadataParser = metadataParser;
+            this.generator = generator;
+            this.validator = validator;
         }
     }
 
@@ -483,6 +406,118 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         });
 
         return contextManager;
+    }
+
+    private createMetadataParserV2(model: ODataModelV2) {
+        const metadataParser = new MetadataParserV2({
+            entitySet: this.getEntitySetOrThrow(),
+            model: model,
+            formMode: this.getFormMode(),
+            requiredProperties: this.getAllRequiredProperties(),
+            readonlyProperties: this.getAllReadonlyProperties(),
+            excludedProperties: this.getAllExcludedProperties(),
+            displayOrder: this.getAllDisplayOrder(),
+            propertyConfigurations: this.getPropertyConfigurations(),
+            propertyConstraints: this.getPropertyConstraints()
+        });
+
+        return metadataParser;
+    }
+
+    private createMetadataParserV4(model: ODataModelV4) {
+        const metadataParser = new MetadataParserV4({
+            entitySet: this.getEntitySetOrThrow(),
+            model: model,
+            formMode: this.getFormMode(),
+            requiredProperties: this.getAllRequiredProperties(),
+            readonlyProperties: this.getAllReadonlyProperties(),
+            excludedProperties: this.getAllExcludedProperties(),
+            displayOrder: this.getAllDisplayOrder(),
+            propertyConfigurations: this.getPropertyConfigurations(),
+            propertyConstraints: this.getPropertyConstraints()
+        });
+
+        return metadataParser;
+    }
+
+    private createGeneratorV2(model: ODataModelV2, contextManager: ContextManagerV2, metadataParser: MetadataParserV2) {
+        const generator = new FormContentGeneratorV2({
+            entitySet: this.getEntitySetOrThrow(),
+            model: model,
+            formMode: this.getFormMode(),
+            editable: this.getEditable(),
+            datePattern: this.getDatePattern(),
+            timePattern: this.getTimePattern(),
+            dateTimeSeparator: this.getDateTimeSeparator(),
+            dateFirst: this.getDateFirst(),
+            groupingEnabled: this.getGroupingEnabled(),
+            groupingSeparator: this.getGroupingSeparator(),
+            groupingSize: this.getGroupingSize(),
+            decimalSeparator: this.getDecimalSeparator(),
+            parseEmptyValueToZero: this.getParseEmptyValueToZero(),
+            requiredProperties: this.getAllRequiredProperties(),
+            readonlyProperties: this.getAllReadonlyProperties(),
+            excludedProperties: this.getAllExcludedProperties(),
+            displayOrder: this.getAllDisplayOrder(),
+            propertyConfigurations: this.getPropertyConfigurations(),
+            propertyValidations: this.getPropertyValidations(),
+            propertyConstraints: this.getPropertyConstraints(),
+            formGroups: this.getFormGroups(),
+            contextManager: contextManager,
+            metadataParser: metadataParser
+        });
+
+        return generator;
+    }
+
+    private createGeneratorV4(model: ODataModelV4, contextManager: ContextManagerV4, metadataParser: MetadataParserV4) {
+        const generator = new FormContentGeneratorV4({
+            entitySet: this.getEntitySetOrThrow(),
+            model: model,
+            formMode: this.getFormMode(),
+            editable: this.getEditable(),
+            datePattern: this.getDatePattern(),
+            timePattern: this.getTimePattern(),
+            dateTimeSeparator: this.getDateTimeSeparator(),
+            dateFirst: this.getDateFirst(),
+            groupingEnabled: this.getGroupingEnabled(),
+            groupingSeparator: this.getGroupingSeparator(),
+            groupingSize: this.getGroupingSize(),
+            decimalSeparator: this.getDecimalSeparator(),
+            parseEmptyValueToZero: this.getParseEmptyValueToZero(),
+            requiredProperties: this.getAllRequiredProperties(),
+            readonlyProperties: this.getAllReadonlyProperties(),
+            excludedProperties: this.getAllExcludedProperties(),
+            displayOrder: this.getAllDisplayOrder(),
+            propertyConfigurations: this.getPropertyConfigurations(),
+            propertyValidations: this.getPropertyValidations(),
+            propertyConstraints: this.getPropertyConstraints(),
+            formGroups: this.getFormGroups(),
+            contextManager: contextManager,
+            metadataParser: metadataParser
+        });
+
+        return generator;
+    }
+
+    private createValidatorV2(model: ODataModelV2, generator: FormContentGeneratorV2) {
+        const validator = new FormContentValidatorV2({
+            generator: generator,
+            model: model,
+            validateOnlyVisible: this.getValidateOnlyVisible()
+        });
+
+        return validator;
+    }
+
+    private createValidatorV4(model: ODataModelV4, generator: FormContentGeneratorV4) {
+        const validator = new FormContentValidatorV4({
+            generator: generator,
+            model: model,
+            validateOnlyVisible: this.getValidateOnlyVisible()
+        });
+
+        return validator;
     }
 
     private onRefreshContent(event: FormContentGeneratorBase$RefreshContentEvent) {

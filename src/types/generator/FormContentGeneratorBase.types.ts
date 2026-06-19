@@ -10,6 +10,7 @@ import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
 import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGeneratorBase";
 import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
+import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 
 export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
@@ -34,7 +35,8 @@ export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
     propertyValidations: PropertyValidation[];
     propertyConstraints: PropertyConstraint[];
     formGroups: FormGroup[];
-    contextManager: ContextManagerBase;
+    contextManager: ContextManagerBase<T>;
+    metadataParser: MetadataParserBase<T>;
 };
 
 export type FormContent = {

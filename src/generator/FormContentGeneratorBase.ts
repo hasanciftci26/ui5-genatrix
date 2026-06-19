@@ -14,7 +14,6 @@ import { PropertyConstraintType } from "ui5/genatrix/form/enum/PropertyConstrain
 import FormTypeGenerator from "ui5/genatrix/generator/FormTypeGenerator";
 import TypeGeneratorBase from "ui5/genatrix/generator/TypeGeneratorBase";
 import ChangeManager from "ui5/genatrix/odata/ChangeManager";
-import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
 import {
     FormContent,
     FormContentGeneratorBase$RefreshContentEventHandler,
@@ -28,15 +27,13 @@ import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.
  */
 export default abstract class FormContentGeneratorBase<T extends Model = Model> extends EventProvider {
     private readonly settings: FormContentGeneratorBaseSettings<T>;
-    private readonly metadataParser: MetadataParserBase<T>;
     private readonly typeGenerator: TypeGeneratorBase;
     private readonly changeManager: ChangeManager;
     private readonly content: FormContent[] = [];
 
-    constructor(settings: FormContentGeneratorBaseSettings<T>, metadataParser: MetadataParserBase<T>) {
+    constructor(settings: FormContentGeneratorBaseSettings<T>) {
         super();
         this.settings = settings;
-        this.metadataParser = metadataParser;
 
         this.typeGenerator = new FormTypeGenerator({
             datePattern: settings.datePattern,
@@ -161,7 +158,7 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
     }
 
     private async parseMetadata() {
-        return this.metadataParser.parse();
+        return this.settings.metadataParser.parse();
     }
 
     private addContent(content: FormContent) {
