@@ -27,10 +27,6 @@ export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
     groupingSize: number;
     decimalSeparator?: string;
     parseEmptyValueToZero: boolean;
-    requiredProperties: string[];
-    readonlyProperties: string[];
-    excludedProperties: string[];
-    displayOrder: string[];
     propertyConfigurations: PropertyConfiguration[];
     propertyValidations: PropertyValidation[];
     propertyConstraints: PropertyConstraint[];

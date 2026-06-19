@@ -1,0 +1,37 @@
+import Context from "sap/ui/model/Context";
+import ODataModelV2 from "sap/ui/model/odata/v2/ODataModel";
+import ODataModelV4 from "sap/ui/model/odata/v4/ODataModel";
+import { FormMode } from "ui5/genatrix/form/enum/FormMode";
+import FormGroup from "ui5/genatrix/form/FormGroup";
+import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
+import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
+import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
+
+export type ServiceContainerSettings<T extends Record<string, any>> = {
+    entitySet: string;
+    model: ODataModelV2 | ODataModelV4;
+    updateGroupId: string;
+    formMode: FormMode | keyof typeof FormMode;
+    editable: boolean;
+    datePattern?: string;
+    timePattern?: string;
+    dateTimeSeparator: string;
+    dateFirst: boolean;
+    groupingEnabled: boolean;
+    groupingSeparator?: string;
+    groupingSize: number;
+    decimalSeparator?: string;
+    parseEmptyValueToZero: boolean;
+    requiredProperties?: string;
+    readonlyProperties?: string;
+    excludedProperties?: string;
+    displayOrder?: string;
+    validateOnlyVisible: boolean;
+    initialData?: T;
+    contextProvider?: () => Promise<Context> | Context;
+    contextRef?: T | Context;
+    propertyConfigurations: PropertyConfiguration[];
+    propertyValidations: PropertyValidation[];
+    propertyConstraints: PropertyConstraint[];
+    formGroups: FormGroup[];
+};

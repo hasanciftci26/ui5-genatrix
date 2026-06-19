@@ -13,30 +13,30 @@
         <FlexBox justifyContent="Center">
             <VBox width="95%">
                 <form:EmbeddedForm
-                    id="frmTest"
+                    id="efEmployees"
                     entitySet="Employees"
-                    title="My Form"
+                    title="New Employee"
                     columnsXL="1"
                     columnsL="1"
                     columnsM="1"
-                    labelSpanXL="3"
-                    labelSpanL="3"
-                    labelSpanM="3"
-                    labelSpanS="3"
-                    emptySpanXL="3"
-                    emptySpanL="3"
-                    emptySpanM="3"
-                    emptySpanS="3"
+                    labelSpanXL="4"
+                    labelSpanL="4"
+                    labelSpanM="4"
+                    labelSpanS="4"
+                    emptySpanXL="4"
+                    emptySpanL="4"
+                    emptySpanM="4"
+                    emptySpanS="4"
                 >
                     <form:propertyConstraints>
                         <form:PropertyConstraint
-                            name="lastName"
+                            name="variableSalary"
                             type="Visible"
                         >
                             <form:PropertyConstraintRule
-                                dependsOn="firstName"
-                                comparisonOperator="EQ"
-                                value1="Hasan"
+                                dependsOn="fixedSalary"
+                                comparisonOperator="GT"
+                                value1="0"
                             />
                         </form:PropertyConstraint>                     
                     </form:propertyConstraints>

@@ -13,21 +13,10 @@ import ODataModelV2 from "sap/ui/model/odata/v2/ODataModel";
 import ODataModelV4 from "sap/ui/model/odata/v4/ODataModel";
 import EmbeddedFormRenderer from "ui5/genatrix/form/EmbeddedFormRenderer";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
-import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGeneratorBase";
-import FormContentGeneratorV2 from "ui5/genatrix/generator/v2/FormContentGenerator";
-import FormContentGeneratorV4 from "ui5/genatrix/generator/v4/FormContentGenerator";
-import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
-import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
-import ContextManagerV2 from "ui5/genatrix/odata/v2/ContextManager";
-import MetadataParserV2 from "ui5/genatrix/odata/v2/MetadataParser";
-import MetadataParserV4 from "ui5/genatrix/odata/v4/MetadataParser";
-import ContextManagerV4 from "ui5/genatrix/odata/v4/ContextManager";
 import { EmbeddedFormSettings } from "ui5/genatrix/types/form/EmbeddedForm.types";
 import { FormContentGeneratorBase$RefreshContentEvent } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
 import ContextManagerError from "ui5/genatrix/util/ContextManagerError";
-import FormContentValidatorBase from "ui5/genatrix/validator/FormContentValidatorBase";
-import FormContentValidatorV2 from "ui5/genatrix/validator/v2/FormContentValidator";
-import FormContentValidatorV4 from "ui5/genatrix/validator/v4/FormContentValidator";
+import ServiceContainer from "ui5/genatrix/form/service/ServiceContainer";
 
 /**
  * @namespace ui5.genatrix.form
@@ -98,10 +87,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
     };
     public static renderer = EmbeddedFormRenderer;
-    private contextManager: ContextManagerBase;
-    private metadataParser: MetadataParserBase;
-    private generator: FormContentGeneratorBase;
-    private validator: FormContentValidatorBase;
+    private services: ServiceContainer<T>;
     private toolbar: Toolbar;
     private title?: Title;
     private editButton: Button;
@@ -126,7 +112,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     public getContext() {
-        return this.contextManager.getContext();
+        return this.services.getContextManager().getContext();
     }
 
     public setEntitySet(value?: string) {
@@ -171,7 +157,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         const formMode = this.getFormMode() || FormMode.Create;
 
         this.setProperty("editable", value);
-        this.generator.setEditable(value);
+        this.services.getGenerator().setEditable(value);
         this.fireModeChanged({ editable: value });
 
         if (formMode === FormMode.Create || formMode === FormMode.Update) {
@@ -179,7 +165,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             this.displayButton.setVisible(value === true);
 
             if (this.isInitialized()) {
-                const content = this.generator.getContent();
+                const content = this.services.getGenerator().getContent();
                 this.getInnerForm().removeAllContent();
 
                 for (const item of content) {
@@ -226,19 +212,19 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     public reset() {
-        this.contextManager.reset();
+        this.services.getContextManager().reset();
     }
 
     private async onModelContextChange() {
         const model = this.getModel();
 
         if (!this.isInitialized() && model && this.isODataModel(model)) {
-            this.createHandlers(model);
-            this.generator.attachRefreshContent(this.onRefreshContent, this);
+            this.services = this.createServices(model);
+            this.services.getGenerator().attachRefreshContent(this.onRefreshContent, this);
 
             try {
-                const context = await this.contextManager.create();
-                const content = await this.generator.generate();
+                const context = await this.services.getContextManager().create();
+                const content = await this.services.getGenerator().generate();
 
                 for (const control of content) {
                     this.getInnerForm().addContent(control);
@@ -265,7 +251,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                 }
 
                 if (error instanceof ContextManagerError === false) {
-                    this.contextManager.reset();
+                    this.services.getContextManager().reset();
                 }
 
                 this.throwRuntimeError(errorMessage);
@@ -356,94 +342,11 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         return button;
     }
 
-    private createHandlers(model: ODataModelV2 | ODataModelV4) {
-        if (model.isA<ODataModelV2>("sap.ui.model.odata.v2.ODataModel")) {
-            const contextManager = this.createContextManagerV2(model);
-            const metadataParser = this.createMetadataParserV2(model);
-            const generator = this.createGeneratorV2(model, contextManager, metadataParser);
-            const validator = this.createValidatorV2(model, generator);
-
-            this.contextManager = contextManager;
-            this.metadataParser = metadataParser;
-            this.generator = generator;
-            this.validator = validator;
-        } else {
-            const contextManager = this.createContextManagerV4(model);
-            const metadataParser = this.createMetadataParserV4(model);
-            const generator = this.createGeneratorV4(model, contextManager, metadataParser);
-            const validator = this.createValidatorV4(model, generator);
-
-            this.contextManager = contextManager;
-            this.metadataParser = metadataParser;
-            this.generator = generator;
-            this.validator = validator;
-        }
-    }
-
-    private createContextManagerV2(model: ODataModelV2) {
-        const contextManager = new ContextManagerV2({
+    private createServices(model: ODataModelV2 | ODataModelV4) {
+        const services = new ServiceContainer({
             entitySet: this.getEntitySetOrThrow(),
             model: model,
             updateGroupId: this.getUpdateGroupId(),
-            formMode: this.getFormMode(),
-            initialData: this.getInitialData(),
-            contextProvider: this.getContextProvider(),
-            contextRef: this.getContextRef()
-        });
-
-        return contextManager;
-    }
-
-    private createContextManagerV4(model: ODataModelV4) {
-        const contextManager = new ContextManagerV4({
-            entitySet: this.getEntitySetOrThrow(),
-            model: model,
-            updateGroupId: this.getUpdateGroupId(),
-            formMode: this.getFormMode(),
-            initialData: this.getInitialData(),
-            contextProvider: this.getContextProvider(),
-            contextRef: this.getContextRef()
-        });
-
-        return contextManager;
-    }
-
-    private createMetadataParserV2(model: ODataModelV2) {
-        const metadataParser = new MetadataParserV2({
-            entitySet: this.getEntitySetOrThrow(),
-            model: model,
-            formMode: this.getFormMode(),
-            requiredProperties: this.getAllRequiredProperties(),
-            readonlyProperties: this.getAllReadonlyProperties(),
-            excludedProperties: this.getAllExcludedProperties(),
-            displayOrder: this.getAllDisplayOrder(),
-            propertyConfigurations: this.getPropertyConfigurations(),
-            propertyConstraints: this.getPropertyConstraints()
-        });
-
-        return metadataParser;
-    }
-
-    private createMetadataParserV4(model: ODataModelV4) {
-        const metadataParser = new MetadataParserV4({
-            entitySet: this.getEntitySetOrThrow(),
-            model: model,
-            formMode: this.getFormMode(),
-            requiredProperties: this.getAllRequiredProperties(),
-            readonlyProperties: this.getAllReadonlyProperties(),
-            excludedProperties: this.getAllExcludedProperties(),
-            displayOrder: this.getAllDisplayOrder(),
-            propertyConfigurations: this.getPropertyConfigurations(),
-            propertyConstraints: this.getPropertyConstraints()
-        });
-
-        return metadataParser;
-    }
-
-    private createGeneratorV2(model: ODataModelV2, contextManager: ContextManagerV2, metadataParser: MetadataParserV2) {
-        const generator = new FormContentGeneratorV2({
-            entitySet: this.getEntitySetOrThrow(),
-            model: model,
             formMode: this.getFormMode(),
             editable: this.getEditable(),
             datePattern: this.getDatePattern(),
@@ -455,69 +358,21 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             groupingSize: this.getGroupingSize(),
             decimalSeparator: this.getDecimalSeparator(),
             parseEmptyValueToZero: this.getParseEmptyValueToZero(),
-            requiredProperties: this.getAllRequiredProperties(),
-            readonlyProperties: this.getAllReadonlyProperties(),
-            excludedProperties: this.getAllExcludedProperties(),
-            displayOrder: this.getAllDisplayOrder(),
+            requiredProperties: this.getRequiredProperties(),
+            readonlyProperties: this.getReadonlyProperties(),
+            excludedProperties: this.getExcludedProperties(),
+            displayOrder: this.getDisplayOrder(),
+            validateOnlyVisible: this.getValidateOnlyVisible(),
+            initialData: this.getInitialData(),
+            contextProvider: this.getContextProvider(),
+            contextRef: this.getContextRef(),
             propertyConfigurations: this.getPropertyConfigurations(),
             propertyValidations: this.getPropertyValidations(),
             propertyConstraints: this.getPropertyConstraints(),
-            formGroups: this.getFormGroups(),
-            contextManager: contextManager,
-            metadataParser: metadataParser
+            formGroups: this.getFormGroups()
         });
 
-        return generator;
-    }
-
-    private createGeneratorV4(model: ODataModelV4, contextManager: ContextManagerV4, metadataParser: MetadataParserV4) {
-        const generator = new FormContentGeneratorV4({
-            entitySet: this.getEntitySetOrThrow(),
-            model: model,
-            formMode: this.getFormMode(),
-            editable: this.getEditable(),
-            datePattern: this.getDatePattern(),
-            timePattern: this.getTimePattern(),
-            dateTimeSeparator: this.getDateTimeSeparator(),
-            dateFirst: this.getDateFirst(),
-            groupingEnabled: this.getGroupingEnabled(),
-            groupingSeparator: this.getGroupingSeparator(),
-            groupingSize: this.getGroupingSize(),
-            decimalSeparator: this.getDecimalSeparator(),
-            parseEmptyValueToZero: this.getParseEmptyValueToZero(),
-            requiredProperties: this.getAllRequiredProperties(),
-            readonlyProperties: this.getAllReadonlyProperties(),
-            excludedProperties: this.getAllExcludedProperties(),
-            displayOrder: this.getAllDisplayOrder(),
-            propertyConfigurations: this.getPropertyConfigurations(),
-            propertyValidations: this.getPropertyValidations(),
-            propertyConstraints: this.getPropertyConstraints(),
-            formGroups: this.getFormGroups(),
-            contextManager: contextManager,
-            metadataParser: metadataParser
-        });
-
-        return generator;
-    }
-
-    private createValidatorV2(model: ODataModelV2, generator: FormContentGeneratorV2) {
-        const validator = new FormContentValidatorV2({
-            generator: generator,
-            model: model,
-            validateOnlyVisible: this.getValidateOnlyVisible()
-        });
-
-        return validator;
-    }
-
-    private createValidatorV4(model: ODataModelV4, generator: FormContentGeneratorV4) {
-        const validator = new FormContentValidatorV4({
-            generator: generator,
-            model: model,
-            validateOnlyVisible: this.getValidateOnlyVisible()
-        });
-
-        return validator;
+        return services;
     }
 
     private onRefreshContent(event: FormContentGeneratorBase$RefreshContentEvent) {
@@ -539,35 +394,6 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
 
         return entitySet;
-    }
-
-    private getAllRequiredProperties() {
-        const formLevelProperties = this.getRequiredProperties()?.split(",") || [];
-        const configLevelProperties = this.getPropertyConfigurations().filter(config => config.getName() && config.getRequired())
-            .map(config => config.getName() as string);
-
-        return Array.from(new Set([...formLevelProperties, ...configLevelProperties]));
-    }
-
-    private getAllReadonlyProperties() {
-        const formLevelProperties = this.getReadonlyProperties()?.split(",") || [];
-        const configLevelProperties = this.getPropertyConfigurations().filter(config => config.getName() && config.getReadonly())
-            .map(config => config.getName() as string);
-
-        return Array.from(new Set([...formLevelProperties, ...configLevelProperties]));
-    }
-
-    private getAllExcludedProperties() {
-        const formLevelProperties = this.getExcludedProperties()?.split(",") || [];
-        const configLevelProperties = this.getPropertyConfigurations().filter(config => config.getName() && config.getExcluded())
-            .map(config => config.getName() as string);
-
-        return Array.from(new Set([...formLevelProperties, ...configLevelProperties]));
-    }
-
-    private getAllDisplayOrder() {
-        const displayOrder = this.getDisplayOrder()?.split(",") || [];
-        return Array.from(new Set(displayOrder));
     }
 
     private isODataModel(model: Model): model is ODataModelV2 | ODataModelV4 {
