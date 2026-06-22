@@ -31,3 +31,10 @@ annotate CompanyManagement.Employees with @(UI: {
         }
     ]
 });
+
+annotate CompanyManagement.Employees with {
+    countryCode @Common: {
+        Text: toCountries.name,
+        TextArrangement : #TextOnly
+    };
+};

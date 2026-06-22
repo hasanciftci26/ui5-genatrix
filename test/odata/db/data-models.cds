@@ -7,6 +7,8 @@ entity Employees {
         fixedSalary    : Decimal(13, 2) not null;
         variableSalary : Decimal(13, 2) not null;
         workingStartAt : Time;
+        toCountries    : Association to one Countries
+                             on toCountries.code = $self.countryCode;
 };
 
 entity Countries {

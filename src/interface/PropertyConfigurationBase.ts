@@ -1,3 +1,5 @@
+import { TextArrangement } from "ui5/genatrix/core/enum/TextArrangement";
+
 export default interface PropertyConfigurationBase {
     getName: () => string | undefined;
     getLabel: () => string | undefined;
@@ -13,4 +15,6 @@ export default interface PropertyConfigurationBase {
     getParseEmptyValueToZero: () => boolean;
     getMaximumValue: () => string | undefined;
     getMinimumValue: () => string | undefined;
+    getText?: () => string | undefined;
+    getTextArrangement?: () => TextArrangement | keyof typeof TextArrangement;
 }

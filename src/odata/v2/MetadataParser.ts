@@ -1,5 +1,6 @@
 import ODataMetaModel, { EntitySet, EntityType } from "sap/ui/model/odata/ODataMetaModel";
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
+import { TextArrangement } from "ui5/genatrix/core/enum/TextArrangement";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
 import { EntityTypeProperty, MetadataParserBaseSettings, MetaModelProperty, PropertyDisplayFormat } from "ui5/genatrix/types/odata/MetadataParserBase.types";
@@ -13,7 +14,7 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
     }
 
     public async parse() {
-        const entityType = await this.getMetaModelEntityType();
+        const entityType = await this.getMetaModelEntityType(this.getEntitySet());
         const properties: EntityTypeProperty[] = [];
 
         if (!entityType.property) {
@@ -38,7 +39,9 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
                 displayFormat: this.getPropertyDisplayFormat(property),
                 precision: this.getPropertyPrecision(property),
                 scale: this.getPropertyScale(property),
-                maxLength: this.getPropertyMaxLength(property)
+                maxLength: this.getPropertyMaxLength(property),
+                text: await this.getTextProperty(property),
+                textArrangement: this.getTextArrangement(property)
             });
         }
 
@@ -148,24 +151,82 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
         }
     }
 
-    private async getMetaModelEntityType() {
+    private async getTextProperty(property: MetaModelProperty) {
+        const text = this.getTextPropertyFromConfig(property.name) || property["com.sap.vocabularies.Common.v1.Text"]?.Path;
+
+        if (!text) {
+            return;
+        }
+
+        if (text.includes("/")) {
+            const navProperty = text.split("/")[0] as string;
+            const metaModel = await this.getMetaModel();
+            const entityType = await this.getMetaModelEntityType(this.getEntitySet());
+            const association = metaModel.getODataAssociationEnd(entityType, navProperty);
+
+            if (!association || association.multiplicity === "*") {
+                return;
+            }
+
+            const navigationEntityType = await this.getMetaModelEntityType(association.role);
+            const textProperty = navigationEntityType.property?.find(prop => prop.name === text.split("/")[1]);
+
+            if (textProperty?.type !== "Edm.String") {
+                return;
+            }
+
+            return text;
+        } else {
+            const entityType = await this.getMetaModelEntityType(this.getEntitySet());
+            const textProperty = entityType.property?.find(prop => prop.name === text);
+
+            if (textProperty?.type !== "Edm.String") {
+                return;
+            }
+
+            return textProperty.name;
+        }
+    }
+
+    private getTextArrangement(property: MetaModelProperty) {
+        const textArrangement = this.getTextArrangementFromConfig(property.name);
+
+        if (textArrangement) {
+            return textArrangement;
+        }
+
+        switch (property["com.sap.vocabularies.Common.v1.Text"]?.["com.sap.vocabularies.UI.v1.TextArrangement"]?.EnumMember) {
+            case "com.sap.vocabularies.UI.v1.TextArrangementType/TextFirst":
+                return TextArrangement.TextFirst;
+            case "com.sap.vocabularies.UI.v1.TextArrangementType/TextLast":
+                return TextArrangement.TextLast;
+            case "com.sap.vocabularies.UI.v1.TextArrangementType/TextOnly":
+                return TextArrangement.TextOnly;
+            case "com.sap.vocabularies.UI.v1.TextArrangementType/TextSeparate":
+                return TextArrangement.TextSeparate;
+            default:
+                return TextArrangement.TextFirst;
+        }
+    }
+
+    private async getMetaModelEntityType(entitySetName: string) {
         const metaModel = await this.getMetaModel();
-        const entitySet = await this.getMetaModelEntitySet();
+        const entitySet = await this.getMetaModelEntitySet(entitySetName);
         const entityType = metaModel.getODataEntityType(entitySet.entityType, false) as EntityType | null | undefined;
 
         if (!entityType) {
-            throw new Error(`Entity Type for the Entity Set: ${this.getEntitySet()} was not found`);
+            throw new Error(`Entity Type for the Entity Set: ${entitySetName} was not found`);
         }
 
         return entityType;
     }
 
-    private async getMetaModelEntitySet() {
+    private async getMetaModelEntitySet(entitySetName: string) {
         const metaModel = await this.getMetaModel();
-        const entitySet = metaModel.getODataEntitySet(this.getEntitySet(), false) as EntitySet | null | undefined;
+        const entitySet = metaModel.getODataEntitySet(entitySetName, false) as EntitySet | null | undefined;
 
         if (!entitySet) {
-            throw new Error(`Entity Set: ${this.getEntitySet()} was not found`);
+            throw new Error(`Entity Set: ${entitySetName} was not found`);
         }
 
         return entitySet;

@@ -1,4 +1,5 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
+import { TextArrangement } from "ui5/genatrix/core/enum/TextArrangement";
 import PropertyConfigurationBase from "ui5/genatrix/interface/PropertyConfigurationBase";
 import { PropertyConfigurationSettings } from "ui5/genatrix/types/form/PropertyConfiguration.types";
 
@@ -26,7 +27,9 @@ export default class PropertyConfiguration extends ManagedObject implements Prop
             decimalSeparator: { type: "string" },
             parseEmptyValueToZero: { type: "boolean", defaultValue: false },
             maximumValue: { type: "string" },
-            minimumValue: { type: "string" }
+            minimumValue: { type: "string" },
+            text: { type: "string" },
+            textArrangement: { type: "ui5.genatrix.core.enum.TextArrangement", defaultValue: TextArrangement.TextFirst }
         },
         defaultAggregation: "layoutData",
         aggregations: {

@@ -1,5 +1,6 @@
 import { $ManagedObjectSettings, PropertyBindingInfo } from "sap/ui/base/ManagedObject";
 import LayoutData from "sap/ui/core/LayoutData";
+import { TextArrangement } from "ui5/genatrix/core/enum/TextArrangement";
 import {
     AggregationSetterOrAdder,
     OptionalAggregationGetterSingle,
@@ -27,6 +28,8 @@ export type PropertyConfigurationSettings = $ManagedObjectSettings & {
     parseEmptyValueToZero?: boolean | PropertyBindingInfo | `{${string}}`;
     maximumValue?: string | PropertyBindingInfo | `{${string}}`;
     minimumValue?: string | PropertyBindingInfo | `{${string}}`;
+    text?: string | PropertyBindingInfo | `{${string}}`;
+    textArrangement?: TextArrangement | keyof typeof TextArrangement | PropertyBindingInfo | `{${string}}`;
     layoutData?: LayoutData;
 };
 
@@ -82,6 +85,12 @@ declare module "ui5/genatrix/form/PropertyConfiguration" {
 
         getMinimumValue: OptionalPropertyGetter<string>;
         setMinimumValue: OptionalPropertySetter<string, PropertyConfiguration>;
+
+        getText: OptionalPropertyGetter<string>;
+        setText: OptionalPropertySetter<string, PropertyConfiguration>;
+
+        getTextArrangement: PropertyGetter<TextArrangement | keyof typeof TextArrangement>;
+        setTextArrangement: PropertySetter<TextArrangement | keyof typeof TextArrangement, PropertyConfiguration>;
 
         getLayoutData: OptionalAggregationGetterSingle<LayoutData>;
         setLayoutData: AggregationSetterOrAdder<LayoutData, PropertyConfiguration>;

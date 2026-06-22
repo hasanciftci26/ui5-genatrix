@@ -88,6 +88,22 @@ export default abstract class MetadataParserBase<T extends Model = Model> extend
             return false;
         }
 
-        return constraint.evaluate();        
+        return constraint.evaluate();
+    }
+
+    protected getTextPropertyFromConfig(propertyName: string) {
+        const config = this.settings.propertyConfigurations.find(config => config.getName() === propertyName);
+
+        if (config?.getText) {
+            return config.getText();
+        }
+    }
+
+    protected getTextArrangementFromConfig(propertyName: string) {
+        const config = this.settings.propertyConfigurations.find(config => config.getName() === propertyName);
+
+        if (config?.getTextArrangement) {
+            return config.getTextArrangement();
+        }
     }
 }

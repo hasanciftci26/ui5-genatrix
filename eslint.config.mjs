@@ -139,7 +139,8 @@ export default [
         files: ["src/**/*Renderer.ts", "src/**/enum/**/*.ts"],
         rules: {
             ...baseRules,
-            "@typescript-eslint/naming-convention": "off"
+            "@typescript-eslint/naming-convention": "off",
+            "no-unused-vars": "off"
         }
     }
 ];
