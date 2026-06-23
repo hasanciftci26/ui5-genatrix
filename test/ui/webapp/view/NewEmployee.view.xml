@@ -43,8 +43,24 @@
                                 comparisonOperator="GT"
                                 value1="0"
                             />
-                        </form:PropertyConstraint>                     
+                        </form:PropertyConstraint>
                     </form:propertyConstraints>
+
+                    <form:propertyValidations>
+                        <form:PropertyValidation
+                            name="firstName"
+                            value1="Hasan"
+                        >
+                            <form:PropertyValidationRule
+                                dependsOn="lastName"
+                                value1="Ciftci"
+                            />
+                            <form:PropertyValidationRule
+                                dependsOn="countryCode"
+                                value1="TR"
+                            />
+                        </form:PropertyValidation>
+                    </form:propertyValidations>
                 </form:EmbeddedForm>
             </VBox>
         </FlexBox>

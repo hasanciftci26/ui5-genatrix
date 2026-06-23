@@ -1,6 +1,10 @@
 import ManagedObject, { MetadataOptions } from "sap/ui/base/ManagedObject";
+import Context from "sap/ui/model/Context";
+import ValidateException from "sap/ui/model/ValidateException";
+import EmbeddedForm from "ui5/genatrix/form/EmbeddedForm";
 import { ComparisonOperator } from "ui5/genatrix/form/enum/ComparisonOperator";
 import { LogicalOperator } from "ui5/genatrix/form/enum/LogicalOperator";
+import PropertyRuleEvaluator from "ui5/genatrix/form/PropertyRuleEvaluator";
 import { EvaluateSettings, PropertyValidationSettings } from "ui5/genatrix/types/form/PropertyValidation.types";
 import LibraryBundle from "ui5/genatrix/util/LibraryBundle";
 
@@ -19,8 +23,13 @@ export default class PropertyValidation extends ManagedObject {
             errorMessage: { type: "string", defaultValue: LibraryBundle.getText("genatrix.error.validation") },
             logicalOperator: { type: "ui5.genatrix.form.enum.LogicalOperator", defaultValue: LogicalOperator.And },
             validator: { type: "function", bindable: false }
+        },
+        defaultAggregation: "rules",
+        aggregations: {
+            rules: { type: "ui5.genatrix.form.PropertyValidationRule", multiple: true, singularName: "rule" }
         }
     };
+    private readonly evaluator = new PropertyRuleEvaluator();
 
     constructor(settings?: PropertyValidationSettings);
     constructor(id?: string, settings?: PropertyValidationSettings);
@@ -34,6 +43,55 @@ export default class PropertyValidation extends ManagedObject {
     }
 
     public async evaluate(settings: EvaluateSettings) {
+        const validator = this.getValidator();
+        // this.showBusy(property, busyModel);
 
+        if (validator) {
+            const valid = await Promise.resolve(validator(settings.value));
+            // this.hideBusy(property, busyModel);
+
+            if (!valid) {
+                this.throwValidationError();
+            }
+
+            return;
+        }
+
+        const rules = this.getRules();
+        const context = this.getContextFromParent();
+        const logicalOperator = this.getLogicalOperator();
+
+        const rulesSatisfied = rules.length === 0 ||
+            (logicalOperator === LogicalOperator.And ? rules.every(cond => cond.check(context)) : rules.some(cond => cond.check(context)));
+
+        if (!rulesSatisfied) {
+            // this.hideBusy(property, busyModel);
+            return;
+        }
+
+        if (!this.isValid(context, settings.value)) {
+            // this.hideBusy(property, busyModel);
+            this.throwValidationError();
+        }
+
+        // this.hideBusy(property, busyModel);
+    }
+
+    private isValid(context: Context, value: any) {
+        return this.evaluator.run({
+            rawPropertyValue: value,
+            comparisonOperator: this.getComparisonOperator(),
+            rawValue1: this.getValue1(),
+            rawValue2: this.getValue2(),
+            context: context
+        });
+    }
+
+    private throwValidationError(): never {
+        throw new ValidateException(this.getErrorMessage());
+    }
+
+    private getContextFromParent() {
+        return (this.getParent() as EmbeddedForm).getContext();
     }
 }

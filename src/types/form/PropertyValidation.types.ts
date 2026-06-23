@@ -1,7 +1,20 @@
 import { $ManagedObjectSettings, PropertyBindingInfo } from "sap/ui/base/ManagedObject";
 import { ComparisonOperator } from "ui5/genatrix/form/enum/ComparisonOperator";
 import { LogicalOperator } from "ui5/genatrix/form/enum/LogicalOperator";
-import { OptionalPropertyGetter, OptionalPropertySetter, PropertyGetter, PropertySetter } from "ui5/genatrix/types/global/CustomClass.types";
+import PropertyValidationRule from "ui5/genatrix/form/PropertyValidationRule";
+import {
+    AggregationBinder,
+    AggregationDestroyer,
+    AggregationGetterMulti,
+    AggregationInserter,
+    AggregationRemoverAll,
+    AggregationRemoverSingle,
+    AggregationSetterOrAdder,
+    OptionalPropertyGetter,
+    OptionalPropertySetter,
+    PropertyGetter,
+    PropertySetter
+} from "ui5/genatrix/types/global/CustomClass.types";
 import { EntityTypeProperty } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 
 export type EvaluateSettings = {
@@ -17,6 +30,7 @@ export type PropertyValidationSettings = $ManagedObjectSettings & {
     errorMessage?: string | PropertyBindingInfo | `{${string}}`;
     logicalOperator?: LogicalOperator | keyof typeof LogicalOperator | PropertyBindingInfo | `{${string}}`;
     validator?: (value: any) => Promise<boolean> | boolean;
+    rules?: PropertyValidationRule[];
 };
 
 declare module "ui5/genatrix/form/PropertyValidation" {
@@ -41,5 +55,13 @@ declare module "ui5/genatrix/form/PropertyValidation" {
 
         getValidator: OptionalPropertyGetter<(value: any) => Promise<boolean> | boolean>;
         setValidator: OptionalPropertySetter<(value: any) => Promise<boolean> | boolean, PropertyValidation>;
+
+        getRules: AggregationGetterMulti<PropertyValidationRule>;
+        addRule: AggregationSetterOrAdder<PropertyValidationRule, PropertyValidation>;
+        insertRule: AggregationInserter<PropertyValidationRule, PropertyValidation>;
+        bindRules: AggregationBinder<PropertyValidation>;
+        removeRule: AggregationRemoverSingle<PropertyValidationRule>;
+        removeAllRules: AggregationRemoverAll<PropertyValidationRule>;
+        destroyRules: AggregationDestroyer<PropertyValidation>;
     }
 }
