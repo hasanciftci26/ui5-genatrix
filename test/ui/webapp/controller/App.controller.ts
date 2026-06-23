@@ -1,7 +1,7 @@
-import BaseController from "ui5/genatrix/test/ui/v2/controller/BaseController";
+import BaseController from "ui5/genatrix/test/ui/controller/BaseController";
 
 /**
- * @namespace ui5.genatrix.test.ui.v2.controller
+ * @namespace ui5.genatrix.test.ui.controller
  */
 export default class App extends BaseController {
     public onNavToHomepage() {

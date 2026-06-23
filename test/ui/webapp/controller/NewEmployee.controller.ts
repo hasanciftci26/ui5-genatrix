@@ -1,9 +1,9 @@
-import BaseController from "ui5/genatrix/test/ui/v2/controller/BaseController";
+import BaseController from "ui5/genatrix/test/ui/controller/BaseController";
 
 /**
- * @namespace ui5.genatrix.test.ui.v2.controller
+ * @namespace ui5.genatrix.test.ui.controller
  */
-export default class NotFound extends BaseController {
+export default class NewEmployee extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     // Properties
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -13,14 +13,22 @@ export default class NotFound extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     public override onInit() {
-        
+        this.attachPatternMatched("RouteNewEmployee", this.onRoutePatternMatched.bind(this));
     }
 
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     // Event Handlers
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
+    public onCreateEmployee() {
+        
+    }
+
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     // Internal Methods
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+    private onRoutePatternMatched() {
+        
+    }
 }

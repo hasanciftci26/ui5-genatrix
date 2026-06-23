@@ -1,5 +1,5 @@
 <mvc:View
-    controllerName="ui5.genatrix.test.ui.v2.controller.NewEmployee"
+    controllerName="ui5.genatrix.test.ui.controller.NewEmployee"
     displayBlock="true"
     xmlns="sap.m"
     xmlns:mvc="sap.ui.core.mvc"

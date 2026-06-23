@@ -1,8 +1,8 @@
 import UIComponent from "sap/ui/core/UIComponent";
-import { createDeviceModel } from "ui5/genatrix/test/ui/v2/model/models";
+import { createDeviceModel } from "ui5/genatrix/test/ui/model/models";
 
 /**
- * @namespace ui5.genatrix.test.ui.v2
+ * @namespace ui5.genatrix.test.ui
  */
 export default class Component extends UIComponent {
     public static readonly metadata = {

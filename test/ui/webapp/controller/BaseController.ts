@@ -6,11 +6,11 @@ import Controller from "sap/ui/core/mvc/Controller";
 import View from "sap/ui/core/mvc/View";
 import Route, { Route$PatternMatchedEvent } from "sap/ui/core/routing/Route";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
-import Component from "ui5/genatrix/test/ui/v2/Component";
-import formatter from "ui5/genatrix/test/ui/v2/model/formatter";
+import Component from "ui5/genatrix/test/ui/Component";
+import formatter from "ui5/genatrix/test/ui/model/formatter";
 
 /**
- * @namespace ui5.genatrix.test.ui.v2.controller
+ * @namespace ui5.genatrix.test.ui.controller
  */
 export default abstract class BaseController extends Controller {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────

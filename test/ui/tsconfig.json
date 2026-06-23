@@ -22,7 +22,7 @@
         "rootDir": "./webapp",
         "outDir": "./dist",
         "paths": {
-            "ui5/genatrix/test/ui/v2/*": [
+            "ui5/genatrix/test/ui/*": [
                 "./webapp/*"
             ]
         },

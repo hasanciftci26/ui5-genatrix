@@ -1,9 +1,9 @@
-import BaseController from "ui5/genatrix/test/ui/v2/controller/BaseController";
+import BaseController from "ui5/genatrix/test/ui/controller/BaseController";
 
 /**
- * @namespace ui5.genatrix.test.ui.v2.controller
+ * @namespace ui5.genatrix.test.ui.controller
  */
-export default class Homepage extends BaseController {
+export default class NotFound extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     // Properties
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -13,22 +13,14 @@ export default class Homepage extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     public override onInit() {
-        this.attachPatternMatched("RouteHomepage", this.onRoutePatternMatched.bind(this));
+        
     }
 
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     // Event Handlers
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
-    public onCreateEmployee() {
-        this.navTo("RouteNewEmployee");
-    }
-
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
     // Internal Methods
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
-    private onRoutePatternMatched() {
-        
-    }
 }

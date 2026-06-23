@@ -1,7 +1,7 @@
 {
     "_version": "1.73.1",
     "sap.app": {
-        "id": "ui5.genatrix.test.ui.v2",
+        "id": "ui5.genatrix.test.ui",
         "type": "application",
         "i18n": {
             "bundleUrl": "i18n/i18n.properties",
@@ -18,7 +18,7 @@
         "dataSources": {
             "mainService": {
                 "type": "OData",
-                "uri": "/company-management/",
+                "uri": "/odata/v2/company-management/",
                 "settings": {
                     "odataVersion": "2.0"
                 }
@@ -68,7 +68,7 @@
             "i18n": {
                 "type": "sap.ui.model.resource.ResourceModel",
                 "settings": {
-                    "bundleName": "ui5.genatrix.test.ui.v2.i18n.i18n",
+                    "bundleName": "ui5.genatrix.test.ui.i18n.i18n",
                     "supportedLocales": [
                         ""
                     ],
@@ -95,7 +95,7 @@
                 "routerClass": "sap.m.routing.Router",
                 "viewType": "XML",
                 "async": true,
-                "path": "ui5.genatrix.test.ui.v2.view",
+                "path": "ui5.genatrix.test.ui.view",
                 "controlAggregation": "pages",
                 "controlId": "app",
                 "clearControlAggregation": false,
@@ -147,7 +147,7 @@
             }
         },
         "rootView": {
-            "viewName": "ui5.genatrix.test.ui.v2.view.App",
+            "viewName": "ui5.genatrix.test.ui.view.App",
             "type": "XML",
             "async": true,
             "id": "App"
