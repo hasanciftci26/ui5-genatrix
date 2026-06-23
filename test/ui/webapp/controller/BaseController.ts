@@ -5,6 +5,8 @@ import UI5Element from "sap/ui/core/Element";
 import Controller from "sap/ui/core/mvc/Controller";
 import View from "sap/ui/core/mvc/View";
 import Route, { Route$PatternMatchedEvent } from "sap/ui/core/routing/Route";
+import ODataModelV2 from "sap/ui/model/odata/v2/ODataModel";
+import ODataModelV4 from "sap/ui/model/odata/v4/ODataModel";
 import ResourceModel from "sap/ui/model/resource/ResourceModel";
 import Component from "ui5/genatrix/test/ui/Component";
 import formatter from "ui5/genatrix/test/ui/model/formatter";
@@ -26,6 +28,14 @@ export default abstract class BaseController extends Controller {
     public getComponent() {
         return this.getOwnerComponent() as Component;
     }
+
+    public getODataModelV2() {
+        return this.getComponent().getModel("v2") as ODataModelV2;
+    }
+
+    public getODataModelV4() {
+        return this.getComponent().getModel("v4") as ODataModelV4;
+    }    
 
     public getCurrentView() {
         return this.getView() as View;

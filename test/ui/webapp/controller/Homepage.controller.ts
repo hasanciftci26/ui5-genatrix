@@ -1,3 +1,5 @@
+import SmartFilterBar from "sap/ui/comp/smartfilterbar/SmartFilterBar";
+import SmartTable from "sap/ui/comp/smarttable/SmartTable";
 import BaseController from "ui5/genatrix/test/ui/controller/BaseController";
 
 /**
@@ -13,6 +15,8 @@ export default class Homepage extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     public override onInit() {
+        this.getById<SmartFilterBar>("sfbEmployees").setModel(this.getODataModelV2());
+        this.getById<SmartTable>("stEmployees").setModel(this.getODataModelV2());
         this.attachPatternMatched("RouteHomepage", this.onRoutePatternMatched.bind(this));
     }
 
@@ -29,6 +33,6 @@ export default class Homepage extends BaseController {
     // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 
     private onRoutePatternMatched() {
-        
+
     }
 }

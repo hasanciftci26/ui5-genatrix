@@ -15,6 +15,7 @@
                 <form:EmbeddedForm
                     id="efEmployees"
                     entitySet="Employees"
+                    oDataModelName="v2"
                     title="New Employee"
                     datePattern="dd MMMM y"
                     timePattern="HH:mm"

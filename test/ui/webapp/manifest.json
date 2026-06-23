@@ -16,7 +16,7 @@
         "title": "{{global.title.appTitle}}",
         "description": "{{global.info.appDescription}}",
         "dataSources": {
-            "mainService": {
+            "mainServiceV2": {
                 "type": "OData",
                 "uri": "/odata/v2/company-management/",
                 "settings": {
@@ -75,8 +75,8 @@
                     "fallbackLocale": ""
                 }
             },
-            "": {
-                "dataSource": "mainService",
+            "v2": {
+                "dataSource": "mainServiceV2",
                 "preload": true,
                 "settings": {
                     "defaultBindingMode": "TwoWay"

@@ -216,7 +216,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
     }
 
     private async onModelContextChange() {
-        const model = this.getModel();
+        const model = this.getModel(this.getODataModelName());
 
         if (!this.isInitialized() && model && this.isODataModel(model)) {
             this.services = this.createServices(model);
@@ -231,7 +231,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
                 }
 
                 model.setDefaultBindingMode(BindingMode.TwoWay);
-                
+
                 this.getInnerForm().setModel(model);
                 this.getInnerForm().setBusy(false);
 
