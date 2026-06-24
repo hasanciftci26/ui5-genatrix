@@ -1,4 +1,5 @@
 import Context from "sap/ui/model/Context";
+import JSONModel from "sap/ui/model/json/JSONModel";
 import ODataModelV2 from "sap/ui/model/odata/v2/ODataModel";
 import ODataModelV4 from "sap/ui/model/odata/v4/ODataModel";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
@@ -10,6 +11,7 @@ import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
 export type ServiceContainerSettings<T extends Record<string, any>> = {
     entitySet: string;
     model: ODataModelV2 | ODataModelV4;
+    busyModel: JSONModel;
     updateGroupId: string;
     formMode: FormMode | keyof typeof FormMode;
     editable: boolean;

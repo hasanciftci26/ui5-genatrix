@@ -44,11 +44,11 @@ export default class PropertyValidation extends ManagedObject {
 
     public async evaluate(settings: EvaluateSettings) {
         const validator = this.getValidator();
-        // this.showBusy(property, busyModel);
+        this.getOwnerParent().showPropertyBusy(settings.property.name);
 
         if (validator) {
             const valid = await Promise.resolve(validator(settings.value));
-            // this.hideBusy(property, busyModel);
+            this.getOwnerParent().hidePropertyBusy(settings.property.name);
 
             if (!valid) {
                 this.throwValidationError();
@@ -65,16 +65,16 @@ export default class PropertyValidation extends ManagedObject {
             (logicalOperator === LogicalOperator.And ? rules.every(cond => cond.check(context)) : rules.some(cond => cond.check(context)));
 
         if (!rulesSatisfied) {
-            // this.hideBusy(property, busyModel);
+            this.getOwnerParent().hidePropertyBusy(settings.property.name);
             return;
         }
 
         if (!this.isValid(context, settings.value)) {
-            // this.hideBusy(property, busyModel);
+            this.getOwnerParent().hidePropertyBusy(settings.property.name);
             this.throwValidationError();
         }
 
-        // this.hideBusy(property, busyModel);
+        this.getOwnerParent().hidePropertyBusy(settings.property.name);
     }
 
     private isValid(context: Context, value: any) {
@@ -91,7 +91,11 @@ export default class PropertyValidation extends ManagedObject {
         throw new ValidateException(this.getErrorMessage());
     }
 
+    private getOwnerParent() {
+        return this.getParent() as EmbeddedForm;
+    }
+
     private getContextFromParent() {
-        return (this.getParent() as EmbeddedForm).getContext();
+        return this.getOwnerParent().getContext();
     }
 }

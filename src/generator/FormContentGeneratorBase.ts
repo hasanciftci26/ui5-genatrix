@@ -68,6 +68,8 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
             };
 
             if (!property.readonly) {
+                this.setBusyModelProperty(property);
+
                 switch (property.type) {
                     case "Edm.Boolean":
                         content.editableControl = this.createCheckBox(property);
@@ -169,6 +171,10 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         return this.settings.propertyValidations.find(validation => validation.getName() === propertyName);
     }
 
+    private setBusyModelProperty(property: EntityTypeProperty) {
+        this.settings.busyModel.setProperty("/" + property.name, false);
+    }
+
     private createLabel(label: string) {
         const control = new Label({ text: label });
         Messaging.registerObject(control, true);
@@ -202,6 +208,10 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
     private createCheckBox(property: EntityTypeProperty) {
         const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
         const control = new CheckBox({
+            busyIndicatorDelay: 0,
+            busy: {
+                path: "ui5GenatrixBusyModel>/" + property.name
+            },
             selected: {
                 path: property.name,
                 type: this.typeGenerator.generate(property)
@@ -223,6 +233,9 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
 
         const control = new FormDatePicker({
             busyIndicatorDelay: 0,
+            busy: {
+                path: "ui5GenatrixBusyModel>/" + property.name
+            },
             required: property.required,
             value: {
                 path: property.name,
@@ -253,6 +266,9 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
 
         const control = new FormDateTimePicker({
             busyIndicatorDelay: 0,
+            busy: {
+                path: "ui5GenatrixBusyModel>/" + property.name
+            },
             required: property.required,
             value: {
                 path: property.name,
@@ -280,6 +296,9 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
         const control = new FormTimePicker({
             busyIndicatorDelay: 0,
+            busy: {
+                path: "ui5GenatrixBusyModel>/" + property.name
+            },
             required: property.required,
             value: {
                 path: property.name,
@@ -299,6 +318,9 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
         const control = new FormInput({
             busyIndicatorDelay: 0,
+            busy: {
+                path: "ui5GenatrixBusyModel>/" + property.name
+            },
             required: property.required,
             value: {
                 path: property.name,

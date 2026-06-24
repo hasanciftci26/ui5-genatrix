@@ -17,6 +17,7 @@ import { EmbeddedFormSettings } from "ui5/genatrix/types/form/EmbeddedForm.types
 import { FormContentGeneratorBase$RefreshContentEvent } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
 import ContextManagerError from "ui5/genatrix/util/ContextManagerError";
 import ServiceContainer from "ui5/genatrix/form/service/ServiceContainer";
+import JSONModel from "sap/ui/model/json/JSONModel";
 
 /**
  * @namespace ui5.genatrix.form
@@ -87,6 +88,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         }
     };
     public static renderer = EmbeddedFormRenderer;
+    private busyModel: JSONModel;
     private services: ServiceContainer<T>;
     private toolbar: Toolbar;
     private title?: Title;
@@ -215,11 +217,20 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         this.services.getContextManager().reset();
     }
 
+    public showPropertyBusy(propertyName: string) {
+        this.busyModel.setProperty("/" + propertyName, true);
+    }
+
+    public hidePropertyBusy(propertyName: string) {
+        this.busyModel.setProperty("/" + propertyName, false);
+    }
+
     private async onModelContextChange() {
         const model = this.getModel(this.getODataModelName());
 
         if (!this.isInitialized() && model && this.isODataModel(model)) {
-            this.services = this.createServices(model);
+            this.busyModel = this.createBusyModel();
+            this.services = this.createServices(model, this.busyModel);
             this.services.getGenerator().attachRefreshContent(this.onRefreshContent, this);
 
             try {
@@ -344,10 +355,20 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         return button;
     }
 
-    private createServices(model: ODataModelV2 | ODataModelV4) {
+    private createBusyModel() {
+        const model = new JSONModel();
+
+        model.setDefaultBindingMode("TwoWay");
+        this.getInnerForm().setModel(model, "ui5GenatrixBusyModel");
+
+        return model;
+    }
+
+    private createServices(model: ODataModelV2 | ODataModelV4, busyModel: JSONModel) {
         const services = new ServiceContainer({
             entitySet: this.getEntitySetOrThrow(),
             model: model,
+            busyModel: busyModel,
             updateGroupId: this.getUpdateGroupId(),
             formMode: this.getFormMode(),
             editable: this.getEditable(),

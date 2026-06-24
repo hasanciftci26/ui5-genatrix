@@ -136,6 +136,7 @@ export default class ServiceContainer<T extends Record<string, any>> extends Bas
         const generator = new FormContentGeneratorV2({
             entitySet: this.settings.entitySet,
             model: model,
+            busyModel: this.settings.busyModel,
             formMode: this.settings.formMode,
             editable: this.settings.editable,
             datePattern: this.settings.datePattern,
@@ -162,6 +163,7 @@ export default class ServiceContainer<T extends Record<string, any>> extends Bas
         const generator = new FormContentGeneratorV4({
             entitySet: this.settings.entitySet,
             model: model,
+            busyModel: this.settings.busyModel,
             formMode: this.settings.formMode,
             editable: this.settings.editable,
             datePattern: this.settings.datePattern,
