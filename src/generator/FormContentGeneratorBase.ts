@@ -63,37 +63,46 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
         for (const property of properties) {
             const content: FormContent = {
                 property: property,
+                custom: false,
                 labelControl: this.createLabel(property.label),
                 readonlyControl: this.createText(property)
             };
 
             if (!property.readonly) {
-                this.setBusyModelProperty(property);
+                const customControl = this.settings.customControls.find(control => control.getName() === property.name);
 
-                switch (property.type) {
-                    case "Edm.Boolean":
-                        content.editableControl = this.createCheckBox(property);
-                        break;
-                    case "Edm.Date":
-                        content.editableControl = this.createDatePicker(property);
-                        break;
-                    case "Edm.DateTime":
-                        if (property.displayFormat === "Date") {
+                if (customControl?.getControl()) {
+                    content.custom = true;
+                    content.editableControl = customControl.getControl();
+                    content.customValidator = customControl.getValidator();
+                } else {
+                    this.setBusyModelProperty(property);
+
+                    switch (property.type) {
+                        case "Edm.Boolean":
+                            content.editableControl = this.createCheckBox(property);
+                            break;
+                        case "Edm.Date":
                             content.editableControl = this.createDatePicker(property);
-                        } else {
-                            content.editableControl = this.createDateTimePicker(property);
-                        }
+                            break;
+                        case "Edm.DateTime":
+                            if (property.displayFormat === "Date") {
+                                content.editableControl = this.createDatePicker(property);
+                            } else {
+                                content.editableControl = this.createDateTimePicker(property);
+                            }
 
-                        break;
-                    case "Edm.DateTimeOffset":
-                        content.editableControl = this.createDateTimePicker(property);
-                        break;
-                    case "Edm.Time":
-                        content.editableControl = this.createTimePicker(property);
-                        break;
-                    default:
-                        content.editableControl = this.createInput(property);
-                        break;
+                            break;
+                        case "Edm.DateTimeOffset":
+                            content.editableControl = this.createDateTimePicker(property);
+                            break;
+                        case "Edm.Time":
+                            content.editableControl = this.createTimePicker(property);
+                            break;
+                        default:
+                            content.editableControl = this.createInput(property);
+                            break;
+                    }
                 }
             }
 

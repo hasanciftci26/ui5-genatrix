@@ -152,6 +152,7 @@ export default class ServiceContainer<T extends Record<string, any>> extends Bas
             propertyValidations: this.settings.propertyValidations,
             propertyConstraints: this.settings.propertyConstraints,
             formGroups: this.settings.formGroups,
+            customControls: this.settings.customControls,
             contextManager: contextManager,
             metadataParser: metadataParser
         });
@@ -179,6 +180,7 @@ export default class ServiceContainer<T extends Record<string, any>> extends Bas
             propertyValidations: this.settings.propertyValidations,
             propertyConstraints: this.settings.propertyConstraints,
             formGroups: this.settings.formGroups,
+            customControls: this.settings.customControls,
             contextManager: contextManager,
             metadataParser: metadataParser
         });

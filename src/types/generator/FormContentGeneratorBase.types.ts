@@ -4,6 +4,7 @@ import Event from "sap/ui/base/Event";
 import Control from "sap/ui/core/Control";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import Model from "sap/ui/model/Model";
+import CustomControl from "ui5/genatrix/form/CustomControl";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
@@ -33,12 +34,15 @@ export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
     propertyValidations: PropertyValidation[];
     propertyConstraints: PropertyConstraint[];
     formGroups: FormGroup[];
+    customControls: CustomControl[];
     contextManager: ContextManagerBase<T>;
     metadataParser: MetadataParserBase<T>;
 };
 
 export type FormContent = {
     property: EntityTypeProperty;
+    custom: boolean;
+    customValidator?: (control: Control) => Promise<boolean> | boolean;
     labelControl: Label;
     readonlyControl: Text;
     editableControl?: Control;

@@ -32,7 +32,29 @@
                     emptySpanL="4"
                     emptySpanM="4"
                     emptySpanS="4"
+                    initialData="{
+                        'countryCode': 'DE'
+                    }"
                 >
+                    <form:customControls>
+                        <form:CustomControl name="countryCode">
+                            <Select selectedKey="{countryCode}">
+                                <core:Item
+                                    key="TR"
+                                    text="Türkiye"
+                                />
+                                <core:Item
+                                    key="DE"
+                                    text="Germany"
+                                />
+                                <core:Item
+                                    key="US"
+                                    text="USA"
+                                />
+                            </Select>
+                        </form:CustomControl>
+                    </form:customControls>
+
                     <form:propertyConstraints>
                         <form:PropertyConstraint
                             name="variableSalary"
@@ -54,10 +76,6 @@
                             <form:PropertyValidationRule
                                 dependsOn="lastName"
                                 value1="Ciftci"
-                            />
-                            <form:PropertyValidationRule
-                                dependsOn="countryCode"
-                                value1="TR"
                             />
                         </form:PropertyValidation>
                     </form:propertyValidations>

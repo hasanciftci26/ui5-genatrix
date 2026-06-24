@@ -71,6 +71,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             propertyValidations: { type: "ui5.genatrix.form.PropertyValidation", multiple: true, singularName: "propertyValidation" },
             propertyConstraints: { type: "ui5.genatrix.form.PropertyConstraint", multiple: true, singularName: "propertyConstraint" },
             formGroups: { type: "ui5.genatrix.form.FormGroup", multiple: true, singularName: "formGroup" },
+            customControls: { type: "ui5.genatrix.form.CustomControl", multiple: true, singularName: "customControl" },
             innerForm: { type: "sap.ui.layout.form.SimpleForm", multiple: false, visibility: "hidden" }
         },
         events: {
@@ -392,7 +393,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             propertyConfigurations: this.getPropertyConfigurations(),
             propertyValidations: this.getPropertyValidations(),
             propertyConstraints: this.getPropertyConstraints(),
-            formGroups: this.getFormGroups()
+            formGroups: this.getFormGroups(),
+            customControls: this.getCustomControls()
         });
 
         return services;

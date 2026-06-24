@@ -3,6 +3,7 @@ import { PropertyBindingInfo } from "sap/ui/base/ManagedObject";
 import { $ControlSettings } from "sap/ui/core/Control";
 import { form } from "sap/ui/layout/library";
 import Context from "sap/ui/model/Context";
+import CustomControl from "ui5/genatrix/form/CustomControl";
 import EmbeddedForm from "ui5/genatrix/form/EmbeddedForm";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import FormGroup from "ui5/genatrix/form/FormGroup";
@@ -80,6 +81,7 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     propertyValidations?: PropertyValidation[];
     propertyConstraints?: PropertyConstraint[];
     formGroups?: FormGroup[];
+    customControls?: CustomControl[];
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
     contextCreated?: (event: EmbeddedForm$ContextCreatedEvent) => void;
     modeChanged?: (event: EmbeddedForm$ModeChangedEvent) => void;
@@ -223,6 +225,14 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         removeFormGroup: AggregationRemoverSingle<FormGroup>;
         removeAllFormGroups: AggregationRemoverAll<FormGroup>;
         destroyFormGroups: AggregationDestroyer<EmbeddedForm>;
+
+        getCustomControls: AggregationGetterMulti<CustomControl>;
+        addCustomControl: AggregationSetterOrAdder<CustomControl, EmbeddedForm>;
+        insertCustomControl: AggregationInserter<CustomControl, EmbeddedForm>;
+        bindCustomControls: AggregationBinder<EmbeddedForm>;
+        removeCustomControl: AggregationRemoverSingle<CustomControl>;
+        removeAllCustomControls: AggregationRemoverAll<CustomControl>;
+        destroyCustomControls: AggregationDestroyer<EmbeddedForm>;
 
         attachInitialized(handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
         attachInitialized(data: object, handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;

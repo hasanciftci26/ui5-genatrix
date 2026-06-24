@@ -2,6 +2,7 @@ import Context from "sap/ui/model/Context";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import ODataModelV2 from "sap/ui/model/odata/v2/ODataModel";
 import ODataModelV4 from "sap/ui/model/odata/v4/ODataModel";
+import CustomControl from "ui5/genatrix/form/CustomControl";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
@@ -36,4 +37,5 @@ export type ServiceContainerSettings<T extends Record<string, any>> = {
     propertyValidations: PropertyValidation[];
     propertyConstraints: PropertyConstraint[];
     formGroups: FormGroup[];
+    customControls: CustomControl[];
 };
