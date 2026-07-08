@@ -10,6 +10,7 @@ import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
 import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
+import ValueList from "ui5/genatrix/form/ValueList";
 import {
     AggregationBinder,
     AggregationDestroyer,
@@ -82,6 +83,7 @@ export type EmbeddedFormSettings<T extends Record<string, any>> = $ControlSettin
     propertyConstraints?: PropertyConstraint[];
     formGroups?: FormGroup[];
     customControls?: CustomControl[];
+    valueLists?: ValueList[];
     initialized?: (event: EmbeddedForm$InitializedEvent) => void;
     contextCreated?: (event: EmbeddedForm$ContextCreatedEvent) => void;
     modeChanged?: (event: EmbeddedForm$ModeChangedEvent) => void;
@@ -233,6 +235,14 @@ declare module "ui5/genatrix/form/EmbeddedForm" {
         removeCustomControl: AggregationRemoverSingle<CustomControl>;
         removeAllCustomControls: AggregationRemoverAll<CustomControl>;
         destroyCustomControls: AggregationDestroyer<EmbeddedForm>;
+
+        getValueLists: AggregationGetterMulti<ValueList>;
+        addValueList: AggregationSetterOrAdder<ValueList, EmbeddedForm>;
+        insertValueList: AggregationInserter<ValueList, EmbeddedForm>;
+        bindValueLists: AggregationBinder<EmbeddedForm>;
+        removeValueList: AggregationRemoverSingle<ValueList>;
+        removeAllValueLists: AggregationRemoverAll<ValueList>;
+        destroyValueLists: AggregationDestroyer<EmbeddedForm>;
 
         attachInitialized(handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;
         attachInitialized(data: object, handler: (event: EmbeddedForm$InitializedEvent) => void, listener?: object): EmbeddedForm;

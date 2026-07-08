@@ -72,6 +72,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             propertyConstraints: { type: "ui5.genatrix.form.PropertyConstraint", multiple: true, singularName: "propertyConstraint" },
             formGroups: { type: "ui5.genatrix.form.FormGroup", multiple: true, singularName: "formGroup" },
             customControls: { type: "ui5.genatrix.form.CustomControl", multiple: true, singularName: "customControl" },
+            valueLists: { type: "ui5.genatrix.form.ValueList", multiple: true, singularName: "valueList" },
             innerForm: { type: "sap.ui.layout.form.SimpleForm", multiple: false, visibility: "hidden" }
         },
         events: {

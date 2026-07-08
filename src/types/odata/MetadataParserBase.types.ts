@@ -3,6 +3,7 @@ import { Property } from "sap/ui/model/odata/ODataMetaModel";
 import { TextArrangement } from "ui5/genatrix/core/enum/TextArrangement";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
+import ValueList from "ui5/genatrix/form/ValueList";
 import PropertyConfigurationBase from "ui5/genatrix/interface/PropertyConfigurationBase";
 
 export type MetadataParserBaseSettings<T extends Model = Model> = {
@@ -33,6 +34,7 @@ export type EntityTypeProperty = {
     maxLength?: number;
     text?: string;
     textArrangement: TextArrangement | keyof typeof TextArrangement;
+    valueList?: ValueList;
 };
 
 export type MetaModelProperty = Property & {
@@ -45,7 +47,40 @@ export type MetaModelProperty = Property & {
             EnumMember: TextArrangementEnumMember;
         };
     };
+    "com.sap.vocabularies.Common.v1.ValueList"?: {
+        Label?: {
+            String?: string;
+        };
+        SearchSupported?: {
+            Bool?: "true" | "false";
+        };
+        CollectionPath?: {
+            String?: string;
+        };
+        Parameters?: PropertyValueListParameter[];
+    };
+    "com.sap.vocabularies.Common.v1.ValueListWithFixedValues"?: {
+        Bool?: "true" | "false";
+    }
 };
+
+export type PropertyValueListParameter = {
+    LocalDataProperty?: {
+        PropertyPath?: string;
+    };
+    RecordType?: ValueListParameterRecordType;
+    ValueListProperty?: {
+        String?: string;
+        Path?: string;
+    };
+};
+
+export type ValueListParameterRecordType =
+    "com.sap.vocabularies.Common.v1.ValueListParameterIn" |
+    "com.sap.vocabularies.Common.v1.ValueListParameterOut" |
+    "com.sap.vocabularies.Common.v1.ValueListParameterInOut" |
+    "com.sap.vocabularies.Common.v1.ValueListParameterDisplayOnly" |
+    "com.sap.vocabularies.Common.v1.ValueListParameterFilterOnly";
 
 export type TextArrangementEnumMember =
     "com.sap.vocabularies.UI.v1.TextArrangementType/TextFirst" |

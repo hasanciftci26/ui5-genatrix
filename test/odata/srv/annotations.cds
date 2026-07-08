@@ -19,21 +19,26 @@ annotate CompanyManagement.Employees with {
 };
 
 annotate CompanyManagement.Employees with {
-    countryCode @Common: {ValueList: {
-        $Type         : 'Common.ValueListType',
-        CollectionPath: 'Countries',
-        Parameters    : [
-            {
-                $Type            : 'Common.ValueListParameterInOut',
-                LocalDataProperty: countryCode,
-                ValueListProperty: 'code'
-            },
-            {
-                $Type            : 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty: 'name'
-            }
-        ]
-    }};
+    countryCode @Common: {
+        ValueListWithFixedValues,
+        ValueList: {
+            Label         : 'Test',
+            SearchSupported,
+            $Type         : 'Common.ValueListType',
+            CollectionPath: 'Countries',
+            Parameters    : [
+                {
+                    $Type            : 'Common.ValueListParameterInOut',
+                    LocalDataProperty: countryCode,
+                    ValueListProperty: 'code'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'name'
+                }
+            ]
+        }
+    };
 };
 
 annotate CompanyManagement.Employees with @(UI: {

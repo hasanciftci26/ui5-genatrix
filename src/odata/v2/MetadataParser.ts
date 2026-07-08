@@ -2,8 +2,11 @@ import ODataMetaModel, { EntitySet, EntityType } from "sap/ui/model/odata/ODataM
 import ODataModel from "sap/ui/model/odata/v2/ODataModel";
 import { TextArrangement } from "ui5/genatrix/core/enum/TextArrangement";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
+import { ParameterType } from "ui5/genatrix/form/enum/ParameterType";
+import ValueList from "ui5/genatrix/form/ValueList";
+import ValueListParameter from "ui5/genatrix/form/ValueListParameter";
 import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
-import { EntityTypeProperty, MetadataParserBaseSettings, MetaModelProperty, PropertyDisplayFormat } from "ui5/genatrix/types/odata/MetadataParserBase.types";
+import { EntityTypeProperty, MetadataParserBaseSettings, MetaModelProperty, PropertyDisplayFormat, ValueListParameterRecordType } from "ui5/genatrix/types/odata/MetadataParserBase.types";
 
 /**
  * @namespace ui5.genatrix.odata.v2
@@ -41,7 +44,8 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
                 scale: this.getPropertyScale(property),
                 maxLength: this.getPropertyMaxLength(property),
                 text: await this.getTextProperty(property),
-                textArrangement: this.getTextArrangement(property)
+                textArrangement: this.getTextArrangement(property),
+                valueList: this.getValueList(property)
             });
         }
 
@@ -206,6 +210,81 @@ export default class MetadataParser extends MetadataParserBase<ODataModel> {
                 return TextArrangement.TextSeparate;
             default:
                 return TextArrangement.TextFirst;
+        }
+    }
+
+    private getValueList(property: MetaModelProperty) {
+        const valueList = property["com.sap.vocabularies.Common.v1.ValueList"];
+
+        if (!valueList) {
+            return;
+        }
+
+        const collectionPath = valueList.CollectionPath?.String;
+        const parameters = valueList.Parameters;
+
+        if (!collectionPath || !parameters?.length) {
+            return;
+        }
+
+        const valueListParameters: ValueListParameter[] = [];
+
+        for (const parameter of parameters) {
+            const parameterType = this.getValueListParameterType(parameter.RecordType);
+            const localDataProperty = parameter.LocalDataProperty?.PropertyPath;
+            const valueListProperty = parameter.ValueListProperty?.String || parameter.ValueListProperty?.Path;
+
+            switch (parameterType) {
+                case ParameterType.In:
+                case ParameterType.Out:
+                case ParameterType.InOut:
+                    if (localDataProperty && valueListProperty) {
+                        valueListParameters.push(new ValueListParameter({
+                            type: parameterType,
+                            localDataProperty: localDataProperty,
+                            valueListProperty: valueListProperty
+                        }));
+                    }
+
+                    break;
+                case ParameterType.DisplayOnly:
+                case ParameterType.FilterOnly:
+                    if (valueListProperty) {
+                        valueListParameters.push(new ValueListParameter({
+                            type: parameterType,
+                            valueListProperty: valueListProperty
+                        }));
+                    }
+
+                    break;
+            }
+        }
+
+        if (valueListParameters.length) {
+            return new ValueList({
+                name: property.name,
+                entitySet: collectionPath,
+                searchSupported: property["com.sap.vocabularies.Common.v1.ValueList"]?.SearchSupported?.Bool === "true",
+                title: property["com.sap.vocabularies.Common.v1.ValueList"]?.Label?.String,
+                valueListWithFixedValues: property["com.sap.vocabularies.Common.v1.ValueListWithFixedValues"]?.Bool === "true",
+                nonFilterableProperties: "", //TODO
+                parameters: valueListParameters
+            });
+        }
+    }
+
+    private getValueListParameterType(recordType?: ValueListParameterRecordType) {
+        switch (recordType) {
+            case "com.sap.vocabularies.Common.v1.ValueListParameterIn":
+                return ParameterType.In;
+            case "com.sap.vocabularies.Common.v1.ValueListParameterOut":
+                return ParameterType.Out;
+            case "com.sap.vocabularies.Common.v1.ValueListParameterInOut":
+                return ParameterType.InOut;
+            case "com.sap.vocabularies.Common.v1.ValueListParameterDisplayOnly":
+                return ParameterType.DisplayOnly;
+            case "com.sap.vocabularies.Common.v1.ValueListParameterFilterOnly":
+                return ParameterType.FilterOnly;
         }
     }
 
