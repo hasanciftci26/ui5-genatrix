@@ -8,6 +8,7 @@ import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
 import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
+import ValueList from "ui5/genatrix/form/ValueList";
 
 export type ServiceContainerSettings<T extends Record<string, any>> = {
     entitySet: string;
@@ -38,4 +39,5 @@ export type ServiceContainerSettings<T extends Record<string, any>> = {
     propertyConstraints: PropertyConstraint[];
     formGroups: FormGroup[];
     customControls: CustomControl[];
+    valueLists: ValueList[];
 };

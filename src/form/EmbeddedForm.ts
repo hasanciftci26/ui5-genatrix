@@ -14,7 +14,7 @@ import ODataModelV4 from "sap/ui/model/odata/v4/ODataModel";
 import EmbeddedFormRenderer from "ui5/genatrix/form/EmbeddedFormRenderer";
 import { FormMode } from "ui5/genatrix/form/enum/FormMode";
 import { EmbeddedFormSettings } from "ui5/genatrix/types/form/EmbeddedForm.types";
-import { FormContentGeneratorBase$RefreshContentEvent } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
+import { FormContentGeneratorBase$RefreshContentEvent, FormContentGeneratorBase$ValueListDetectedEvent } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
 import ContextManagerError from "ui5/genatrix/util/ContextManagerError";
 import ServiceContainer from "ui5/genatrix/form/service/ServiceContainer";
 import JSONModel from "sap/ui/model/json/JSONModel";
@@ -234,6 +234,7 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             this.busyModel = this.createBusyModel();
             this.services = this.createServices(model, this.busyModel);
             this.services.getGenerator().attachRefreshContent(this.onRefreshContent, this);
+            this.services.getGenerator().attachValueListDetected(this.onValueListDetected, this);
 
             try {
                 const context = await this.services.getContextManager().create();
@@ -395,7 +396,8 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
             propertyValidations: this.getPropertyValidations(),
             propertyConstraints: this.getPropertyConstraints(),
             formGroups: this.getFormGroups(),
-            customControls: this.getCustomControls()
+            customControls: this.getCustomControls(),
+            valueLists: this.getValueLists()
         });
 
         return services;
@@ -410,6 +412,10 @@ export default class EmbeddedForm<T extends Record<string, any> = Record<string,
         for (const item of content) {
             this.getInnerForm().addContent(item);
         }
+    }
+
+    private onValueListDetected(event: FormContentGeneratorBase$ValueListDetectedEvent) {
+        this.addValueList(event.getParameter("valueList"));
     }
 
     private getEntitySetOrThrow() {

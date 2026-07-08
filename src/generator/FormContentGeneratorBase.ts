@@ -11,12 +11,14 @@ import FormDateTimePicker from "ui5/genatrix/extension/control/FormDateTimePicke
 import FormInput from "ui5/genatrix/extension/control/FormInput";
 import FormTimePicker from "ui5/genatrix/extension/control/FormTimePicker";
 import { PropertyConstraintType } from "ui5/genatrix/form/enum/PropertyConstraintType";
+import ValueList from "ui5/genatrix/form/ValueList";
 import FormTypeGenerator from "ui5/genatrix/generator/FormTypeGenerator";
 import TypeGeneratorBase from "ui5/genatrix/generator/TypeGeneratorBase";
 import ChangeManager from "ui5/genatrix/odata/ChangeManager";
 import {
     FormContent,
     FormContentGeneratorBase$RefreshContentEventHandler,
+    FormContentGeneratorBase$ValueListDetectedEventHandler,
     FormContentGeneratorBaseSettings
 } from "ui5/genatrix/types/generator/FormContentGeneratorBase.types";
 import { ChangeManager$ApplyConstraintEvent } from "ui5/genatrix/types/odata/ChangeManager.types";
@@ -166,6 +168,16 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
 
     public fireRefreshContent() {
         this.fireEvent("refreshContent");
+    }
+
+    public attachValueListDetected(handler: FormContentGeneratorBase$ValueListDetectedEventHandler, listener?: object) {
+        this.attachEvent("valueListDetected", handler, listener);
+    }
+
+    public fireValueListDetected(valueList: ValueList) {
+        this.fireEvent("valueListDetected", {
+            valueList: valueList
+        });
     }
 
     private async parseMetadata() {
@@ -324,6 +336,49 @@ export default abstract class FormContentGeneratorBase<T extends Model = Model> 
     }
 
     private createInput(property: EntityTypeProperty) {
+        if (property.type === "Edm.String" || property.type === "Edm.Guid") {
+            const userDefinedValueList = this.settings.valueLists.find(vl => vl.getName() === property.name);
+            const metadataValueList = property.valueList;
+
+            if (userDefinedValueList) {
+                if (userDefinedValueList.getValueListWithFixedValues()) {
+                    return this.createComboBox(property, userDefinedValueList, false);
+                } else {
+                    return this.createInputWithValueList(property, userDefinedValueList, false);
+                }
+            } else if (metadataValueList) {
+                if (metadataValueList.getValueListWithFixedValues()) {
+                    return this.createComboBox(property, metadataValueList, true);
+                } else {
+                    return this.createInputWithValueList(property, metadataValueList, true);
+                }
+            } else {
+                return this.createInputNoValueList(property);
+            }
+        } else {
+            return this.createInputNoValueList(property);
+        }
+    }
+
+    // TODO
+    private createInputWithValueList(property: EntityTypeProperty, valueList: ValueList, metadataValueList: boolean) {
+        if (metadataValueList) {
+            this.fireValueListDetected(valueList);
+        }
+
+        return new FormInput();
+    }
+
+    // TODO
+    private createComboBox(property: EntityTypeProperty, valueList: ValueList, metadataValueList: boolean) {
+        if (metadataValueList) {
+            this.fireValueListDetected(valueList);
+        }
+
+        return new FormInput();
+    }
+
+    private createInputNoValueList(property: EntityTypeProperty) {
         const layoutData = this.settings.propertyConfigurations.find(config => config.getName() === property.name)?.getLayoutData();
         const control = new FormInput({
             busyIndicatorDelay: 0,

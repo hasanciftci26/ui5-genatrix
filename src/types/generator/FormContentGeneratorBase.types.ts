@@ -10,6 +10,7 @@ import FormGroup from "ui5/genatrix/form/FormGroup";
 import PropertyConfiguration from "ui5/genatrix/form/PropertyConfiguration";
 import PropertyConstraint from "ui5/genatrix/form/PropertyConstraint";
 import PropertyValidation from "ui5/genatrix/form/PropertyValidation";
+import ValueList from "ui5/genatrix/form/ValueList";
 import FormContentGeneratorBase from "ui5/genatrix/generator/FormContentGeneratorBase";
 import ContextManagerBase from "ui5/genatrix/odata/ContextManagerBase";
 import MetadataParserBase from "ui5/genatrix/odata/MetadataParserBase";
@@ -35,6 +36,7 @@ export type FormContentGeneratorBaseSettings<T extends Model = Model> = {
     propertyConstraints: PropertyConstraint[];
     formGroups: FormGroup[];
     customControls: CustomControl[];
+    valueLists: ValueList[];
     contextManager: ContextManagerBase<T>;
     metadataParser: MetadataParserBase<T>;
 };
@@ -54,3 +56,10 @@ export type FormContentGeneratorBase$RefreshContentEventParameters = {
 
 export type FormContentGeneratorBase$RefreshContentEvent = Event<FormContentGeneratorBase$RefreshContentEventParameters, FormContentGeneratorBase>;
 export type FormContentGeneratorBase$RefreshContentEventHandler = (event: FormContentGeneratorBase$RefreshContentEvent) => void;
+
+export type FormContentGeneratorBase$ValueListDetectedEventParameters = {
+    valueList: ValueList;
+};
+
+export type FormContentGeneratorBase$ValueListDetectedEvent = Event<FormContentGeneratorBase$ValueListDetectedEventParameters, FormContentGeneratorBase>;
+export type FormContentGeneratorBase$ValueListDetectedEventHandler = (event: FormContentGeneratorBase$ValueListDetectedEvent) => void;
